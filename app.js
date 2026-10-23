@@ -156,7 +156,7 @@ async function route(){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
  document.body.dataset.t=SV[key]?key:'home';$('#nav').classList.remove('open');
  if(key==='admin')await admin();
- else{$('#app').innerHTML=(SV[key]?pages.service(key):pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key)}
+ else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key)}
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-resa]');if(a){const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];if(key){e.preventDefault();document.getElementById('resa')?.scrollIntoView()}}});
