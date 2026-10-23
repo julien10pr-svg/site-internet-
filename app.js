@@ -119,7 +119,7 @@ async function admin(){
  const {data:{session}}=await sb.auth.getSession();
  const ok=session?(await sb.rpc('is_admin')).data:false;
  if(!ok){app.innerHTML=`<div class="wrap"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
-  $('#lf').onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});if(error)$('#lm').innerHTML='<p class="msg err">Identifiants incorrects.</p>';else admin()};return}
+  $('#lf').onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});if(error)$('#lm').innerHTML='<p class="msg err">'+error.message+'.</p>';else admin()};return}
  const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Médias:tMedia};
  app.innerHTML=`<div class="wrap"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
  const show=n=>{app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));tabs[n]($('#tab'))};
