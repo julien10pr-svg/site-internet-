@@ -68,20 +68,20 @@ const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${t
 
 const pages={
 home(){return `<section class="hero wrap"><h1>${esc(t('home.title'))}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn" href="#/a-propos">Découvrir l’accompagnement</a><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
-<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id}" href="#/${id}"><h2>${s.name}</h2><p>${esc(t(s.k+'.intro'))}</p><b>Découvrir l’accompagnement</b></a>`).join('')}</div>
+<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2><p>${esc(t(s.k+'.intro'))}</p><b>Découvrir l’accompagnement</b></a>`).join('')}</div>
 <section class="wrap rv"><h2>Qui accompagne ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${video()}${gallery()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`},
 service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
- return `<div class="shero"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
+ return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
 <div class="wrap">${s.secs.map(([h,k])=>`<div class="sec2 rv"><h2>${h}</h2><div>${rich(t(s.k+'.'+k))}</div></div>`).join('')}
 <section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}${x.tbc?' <mark class="tbd">[tarif à confirmer]</mark>':''}</p></div>`).join('')}</div>
 <p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
 <section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`},
-about(){return `<div class="shero"><div class="wrap"><h1>À propos</h1></div></div><div class="wrap"><section>${rich(t('about.text'))}<h2>Ma vision</h2>${rich(t('about.vision'))}</section></div>${gallery()}`},
-contact(){return `<div class="shero"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section>${contactBlock()}</section></div>`},
-faq(){return `<div class="shero"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section>${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`},
-mentions(){return `<div class="wrap"><section><h1>Mentions légales</h1>${rich(t('legal.text'))}</section></div>`},
-confidentialite(){return `<div class="wrap"><section><h1>Confidentialité</h1>${rich(t('privacy.text'))}</section></div>`}};
+about(){return `<div class="shero rv"><div class="wrap"><h1>À propos</h1></div></div><div class="wrap"><section class="rv">${rich(t('about.text'))}<h2>Ma vision</h2>${rich(t('about.vision'))}</section></div>${gallery()}`},
+contact(){return `<div class="shero rv"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`},
+faq(){return `<div class="shero rv"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`},
+mentions(){return `<div class="wrap"><section class="rv"><h1>Mentions légales</h1>${rich(t('legal.text'))}</section></div>`},
+confidentialite(){return `<div class="wrap"><section class="rv"><h1>Confidentialité</h1>${rich(t('privacy.text'))}</section></div>`}};
 
 function booking(id){
  const box=$('#booking');if(!box)return;
@@ -115,13 +115,13 @@ const ST=['pending','confirmed','cancelled','done'],STL={pending:'En attente',co
 const opts=(a,l,v)=>a.map(x=>`<option value="${x}"${x===v?' selected':''}>${l[x]||x}</option>`).join('');
 async function admin(){
  const app=$('#app');
- if(!live){app.innerHTML='<div class="wrap"><section><h1>Espace administrateur</h1><p class="msg err">Supabase n’est pas configuré (config.js).</p></section></div>';return}
+ if(!live){app.innerHTML='<div class="wrap admin"><section><h1>Espace administrateur</h1><p class="msg err">Supabase n’est pas configuré (config.js).</p></section></div>';return}
  const {data:{session}}=await sb.auth.getSession();
  const ok=session?(await sb.rpc('is_admin')).data:false;
- if(!ok){app.innerHTML=`<div class="wrap"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
+ if(!ok){app.innerHTML=`<div class="wrap admin"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
   $('#lf').onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});if(error)$('#lm').innerHTML='<p class="msg err">'+error.message+'.</p>';else admin()};return}
  const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Médias:tMedia};
- app.innerHTML=`<div class="wrap"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
+ app.innerHTML=`<div class="wrap admin"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
  const show=n=>{app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));tabs[n]($('#tab'))};
  app.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>show(b.textContent));$('#out').onclick=async()=>{await sb.auth.signOut();admin()};show('Réservations');
 }
@@ -151,7 +151,14 @@ async function tMedia(el){const {data=[]}=await sb.from('media').select('*').ord
  el.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{if(b.dataset.p)await sb.storage.from('media').remove([b.dataset.p]);await sb.from('media').delete().eq('id',b.dataset.x);tMedia(el)})}
 
 // ---------- Routeur ----------
-const rv=()=>{const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&(e.target.classList.add('on'),io.unobserve(e.target))),{threshold:.12});document.querySelectorAll('.rv').forEach(x=>io.observe(x))};
+let revealObserver;
+const rv=()=>{
+ if(revealObserver)revealObserver.disconnect();
+ const items=document.querySelectorAll('#app .rv');
+ if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){items.forEach(x=>x.classList.add('on'));return}
+ revealObserver=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');revealObserver.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -30px 0px'});
+ items.forEach(x=>revealObserver.observe(x))
+};
 async function route(){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
  document.body.dataset.t=SV[key]?key:'home';$('#nav').classList.remove('open');
