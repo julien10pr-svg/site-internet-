@@ -330,6 +330,19 @@ mark.tbd {
   color: #f26a1b;
 }
 
+.p-clubs {
+  background: linear-gradient(160deg, #f1eee8, #e3ddd3);
+  color: var(--ink);
+}
+
+.p-clubs h2 {
+  color: var(--a);
+}
+
+.p-clubs b {
+  color: var(--ink);
+}
+
 .shero {
   padding: clamp(4.5rem, 9vw, 7rem) 0 clamp(4rem, 7vw, 5.5rem);
   background: var(--hbg);
