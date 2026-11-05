@@ -33,6 +33,8 @@ const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenu
 'clubs.players':'Un accompagnement en préparation physique et mentale, construit selon les besoins des joueurs et joueuses, leur discipline et les objectifs du club.',
 'clubs.staff':'Des formations et temps d’échange pour les entraîneurs et les staffs : mieux comprendre les principes de préparation physique et mentale, puis les intégrer dans leur pratique.',
 'clubs.companies':'Des ateliers autour de la cohésion d’équipe, du bien-être et de l’activité physique, adaptés aux besoins de votre entreprise.',
+'clubs.duration':'L’intervention s’adapte à votre besoin : d’une heure à une demi-journée.',
+'clubs.pricing':'Le tarif varie selon le contenu, la durée et le public concerné. Une proposition personnalisée est établie après échange sur votre mission.',
 'loyalty':'Des avantages fidélité peuvent être proposés aux clients réguliers. Ils ne se cumulent pas automatiquement avec les tarifs de groupe ou les packs.',
 'about.text':'Je suis en deuxième année de Master EOPS à l’Université de Lille, en alternance à la Patriote de Templeuve : coach principal des U18F Région, assistant auprès des U18 France, et intervenant à l’école de basket.\n\nFormations : Brevet fédéral jeune en basket ; DETB en cours (trois évaluations sur quatre validées, diplôme non encore obtenu) ; AUEC en réathlétisation du sportif.\n\n[Texte de présentation personnelle à compléter]',
 'about.vision':'[Ma vision de l’accompagnement à rédiger]',
@@ -72,8 +74,7 @@ const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${t
 
 const pages={
 home(){return `<section class="hero wrap"><h1>${esc(t('home.title'))}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn" href="#/a-propos">Découvrir l’accompagnement</a><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
-<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2><p>${esc(t(s.k+'.intro'))}</p><b>Découvrir l’accompagnement</b></a>`).join('')}</div>
-<section class="wrap rv"><h2>Clubs et Entreprises</h2><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/clubs">Découvrir l’accompagnement</a></section>
+<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2><p>${esc(t(s.k+'.intro'))}</p><b>Découvrir l’accompagnement</b></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2><p>${esc(t('clubs.intro'))}</p><b>Découvrir nos interventions</b></a></div>
 <section class="wrap rv" style="padding-bottom:clamp(5rem,9vw,7rem)"><h2>Qui accompagne ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${video()}${gallery()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`},
 service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
@@ -84,7 +85,8 @@ service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
 <section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`},
 about(){return `<div class="shero rv"><div class="wrap"><h1>À propos</h1></div></div><div class="wrap"><section class="rv">${rich(t('about.text'))}<h2>Ma vision</h2>${rich(t('about.vision'))}</section></div>${gallery()}`},
 clubs(){return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
-<section class="wrap rv"><h2>Des interventions adaptées à vos besoins</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article><article class="box"><h3>Entreprises</h3>${rich(t('clubs.companies'))}</article></div></section>`},
+<section class="wrap rv"><h2>Des interventions adaptées à vos besoins</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article><article class="box"><h3>Entreprises</h3>${rich(t('clubs.companies'))}</article></div></section>
+<section class="wrap rv"><h2>Offres et tarifs</h2><div class="grid"><article class="box"><h3>Durée des interventions</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>Tarification</h3>${rich(t('clubs.pricing'))}</article></div></section>`},
 contact(){return `<div class="shero rv"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`},
 faq(){return `<div class="shero rv"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`},
 mentions(){return `<div class="wrap"><section class="rv"><h1>Mentions légales</h1>${rich(t('legal.text'))}</section></div>`},
