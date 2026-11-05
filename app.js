@@ -4,10 +4,10 @@ const sb=live?createClient(cfg.supabaseUrl,cfg.supabaseAnonKey):null;
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tbd=s=>esc(s).replace(/\[[^\]]+\]/g,m=>`<mark class="tbd">${m}</mark>`);
-const rich=s=>String(s??'').split(/\n\n+/).map(p=>`<p>${tbd(p)}</p>`).join('');
+const rich=s=>String(s??'').split(/\n\n+/).map(p=>`<p style="margin:0 auto 1.35em;line-height:1.75">${tbd(p).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}</p>`).join('');
 const eur=c=>(c/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:c%100?2:0});
 const fmt=d=>new Date(d).toLocaleString('fr-FR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Paris'});
-const DUR='Séance de référence : une heure. Le format s’adapte au travail engagé.';
+const DUR='Séance de référence : 1 h 15 de séance effective, suivie d’un débriefing et de conseils.';
 const TBC='[À compléter]';
 
 const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenus)
@@ -63,13 +63,13 @@ const foot=()=>{$('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p>
 const gallery=()=>`<section class="wrap rv"><h2>Galerie</h2>${photos.length?`<div class="gal">${photos.map(p=>`<img loading="lazy" src="${esc(p.url)}" alt="${esc(p.caption||'Photo')}">`).join('')}</div>`:`<p><mark class="tbd">[Galerie à alimenter depuis l’espace administrateur]</mark></p>`}</section>`;
 const video=()=>{const u=t('video.url');let inner='<mark class="tbd">[Vidéo de présentation à ajouter]</mark>';
  const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
- return `<section class="wrap rv"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`};
+ return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`};
 const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${tbd(t('contact.phone'))}</p><p>${tbd(t('contact.zone'))}</p><p>${tbd(t('contact.social'))}</p></div>`;
 
 const pages={
 home(){return `<section class="hero wrap"><h1>${esc(t('home.title'))}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn" href="#/a-propos">Découvrir l’accompagnement</a><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
 <div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2><p>${esc(t(s.k+'.intro'))}</p><b>Découvrir l’accompagnement</b></a>`).join('')}</div>
-<section class="wrap rv"><h2>Qui accompagne ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${video()}${gallery()}
+<section class="wrap rv" style="padding-bottom:clamp(5rem,9vw,7rem)"><h2>Qui accompagne ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${video()}${gallery()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`},
 service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
  return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
