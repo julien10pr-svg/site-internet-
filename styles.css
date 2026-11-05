@@ -8,6 +8,7 @@
   --hbg: #14171c;
   --hfg: #fff;
   --r: 10px;
+  --section-space: clamp(2.75rem, 5vw, 4rem);
 }
 
 body[data-t="physique"] {
@@ -184,13 +185,16 @@ nav .cta:hover,
   text-align: center;
 }
 
+#app > section:not(.hero),
 #app .wrap:not(.admin) > section {
-  padding: clamp(4.5rem, 8vw, 7rem) 0;
+  padding-block: var(--section-space) !important;
 }
 
+#app > section:not(.hero) > h2,
+#app > section:not(.hero) > h1,
 #app .wrap:not(.admin) > section > h2,
 #app .wrap:not(.admin) > section > h1 {
-  margin-bottom: 1.1em;
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
 }
 
 #app .wrap:not(.admin) p {
