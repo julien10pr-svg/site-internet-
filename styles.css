@@ -32,6 +32,13 @@ body[data-t="basket"] {
   --hfg: #fff;
 }
 
+body[data-t="clubs"] {
+  --a: #244b38;
+  --b: #dce7df;
+  --hbg: #f1f5f1;
+  --hfg: #203d30;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -331,16 +338,29 @@ mark.tbd {
 }
 
 .p-clubs {
-  background: linear-gradient(160deg, #f1eee8, #e3ddd3);
-  color: var(--ink);
+  background: #edf2ed;
+  color: #263b30;
 }
 
 .p-clubs h2 {
-  color: var(--a);
+  color: #244b38;
 }
 
 .p-clubs b {
-  color: var(--ink);
+  color: #244b38;
+}
+
+body[data-t="clubs"] .shero h1 {
+  color: #244b38;
+}
+
+.clubs-offers .box {
+  border-color: #d6e0d7;
+  background: #fff;
+}
+
+.clubs-offers .box h3 {
+  color: #244b38;
 }
 
 .shero {
