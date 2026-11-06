@@ -73,7 +73,24 @@ async function loadData(){
  (c.data||[]).forEach(r=>{if(r.key==='reviews.data')reviews=parseReviews(r.value);else content[r.key]=r.value}); if(o.data?.length)offers=o.data; photos=m.data||[];}catch(e){console.error(e)}
 }
 const foot=()=>{$('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;$('#brand').innerHTML=tbd(t('brand'))};
-const gallery=()=>`<section class="wrap rv photo-gallery"><h2>Galerie</h2>${photos.length?`<div class="photo-album">${photos.map((p,i)=>`<figure class="photo-album-card" style="--stack-index:${i};--stack-offset:${Math.min(i*8,56)}px;--stack-tilt:${i%2?'0.35deg':'-0.35deg'}"><img loading="lazy" src="${esc(p.url)}" alt="${esc(p.caption||'Photo de coaching')}">${p.caption?`<figcaption>${esc(p.caption)}</figcaption>`:''}</figure>`).join('')}</div>`:`<p class="reviews-empty">Les photos de l’accompagnement seront bientôt ajoutées.</p>`}</section>`;
+const gallery=()=>`<section class="wrap rv photo-gallery"><h2>Galerie</h2>${photos.length?`<div class="album-shell"><div class="photo-album" data-photo-album tabindex="0" aria-label="Album photo : faites défiler horizontalement">${photos.map((p,i)=>`<figure class="album-photo${i===0?' is-active':''}" data-photo-index="${i}"><img loading="lazy" src="${esc(p.url)}" alt="${esc(p.caption||'Photo de coaching')}">${p.caption?`<figcaption>${esc(p.caption)}</figcaption>`:''}</figure>`).join('')}</div><div class="album-navigation"><button type="button" data-gallery-prev aria-label="Photo précédente">←</button><span data-gallery-count aria-live="polite">1 / ${photos.length}</span><button type="button" data-gallery-next aria-label="Photo suivante">→</button></div></div>`:`<p class="reviews-empty">Les photos de l’accompagnement seront bientôt ajoutées.</p>`}</section>`;
+function setupGallery(){
+ const track=$('[data-photo-album]');if(!track)return;
+ const section=track.closest('.photo-gallery'),items=[...track.querySelectorAll('.album-photo')],count=section.querySelector('[data-gallery-count]');
+ if(items.length<2){section.querySelectorAll('[data-gallery-prev],[data-gallery-next]').forEach(b=>b.hidden=true);return}
+ let active=0,frame=0;
+ const nearest=()=>{const mid=track.getBoundingClientRect().left+track.clientWidth/2;let best=0,distance=Infinity;items.forEach((item,i)=>{const r=item.getBoundingClientRect(),d=Math.abs(r.left+r.width/2-mid);if(d<distance){best=i;distance=d}});return best};
+ const update=()=>{active=nearest();items.forEach((item,i)=>item.classList.toggle('is-active',i===active));count.textContent=`${active+1} / ${items.length}`};
+ const move=direction=>{const i=Math.max(0,Math.min(items.length-1,nearest()+direction)),target=items[i];track.scrollTo({left:track.scrollLeft+target.getBoundingClientRect().left-items[nearest()].getBoundingClientRect().left,behavior:'smooth'})};
+ let dragging=false,startX=0,startScroll=0;
+ track.addEventListener('mousedown',e=>{if(e.button!==0)return;dragging=true;startX=e.clientX;startScroll=track.scrollLeft;track.classList.add('is-dragging')});
+ window.addEventListener('mousemove',e=>{if(dragging)track.scrollLeft=startScroll-(e.clientX-startX)});
+ window.addEventListener('mouseup',()=>{dragging=false;track.classList.remove('is-dragging')});
+ section.querySelector('[data-gallery-prev]').onclick=()=>move(-1);section.querySelector('[data-gallery-next]').onclick=()=>move(1);
+ track.addEventListener('scroll',()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(update)},{passive:true});
+ items.forEach((item,i)=>item.addEventListener('mouseenter',()=>{active=i;items.forEach((card,j)=>card.classList.toggle('is-active',j===i));count.textContent=`${i+1} / ${items.length}`}));
+ update();
+}
 const video=()=>{const u=t('video.url');let inner='<mark class="tbd">[Vidéo de présentation à ajouter]</mark>';
  const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
  return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`};
@@ -197,7 +214,7 @@ async function route(){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
  document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
  if(key==='admin')await admin();
- else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews()}
+ else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews();setupGallery()}
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);
 }
