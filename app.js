@@ -162,6 +162,9 @@ async function tMedia(el){const {data=[]}=await sb.from('media').select('*').ord
 
 // ---------- Routeur ----------
 let revealObserver;
+let routeSegments=[];
+let updateScrollRoute=()=>{};
+let routeFrame=0;
 const rv=()=>{
  if(revealObserver)revealObserver.disconnect();
  const items=document.querySelectorAll('#app .rv');
@@ -170,44 +173,67 @@ const rv=()=>{
  items.forEach(x=>revealObserver.observe(x))
 };
 function setupScrollRoute(){
- const ns='http://www.w3.org/2000/svg';
- const svg=document.createElementNS(ns,'svg');
- svg.setAttribute('id','scroll-route');
- svg.setAttribute('viewBox','0 0 46 1000');
- svg.setAttribute('preserveAspectRatio','none');
- svg.setAttribute('aria-hidden','true');
- svg.innerHTML='<path class="scroll-route-track" d="M22 18 V150 H40 V290 H7 V430 H37 V570 H12 V710 H32 V850 H20 V982"/><path class="scroll-route-progress" d="M22 18 V150 H40 V290 H7 V430 H37 V570 H12 V710 H32 V850 H20 V982"/><ellipse class="scroll-route-dot" cx="22" cy="18" rx="8" ry="11.25"/>';
- document.body.append(svg);
- const guidePath=svg.querySelector('.scroll-route-track');
- const progressPath=svg.querySelector('.scroll-route-progress');
- const dot=svg.querySelector('.scroll-route-dot');
- const length=guidePath.getTotalLength();
- progressPath.style.strokeDasharray=String(length);
- progressPath.style.strokeDashoffset=String(length);
- let frame=0;
- const update=()=>{
-  frame=0;
-  const maxScroll=document.documentElement.scrollHeight-window.innerHeight;
-  const progress=maxScroll>0?Math.max(0,Math.min(1,window.scrollY/maxScroll)):0;
-  const distance=length*progress;
-  progressPath.style.strokeDashoffset=String(length-distance);
-  const point=guidePath.getPointAtLength(distance);
-  dot.setAttribute('cx',point.x.toFixed(2));
-  dot.setAttribute('cy',point.y.toFixed(2));
- };
- const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};
- window.addEventListener('scroll',schedule,{passive:true});
- window.addEventListener('resize',schedule,{passive:true});
- schedule();
- return schedule;
+ const app=$('#app');
+ app.querySelectorAll('.route-connector').forEach(x=>x.remove());
+ routeSegments=[];
+ if(document.body.dataset.t==='admin')return ()=>{};
+
+ const nodes=[...app.querySelectorAll(':scope > .hero, :scope > .panels, :scope > .shero, :scope > section.wrap.rv, :scope > .wrap > .sec2, :scope > .wrap > section.rv')];
+ nodes.slice(0,-1).forEach((node,index)=>{
+  const next=nodes[index+1];
+  if(node.classList.contains('hero')&&next.classList.contains('panels'))return;
+  const connector=document.createElement('div');
+  connector.className='route-connector';
+  connector.setAttribute('aria-hidden','true');
+  connector.innerHTML='<svg viewBox="0 0 100 64" focusable="false"><path class="route-track" d="M50 0 V12 H70 V32 H30 V52 H50 V64"/><path class="route-progress" d="M50 0 V12 H70 V32 H30 V52 H50 V64"/><circle class="route-dot" cx="50" cy="0" r="6"/></svg>';
+  node.insertAdjacentElement('afterend',connector);
+ });
+
+ routeSegments=[...app.querySelectorAll('.route-connector')].map(el=>{
+  const track=el.querySelector('.route-track');
+  const progress=el.querySelector('.route-progress');
+  const dot=el.querySelector('.route-dot');
+  const length=track.getTotalLength();
+  progress.style.strokeDasharray=String(length);
+  progress.style.strokeDashoffset=String(length);
+  return {el,track,progress,dot,length};
+ });
+ return drawScrollRoute;
 }
-const updateScrollRoute=setupScrollRoute();
+
+function drawScrollRoute(){
+ if(!routeSegments.length)return;
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(reduced){routeSegments.forEach(s=>{s.progress.style.strokeDashoffset=String(s.length);s.dot.setAttribute('opacity','0')});return}
+ const cursor=window.scrollY+window.innerHeight*.56;
+ const centers=routeSegments.map(s=>s.el.getBoundingClientRect().top+window.scrollY+s.el.offsetHeight/2);
+ let active=0;
+ for(let i=1;i<centers.length;i++)if(Math.abs(centers[i]-cursor)<Math.abs(centers[active]-cursor))active=i;
+ const start=active===0?0:(centers[active-1]+centers[active])/2;
+ const end=active===centers.length-1?document.documentElement.scrollHeight:(centers[active]+centers[active+1])/2;
+ const progress=end>start?Math.max(0,Math.min(1,(cursor-start)/(end-start))):0;
+ routeSegments.forEach((s,i)=>{
+  const amount=i<active?1:i===active?progress:0;
+  const distance=s.length*amount;
+  s.progress.style.strokeDashoffset=String(s.length-distance);
+  s.dot.setAttribute('opacity',i===active?'1':'0');
+  if(i===active){const point=s.track.getPointAtLength(distance);s.dot.setAttribute('cx',point.x.toFixed(2));s.dot.setAttribute('cy',point.y.toFixed(2))}
+ });
+}
+
+function scheduleScrollRoute(){
+ if(routeFrame)return;
+ routeFrame=requestAnimationFrame(()=>{routeFrame=0;updateScrollRoute()});
+}
+window.addEventListener('scroll',scheduleScrollRoute,{passive:true});
+window.addEventListener('resize',scheduleScrollRoute,{passive:true});
 
 async function route(){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
  document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
  if(key==='admin')await admin();
  else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key)}
+ updateScrollRoute=setupScrollRoute();
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);requestAnimationFrame(updateScrollRoute);
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-resa]');if(a){const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];if(key){e.preventDefault();document.getElementById('resa')?.scrollIntoView()}}});
