@@ -253,100 +253,36 @@ mark.tbd {
 }
 
 .hero h1 {
-  position: relative;
-  isolation: isolate;
   max-width: 18ch;
   margin: 0 auto 0.45em;
-  animation: title-pop-in 1.05s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.hero h1::before,
-.hero h1::after {
-  position: absolute;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  content: "";
-  opacity: 0;
-  pointer-events: none;
+.hero.home-enter h1 {
+  animation: title-pop-in 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.hero h1::before {
-  z-index: -1;
-  top: 50%;
-  left: 50%;
-  width: clamp(9rem, 24vw, 20rem);
-  height: clamp(9rem, 24vw, 20rem);
-  border: 2px solid rgba(20, 23, 28, 0.2);
-  background: radial-gradient(circle, rgba(242, 106, 27, 0.09), transparent 68%);
-  transform: translate(-50%, -50%) scale(0.08);
-  animation: title-bubble-burst 1.05s 0.08s ease-out both;
+.hero.home-enter p {
+  animation: rise-in 0.75s 0.18s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.hero h1::after {
-  top: 14%;
-  right: 14%;
-  width: 10px;
-  height: 10px;
-  border-color: var(--a);
-  animation: bubble-spark 0.7s 0.24s ease-out both;
+.hero.home-enter .row {
+  animation: rise-in 0.75s 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 @keyframes title-pop-in {
   from {
     opacity: 0;
-    filter: blur(7px);
-    transform: translateY(18px) scale(0.88);
+    transform: translateY(22px) scale(0.92);
   }
 
   68% {
     opacity: 1;
-    filter: blur(0);
     transform: translateY(0) scale(1.025);
   }
 
   to {
     opacity: 1;
-    filter: blur(0);
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes title-bubble-burst {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.08);
-  }
-
-  28% {
-    opacity: 0.36;
-    transform: translate(-50%, -50%) scale(0.34);
-  }
-
-  62% {
-    opacity: 0.18;
-    transform: translate(-50%, -50%) scale(1.05);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(1.55);
-  }
-}
-
-@keyframes bubble-spark {
-  0% {
-    opacity: 0;
-    transform: scale(0.2);
-  }
-
-  32% {
-    opacity: 0.75;
-    transform: scale(0.85);
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(2.4);
   }
 }
 
@@ -355,11 +291,6 @@ mark.tbd {
   margin: 0 auto 1.5em;
   color: var(--mut);
   font-size: clamp(1.05rem, 1.7vw, 1.25rem);
-  animation: rise-in 0.8s 0.12s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.hero .row {
-  animation: rise-in 0.8s 0.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 @keyframes rise-in {
@@ -510,8 +441,8 @@ mark.tbd {
 
 .route-connector svg {
   display: block;
-  width: 72px;
-  height: 64px;
+  width: 48px;
+  height: 56px;
   overflow: visible;
 }
 
@@ -533,9 +464,9 @@ mark.tbd {
 }
 
 .route-dot {
-  fill: var(--ink);
-  stroke: var(--bg);
-  stroke-width: 2;
+  fill: #fff;
+  stroke: var(--ink);
+  stroke-width: 1.5;
   opacity: 0;
 }
 
@@ -1027,8 +958,8 @@ th {
   }
 
   .route-connector svg {
-    width: 60px;
-    height: 52px;
+    width: 42px;
+    height: 50px;
   }
 }
 
@@ -1044,6 +975,15 @@ th {
   .rv {
     opacity: 1;
     transform: none;
+  }
+
+  .hero.home-enter h1 {
+    animation: title-pop-in 0.5s ease-out both !important;
+  }
+
+  .hero.home-enter p,
+  .hero.home-enter .row {
+    animation: rise-in 0.35s ease-out both !important;
   }
 
   .route-dot {
