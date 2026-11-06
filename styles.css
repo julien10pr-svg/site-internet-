@@ -254,9 +254,10 @@ mark.tbd {
 
 .hero h1 {
   position: relative;
+  isolation: isolate;
   max-width: 18ch;
   margin: 0 auto 0.45em;
-  animation: title-appear 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: title-pop-in 1.05s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 .hero h1::before,
@@ -270,47 +271,82 @@ mark.tbd {
 }
 
 .hero h1::before {
-  top: 10%;
-  left: 12%;
-  width: 12px;
-  height: 12px;
-  animation: bubble-pop 0.75s 0.35s ease-out both;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: clamp(9rem, 24vw, 20rem);
+  height: clamp(9rem, 24vw, 20rem);
+  border: 2px solid rgba(20, 23, 28, 0.2);
+  background: radial-gradient(circle, rgba(242, 106, 27, 0.09), transparent 68%);
+  transform: translate(-50%, -50%) scale(0.08);
+  animation: title-bubble-burst 1.05s 0.08s ease-out both;
 }
 
 .hero h1::after {
-  right: 11%;
-  bottom: 20%;
-  width: 8px;
-  height: 8px;
-  animation: bubble-pop 0.7s 0.52s ease-out both;
+  top: 14%;
+  right: 14%;
+  width: 10px;
+  height: 10px;
+  border-color: var(--a);
+  animation: bubble-spark 0.7s 0.24s ease-out both;
 }
 
-@keyframes title-appear {
+@keyframes title-pop-in {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.975);
+    filter: blur(7px);
+    transform: translateY(18px) scale(0.88);
+  }
+
+  68% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1.025);
   }
 
   to {
     opacity: 1;
+    filter: blur(0);
     transform: translateY(0) scale(1);
   }
 }
 
-@keyframes bubble-pop {
+@keyframes title-bubble-burst {
   0% {
     opacity: 0;
-    transform: scale(0.25);
+    transform: translate(-50%, -50%) scale(0.08);
   }
 
-  35% {
-    opacity: 0.55;
-    transform: scale(0.8);
+  28% {
+    opacity: 0.36;
+    transform: translate(-50%, -50%) scale(0.34);
+  }
+
+  62% {
+    opacity: 0.18;
+    transform: translate(-50%, -50%) scale(1.05);
   }
 
   100% {
     opacity: 0;
-    transform: scale(1.8);
+    transform: translate(-50%, -50%) scale(1.55);
+  }
+}
+
+@keyframes bubble-spark {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+
+  32% {
+    opacity: 0.75;
+    transform: scale(0.85);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
   }
 }
 
@@ -349,6 +385,7 @@ mark.tbd {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   min-height: 62vh;
+  transition: grid-template-columns 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .panel {
@@ -363,7 +400,6 @@ mark.tbd {
   text-align: center;
   text-decoration: none;
   transition:
-    flex 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
     opacity 0.7s ease,
     transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
     box-shadow 0.7s ease,
@@ -372,15 +408,31 @@ mark.tbd {
 
 @media (hover: hover) {
   .panels:hover .panel:not(:hover) {
-    opacity: 0.76;
-    filter: saturate(0.82);
+    opacity: 0.9;
+    filter: saturate(0.92);
   }
 
   .panel:hover,
   .panel:focus-visible {
     z-index: 1;
-    transform: translateY(-4px) scale(1.012);
+    transform: translateY(-4px);
     box-shadow: 0 18px 36px rgba(20, 23, 28, 0.16);
+  }
+
+  .panels:has(.panel:nth-child(1):hover) {
+    grid-template-columns: 1.24fr 1fr 1fr 1fr;
+  }
+
+  .panels:has(.panel:nth-child(2):hover) {
+    grid-template-columns: 1fr 1.24fr 1fr 1fr;
+  }
+
+  .panels:has(.panel:nth-child(3):hover) {
+    grid-template-columns: 1fr 1fr 1.24fr 1fr;
+  }
+
+  .panels:has(.panel:nth-child(4):hover) {
+    grid-template-columns: 1fr 1fr 1fr 1.24fr;
   }
 }
 
@@ -409,14 +461,6 @@ mark.tbd {
   margin-top: 1rem;
   border-bottom: 2px solid currentColor;
   font-weight: 700;
-}
-
-.panels > .panel:nth-child(2) {
-  transition-delay: 0.08s;
-}
-
-.panels > .panel:nth-child(3) {
-  transition-delay: 0.16s;
 }
 
 .p-physique {
@@ -455,44 +499,44 @@ mark.tbd {
   color: #244b38;
 }
 
-#scroll-route {
-  position: fixed;
-  top: 17vh;
-  bottom: 12vh;
-  left: clamp(3px, 1vw, 16px);
-  z-index: 12;
-  width: 46px;
-  height: 71vh;
-  overflow: visible;
+.route-connector {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: clamp(3.5rem, 6vw, 5rem);
+  place-items: center;
   pointer-events: none;
 }
 
-.scroll-route-track,
-.scroll-route-progress {
+.route-connector svg {
+  display: block;
+  width: 72px;
+  height: 64px;
+  overflow: visible;
+}
+
+.route-track,
+.route-progress {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.scroll-route-track {
+.route-track {
   stroke: rgba(20, 23, 28, 0.17);
-  stroke-width: 3;
+  stroke-width: 2.5;
 }
 
-.scroll-route-progress {
+.route-progress {
   stroke: var(--ink);
-  stroke-width: 4;
+  stroke-width: 3.5;
 }
 
-.scroll-route-dot {
+.route-dot {
   fill: var(--ink);
   stroke: var(--bg);
   stroke-width: 2;
-  transition: cx 0.1s linear, cy 0.1s linear;
-}
-
-body[data-t="admin"] #scroll-route {
-  display: none;
+  opacity: 0;
 }
 
 body[data-t="clubs"] .shero h1 {
@@ -934,6 +978,13 @@ th {
     margin-top: 0.4rem;
   }
 
+  .panels:has(.panel:nth-child(1):hover),
+  .panels:has(.panel:nth-child(2):hover),
+  .panels:has(.panel:nth-child(3):hover),
+  .panels:has(.panel:nth-child(4):hover) {
+    grid-template-columns: 1fr;
+  }
+
   .panels {
     min-height: 0;
     grid-template-columns: 1fr;
@@ -971,8 +1022,13 @@ th {
 }
 
 @media (max-width: 700px) {
-  #scroll-route {
-    display: none;
+  .route-connector {
+    height: 3.25rem;
+  }
+
+  .route-connector svg {
+    width: 60px;
+    height: 52px;
   }
 }
 
@@ -990,7 +1046,7 @@ th {
     transform: none;
   }
 
-  #scroll-route {
+  .route-dot {
     display: none;
   }
 }
