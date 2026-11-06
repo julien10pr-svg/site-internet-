@@ -20,10 +20,10 @@ const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenu
 'phys.needs':'[Besoins et objectifs concernés à détailler]',
 'phys.testing':'[Moyens d’évaluation et de testing à préciser]',
 'phys.nutrition':'L’accompagnement nutritionnel peut compléter le travail physique.\n\n[Place et contenu de l’accompagnement nutritionnel à préciser]',
-'ment.intro':'Un accompagnement pour travailler la confiance, la concentration et la gestion de la pression, seul ou en petit groupe.',
+'ment.intro':'Un accompagnement individuel pour travailler la confiance, la concentration et la gestion de la pression.',
 'ment.vision':'[Vision et méthodologie à détailler]',
 'ment.goals':'[Objectifs possibles et déroulement général à préciser]',
-'ment.format':'Les séances peuvent être individuelles ou en petit groupe.\n\n[Détails des formats à préciser]',
+'ment.format':'Les séances sont individuelles.\n\n[Détails des formats à préciser]',
 'bask.intro':'Du joueur débutant à celle ou celui qui vise une progression importante, par exemple une entrée au CREPS : un coaching adapté au niveau, aux objectifs et au profil.',
 'bask.fund':'Travail des fondamentaux individuels : maniement, appuis, finitions, lecture de jeu.\n\n[Contenu à détailler]',
 'bask.shoot':'Développement technique et gestuelle de tir, avec un suivi progressif.\n\n[Contenu à détailler]',
@@ -50,13 +50,13 @@ const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenu
 'video.url':''};
 const DEF_OFFERS=[
 ['physique','Séance à l’unité','',5000],['physique','Pack de 5 séances','soit 45 € par séance',22500],['physique','Pack de 10 séances','soit 40 € par séance',40000],
-['mentale','Séance à l’unité','Individuel ou petit groupe (détails à préciser)',5000],['mentale','Pack de 5 séances','soit 40 € par séance',20000],
+['mentale','Séance à l’unité','Séance individuelle',5000],['mentale','Pack de 5 séances','soit 40 € par séance',20000],
 ['basket','1 personne','30 € par personne',3000],['basket','2 personnes','25 € par personne',5000],['basket','3 personnes','20 € par personne',6000],['basket','4 personnes','17 € par personne',6800,true]
 ].map(([service,label,detail,price_cents,tbc])=>({service,label,detail,price_cents,tbc}));
 
 const SV={
 physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</span>',secs:[['Vision et méthodologie','vision'],['Besoins et objectifs','needs'],['Évaluation et testing','testing'],['Nutrition','nutrition']]},
-mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel ou petit groupe','format']]},
+mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel','format']]},
 basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}};
 
 let content={...C}, offers=DEF_OFFERS, photos=[], user=null;
