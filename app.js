@@ -188,29 +188,17 @@ function drawScrollRoute(){
  if(!routeBall)return;
  const app=$('#app');
  const appRect=app.getBoundingClientRect();
- const anchors=[];
+ const centerX=window.innerWidth/2;
+ const viewportY=window.innerHeight*.58;
+ const localY=Math.max(0,Math.min(app.offsetHeight,viewportY-appRect.top));
+ routeBall.style.left=`${centerX-appRect.left}px`;
+ routeBall.style.top=`${localY}px`;
 
- // La bille traverse les cartes de gauche à droite, puis poursuit sa route
- // au centre des sections suivantes. Aucun trait ne reste affiché derrière elle.
- [...app.querySelectorAll('.panel')].forEach((el,i)=>{
-  const r=el.getBoundingClientRect();
-  anchors.push({x:r.left-appRect.left+r.width/2,y:r.top-appRect.top+r.height*(0.22+i*0.17)});
- });
- [...app.querySelectorAll('.shero, :scope > section.wrap.rv, :scope > .wrap > .sec2, :scope > .wrap > section.rv')].forEach(el=>{
-  const r=el.getBoundingClientRect();
-  anchors.push({x:r.left-appRect.left+r.width/2,y:r.top-appRect.top+r.height/2});
- });
- if(!anchors.length)return;
-
- const focusY=Math.max(0,Math.min(app.offsetHeight,window.innerHeight*.58-appRect.top));
- let left=anchors[0],right=anchors[anchors.length-1];
- for(let i=1;i<anchors.length;i++){
-  if(anchors[i].y>=focusY){left=anchors[i-1];right=anchors[i];break}
- }
- const span=right.y-left.y;
- const ratio=span>0?Math.max(0,Math.min(1,(focusY-left.y)/span)):0;
- routeBall.style.left=`${left.x+(right.x-left.x)*ratio}px`;
- routeBall.style.top=`${focusY}px`;
+ // La bille reste sur l’axe central et se cache quand elle passerait devant
+ // une carte, un titre, un paragraphe ou un autre élément de contenu.
+ const underBall=document.elementFromPoint(centerX,viewportY);
+ const occupied=underBall?.closest('.panel,.hero,.shero,.box,.sec2,h1,h2,h3,p,a,button,img,iframe,video,details,form,input,textarea,select');
+ routeBall.classList.toggle('is-hidden',!!occupied);
 }
 
 function scheduleScrollRoute(){
