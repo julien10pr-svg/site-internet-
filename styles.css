@@ -459,7 +459,13 @@ mark.tbd {
   pointer-events: none;
   transform: translate(-50%, -50%);
   animation: ball-breathe 1.8s ease-in-out infinite;
+  transition: opacity 0.2s ease, scale 0.2s ease;
   will-change: left, top, transform;
+}
+
+.scroll-ball.is-hidden {
+  opacity: 0;
+  scale: 0.7;
 }
 
 @keyframes ball-breathe {
