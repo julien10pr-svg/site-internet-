@@ -162,7 +162,7 @@ async function tMedia(el){const {data=[]}=await sb.from('media').select('*').ord
 
 // ---------- Routeur ----------
 let revealObserver;
-let routeSegments=[];
+let routeBall=null;
 let updateScrollRoute=()=>{};
 let routeFrame=0;
 const rv=()=>{
@@ -174,51 +174,43 @@ const rv=()=>{
 };
 function setupScrollRoute(){
  const app=$('#app');
- app.querySelectorAll('.route-connector').forEach(x=>x.remove());
- routeSegments=[];
+ app.querySelectorAll('.scroll-ball').forEach(x=>x.remove());
+ routeBall=null;
  if(document.body.dataset.t==='admin')return ()=>{};
-
- const nodes=[...app.querySelectorAll(':scope > .hero, :scope > .panels, :scope > .shero, :scope > section.wrap.rv, :scope > .wrap > .sec2, :scope > .wrap > section.rv')];
- nodes.slice(0,-1).forEach((node,index)=>{
-  const next=nodes[index+1];
-  if(node.classList.contains('hero')&&next.classList.contains('panels'))return;
-  const connector=document.createElement('div');
-  connector.className='route-connector';
-  connector.setAttribute('aria-hidden','true');
-  connector.innerHTML='<svg viewBox="0 0 100 64" focusable="false"><path class="route-track" d="M50 0 C50 8 62 10 62 18 C62 28 38 27 38 37 C38 48 54 47 54 56 C54 60 52 62 50 64"/><path class="route-progress" d="M50 0 C50 8 62 10 62 18 C62 28 38 27 38 37 C38 48 54 47 54 56 C54 60 52 62 50 64"/><circle class="route-dot" cx="50" cy="0" r="8.2"/></svg>';
-  node.insertAdjacentElement('afterend',connector);
- });
-
- routeSegments=[...app.querySelectorAll('.route-connector')].map(el=>{
-  const track=el.querySelector('.route-track');
-  const progress=el.querySelector('.route-progress');
-  const dot=el.querySelector('.route-dot');
-  const length=track.getTotalLength();
-  progress.style.strokeDasharray=String(length);
-  progress.style.strokeDashoffset=String(length);
-  return {el,track,progress,dot,length};
- });
+ routeBall=document.createElement('span');
+ routeBall.className='scroll-ball';
+ routeBall.setAttribute('aria-hidden','true');
+ app.append(routeBall);
  return drawScrollRoute;
 }
 
 function drawScrollRoute(){
- if(!routeSegments.length)return;
- const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- if(reduced){routeSegments.forEach(s=>{s.progress.style.strokeDashoffset=String(s.length);s.dot.setAttribute('opacity','0')});return}
- const cursor=window.scrollY+window.innerHeight*.56;
- const centers=routeSegments.map(s=>s.el.getBoundingClientRect().top+window.scrollY+s.el.offsetHeight/2);
- let active=0;
- for(let i=1;i<centers.length;i++)if(Math.abs(centers[i]-cursor)<Math.abs(centers[active]-cursor))active=i;
- const start=active===0?0:(centers[active-1]+centers[active])/2;
- const end=active===routeSegments.length-1?document.documentElement.scrollHeight:(centers[active]+centers[active+1])/2;
- const progress=end>start?Math.max(0,Math.min(1,(cursor-start)/(end-start))):0;
- routeSegments.forEach((s,i)=>{
-  const amount=i<active?1:i===active?progress:0;
-  const distance=s.length*amount;
-  s.progress.style.strokeDashoffset=String(s.length-distance);
-  s.dot.setAttribute('opacity',i===active?'1':'0');
-  if(i===active){const point=s.track.getPointAtLength(distance);s.dot.setAttribute('cx',point.x.toFixed(2));s.dot.setAttribute('cy',point.y.toFixed(2))}
+ if(!routeBall)return;
+ const app=$('#app');
+ const appRect=app.getBoundingClientRect();
+ const anchors=[];
+
+ // La bille traverse les cartes de gauche à droite, puis poursuit sa route
+ // au centre des sections suivantes. Aucun trait ne reste affiché derrière elle.
+ [...app.querySelectorAll('.panel')].forEach((el,i)=>{
+  const r=el.getBoundingClientRect();
+  anchors.push({x:r.left-appRect.left+r.width/2,y:r.top-appRect.top+r.height*(0.22+i*0.17)});
  });
+ [...app.querySelectorAll('.shero, :scope > section.wrap.rv, :scope > .wrap > .sec2, :scope > .wrap > section.rv')].forEach(el=>{
+  const r=el.getBoundingClientRect();
+  anchors.push({x:r.left-appRect.left+r.width/2,y:r.top-appRect.top+r.height/2});
+ });
+ if(!anchors.length)return;
+
+ const focusY=Math.max(0,Math.min(app.offsetHeight,window.innerHeight*.58-appRect.top));
+ let left=anchors[0],right=anchors[anchors.length-1];
+ for(let i=1;i<anchors.length;i++){
+  if(anchors[i].y>=focusY){left=anchors[i-1];right=anchors[i];break}
+ }
+ const span=right.y-left.y;
+ const ratio=span>0?Math.max(0,Math.min(1,(focusY-left.y)/span)):0;
+ routeBall.style.left=`${left.x+(right.x-left.x)*ratio}px`;
+ routeBall.style.top=`${focusY}px`;
 }
 
 function scheduleScrollRoute(){
