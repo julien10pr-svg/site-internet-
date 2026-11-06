@@ -162,9 +162,6 @@ async function tMedia(el){const {data=[]}=await sb.from('media').select('*').ord
 
 // ---------- Routeur ----------
 let revealObserver;
-let routeBall=null;
-let updateScrollRoute=()=>{};
-let routeFrame=0;
 const rv=()=>{
  if(revealObserver)revealObserver.disconnect();
  const items=document.querySelectorAll('#app .rv');
@@ -172,50 +169,14 @@ const rv=()=>{
  revealObserver=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');revealObserver.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -30px 0px'});
  items.forEach(x=>revealObserver.observe(x))
 };
-function setupScrollRoute(){
- const app=$('#app');
- app.querySelectorAll('.scroll-ball').forEach(x=>x.remove());
- routeBall=null;
- if(document.body.dataset.t==='admin')return ()=>{};
- routeBall=document.createElement('span');
- routeBall.className='scroll-ball';
- routeBall.setAttribute('aria-hidden','true');
- app.append(routeBall);
- return drawScrollRoute;
-}
-
-function drawScrollRoute(){
- if(!routeBall)return;
- const app=$('#app');
- const appRect=app.getBoundingClientRect();
- const centerX=window.innerWidth/2;
- const viewportY=window.innerHeight*.58;
- const localY=Math.max(0,Math.min(app.offsetHeight,viewportY-appRect.top));
- routeBall.style.left=`${centerX-appRect.left}px`;
- routeBall.style.top=`${localY}px`;
-
- // La bille reste sur l’axe central et se cache quand elle passerait devant
- // une carte, un titre, un paragraphe ou un autre élément de contenu.
- const underBall=document.elementFromPoint(centerX,viewportY);
- const occupied=underBall?.closest('.panel,.hero,.shero,.box,.sec2,h1,h2,h3,p,a,button,img,iframe,video,details,form,input,textarea,select');
- routeBall.classList.toggle('is-hidden',!!occupied);
-}
-
-function scheduleScrollRoute(){
- if(routeFrame)return;
- routeFrame=requestAnimationFrame(()=>{routeFrame=0;updateScrollRoute()});
-}
-window.addEventListener('scroll',scheduleScrollRoute,{passive:true});
-window.addEventListener('resize',scheduleScrollRoute,{passive:true});
 
 async function route(){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
  document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
  if(key==='admin')await admin();
  else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key)}
- updateScrollRoute=setupScrollRoute();
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
- foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);requestAnimationFrame(updateScrollRoute);
+ foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-resa]');if(a){const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];if(key){e.preventDefault();document.getElementById('resa')?.scrollIntoView()}}});
 $('.burger').onclick=e=>{const n=$('#nav');n.classList.toggle('open');e.target.setAttribute('aria-expanded',n.classList.contains('open'))};
