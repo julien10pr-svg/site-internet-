@@ -253,9 +253,65 @@ mark.tbd {
 }
 
 .hero h1 {
+  position: relative;
   max-width: 18ch;
   margin: 0 auto 0.45em;
-  animation: rise-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: title-appear 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.hero h1::before,
+.hero h1::after {
+  position: absolute;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero h1::before {
+  top: 10%;
+  left: 12%;
+  width: 12px;
+  height: 12px;
+  animation: bubble-pop 0.75s 0.35s ease-out both;
+}
+
+.hero h1::after {
+  right: 11%;
+  bottom: 20%;
+  width: 8px;
+  height: 8px;
+  animation: bubble-pop 0.7s 0.52s ease-out both;
+}
+
+@keyframes title-appear {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bubble-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.25);
+  }
+
+  35% {
+    opacity: 0.55;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
 }
 
 .hero p {
@@ -296,6 +352,8 @@ mark.tbd {
 }
 
 .panel {
+  position: relative;
+  z-index: 0;
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -305,13 +363,25 @@ mark.tbd {
   text-align: center;
   text-decoration: none;
   transition:
+    flex 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
     opacity 0.7s ease,
-    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.7s ease,
+    filter 0.7s ease;
 }
 
-.panel:hover,
-.panel:focus-visible {
-  transform: translateY(-3px);
+@media (hover: hover) {
+  .panels:hover .panel:not(:hover) {
+    opacity: 0.76;
+    filter: saturate(0.82);
+  }
+
+  .panel:hover,
+  .panel:focus-visible {
+    z-index: 1;
+    transform: translateY(-4px) scale(1.012);
+    box-shadow: 0 18px 36px rgba(20, 23, 28, 0.16);
+  }
 }
 
 .panel h2 {
@@ -383,6 +453,46 @@ mark.tbd {
 
 .p-clubs b {
   color: #244b38;
+}
+
+#scroll-route {
+  position: fixed;
+  top: 17vh;
+  bottom: 12vh;
+  left: clamp(3px, 1vw, 16px);
+  z-index: 12;
+  width: 46px;
+  height: 71vh;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.scroll-route-track,
+.scroll-route-progress {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.scroll-route-track {
+  stroke: rgba(20, 23, 28, 0.17);
+  stroke-width: 3;
+}
+
+.scroll-route-progress {
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+
+.scroll-route-dot {
+  fill: var(--ink);
+  stroke: var(--bg);
+  stroke-width: 2;
+  transition: cx 0.1s linear, cy 0.1s linear;
+}
+
+body[data-t="admin"] #scroll-route {
+  display: none;
 }
 
 body[data-t="clubs"] .shero h1 {
@@ -830,6 +940,12 @@ th {
     grid-auto-rows: 22rem;
   }
 
+  .panels .panel:hover,
+  .panels .panel:focus-visible {
+    transform: none;
+    box-shadow: none;
+  }
+
   .panel {
     min-height: 0;
   }
@@ -854,6 +970,12 @@ th {
   }
 }
 
+@media (max-width: 700px) {
+  #scroll-route {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -866,5 +988,9 @@ th {
   .rv {
     opacity: 1;
     transform: none;
+  }
+
+  #scroll-route {
+    display: none;
   }
 }
