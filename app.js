@@ -59,12 +59,18 @@ physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</
 mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel','format']]},
 basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}};
 
-let content={...C}, offers=DEF_OFFERS, photos=[], user=null;
+let content={...C}, offers=DEF_OFFERS, photos=[], reviews=[], user=null;
 const t=k=>content[k]??C[k]??'';
+function parseReviews(value){
+ try{
+  const parsed=Array.isArray(value)?value:JSON.parse(value||'[]');
+  return Array.isArray(parsed)?parsed.filter(r=>r&&typeof r.text==='string'&&r.text.trim()).map(r=>({text:r.text.trim(),name:typeof r.name==='string'?r.name.trim():''})):[];
+ }catch{return []}
+}
 async function loadData(){
  if(!live)return;
  try{const [c,o,m]=await Promise.all([sb.from('site_content').select('*'),sb.from('offers').select('*').eq('active',true).order('sort'),sb.from('media').select('*').eq('kind','photo').order('sort')]);
- (c.data||[]).forEach(r=>content[r.key]=r.value); if(o.data?.length)offers=o.data; photos=m.data||[];}catch(e){console.error(e)}
+ (c.data||[]).forEach(r=>{if(r.key==='reviews.data')reviews=parseReviews(r.value);else content[r.key]=r.value}); if(o.data?.length)offers=o.data; photos=m.data||[];}catch(e){console.error(e)}
 }
 const foot=()=>{$('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;$('#brand').innerHTML=tbd(t('brand'))};
 const gallery=()=>`<section class="wrap rv"><h2>Galerie</h2>${photos.length?`<div class="gal">${photos.map(p=>`<img loading="lazy" src="${esc(p.url)}" alt="${esc(p.caption||'Photo')}">`).join('')}</div>`:`<p><mark class="tbd">[Galerie à alimenter depuis l’espace administrateur]</mark></p>`}</section>`;
@@ -72,11 +78,19 @@ const video=()=>{const u=t('video.url');let inner='<mark class="tbd">[Vidéo de 
  const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
  return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`};
 const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${tbd(t('contact.phone'))}</p><p>${tbd(t('contact.zone'))}</p><p>${tbd(t('contact.social'))}</p></div>`;
+const reviewsSection=()=>`<section class="wrap rv reviews-section" aria-labelledby="reviews-title"><div class="reviews-heading"><h2 id="reviews-title">Vos avis</h2><p>Les retours d’expérience des personnes accompagnées.</p></div>${reviews.length?`<div class="reviews-carousel" data-reviews-carousel><article class="review-bubble" aria-live="polite"><blockquote><p data-review-text></p><cite data-review-name></cite></blockquote></article><div class="review-controls"><button type="button" data-review-prev aria-label="Avis précédent">←</button><span data-review-count aria-live="polite"></span><button type="button" data-review-next aria-label="Avis suivant">→</button></div></div>`:`<p class="reviews-empty">Les premiers avis seront affichés ici.</p>`}</section>`;
+function setupReviews(){
+ const carousel=$('[data-reviews-carousel]');if(!carousel||!reviews.length)return;
+ let index=0;const quote=carousel.querySelector('[data-review-text]'),name=carousel.querySelector('[data-review-name]'),count=carousel.querySelector('[data-review-count]');
+ const show=()=>{const review=reviews[index];quote.textContent=`« ${review.text} »`;name.textContent=review.name;name.hidden=!review.name;count.textContent=`${index+1} / ${reviews.length}`};
+ carousel.querySelector('[data-review-prev]').onclick=()=>{index=(index-1+reviews.length)%reviews.length;show()};
+ carousel.querySelector('[data-review-next]').onclick=()=>{index=(index+1)%reviews.length;show()};show();
+}
 
 const pages={
 home(){return `<section class="hero wrap"><h1>${esc(t('home.title'))}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn" href="#/a-propos">Découvrir l’accompagnement</a><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
 <div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2><p>${esc(t(s.k+'.intro'))}</p><b>Découvrir l’accompagnement</b></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2><p>${esc(t('clubs.intro'))}</p><b>Découvrir nos interventions</b></a></div>
-<section class="wrap rv" style="padding-bottom:clamp(5rem,9vw,7rem)"><h2>Qui accompagne ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${video()}${gallery()}
+<section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Qui accompagne ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}${video()}${gallery()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`},
 service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
  return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
@@ -130,7 +144,7 @@ async function admin(){
  const ok=session?(await sb.rpc('is_admin')).data:false;
  if(!ok){app.innerHTML=`<div class="wrap admin"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
   $('#lf').onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});if(error)$('#lm').innerHTML='<p class="msg err">'+error.message+'.</p>';else admin()};return}
- const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Médias:tMedia};
+ const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Avis:tReviews,Médias:tMedia};
  app.innerHTML=`<div class="wrap admin"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
  const show=n=>{app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));tabs[n]($('#tab'))};
  app.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>show(b.textContent));$('#out').onclick=async()=>{await sb.auth.signOut();admin()};show('Réservations');
@@ -153,6 +167,15 @@ async function tOffers(el){const {data=[]}=await sb.from('offers').select('*').o
 async function tContent(el){const {data=[]}=await sb.from('site_content').select('*');const cur={...C};data.forEach(r=>cur[r.key]=r.value);
  el.innerHTML=`<form style="max-width:760px">${Object.keys(C).map(k=>`<label>${k}<textarea name="${k}" rows="${cur[k].length>120?4:1}">${esc(cur[k])}</textarea></label>`).join('')}<button class="btn">Enregistrer les contenus</button></form><p class="note">Les passages entre crochets [ ] s’affichent comme « à compléter » sur le site.</p>`;
  el.querySelector('form').onsubmit=async e=>{e.preventDefault();const rows=Object.keys(C).map(k=>({key:k,value:e.target[k].value}));const {error}=await sb.from('site_content').upsert(rows);toast(el,error?error.message:'Contenus enregistrés',!!error)}}
+async function tReviews(el){
+ const {data,error}=await sb.from('site_content').select('value').eq('key','reviews.data').maybeSingle();
+ const items=parseReviews(data?.value);
+ el.innerHTML=`<div class="admin-reviews"><h2>Ajouter un avis</h2><p class="note">Les avis enregistrés ici apparaissent publiquement sur la page d’accueil.</p><form id="review-form"><label>Commentaire<textarea name="text" rows="4" maxlength="1500" required placeholder="Saisir le commentaire"></textarea></label><label>Prénom ou nom affiché (facultatif)<input name="name" maxlength="80" placeholder="Ex. Camille"></label><button class="btn" type="submit">Ajouter l’avis</button></form><h2>Avis publiés (${items.length})</h2><div class="admin-review-list">${items.map((r,i)=>`<article class="box"><p>« ${esc(r.text)} »</p>${r.name?`<p><strong>${esc(r.name)}</strong></p>`:''}<button type="button" class="btn alt" data-delete-review="${i}">Supprimer</button></article>`).join('')||'<p>Aucun avis publié pour le moment.</p>'}</div></div>`;
+ if(error)toast(el,`Chargement des avis impossible : ${error.message}`,true);
+ const save=async next=>{const {error:saveError}=await sb.from('site_content').upsert({key:'reviews.data',value:JSON.stringify(next)});if(saveError){toast(el,saveError.message,true);return false}reviews=next;return true};
+ el.querySelector('#review-form').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget,submit=form.querySelector('button[type="submit"]'),text=form.elements.namedItem('text').value.trim(),name=form.elements.namedItem('name').value.trim();if(!text)return;const next=[...items,{text,name}];submit.disabled=true;if(await save(next))tReviews(el);else submit.disabled=false};
+ el.querySelectorAll('[data-delete-review]').forEach(button=>button.onclick=async()=>{const next=items.filter((_,i)=>i!==Number(button.dataset.deleteReview));if(await save(next))tReviews(el)});
+}
 async function tMedia(el){const {data=[]}=await sb.from('media').select('*').order('created_at',{ascending:false});
  el.innerHTML=`<form id="mf"><label>Ajouter une photo<input type="file" name="f" accept="image/*" required></label><label>Légende<input name="cap"></label><button class="btn">Téléverser</button></form><p class="note">Vidéo : collez un lien YouTube ou un fichier .mp4 dans Contenus › video.url.</p>
  <div class="gal">${data.map(m=>`<div><img src="${esc(m.url)}" alt=""><button data-x="${m.id}" data-p="${esc(m.path||'')}">Supprimer</button></div>`).join('')}</div>`;
@@ -174,7 +197,7 @@ async function route(){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
  document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
  if(key==='admin')await admin();
- else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key)}
+ else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews()}
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);
 }
