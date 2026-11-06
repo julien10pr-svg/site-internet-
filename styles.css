@@ -54,10 +54,6 @@ body {
   font: 17px/1.7 "Hanken Grotesk", system-ui, sans-serif;
 }
 
-#app {
-  position: relative;
-}
-
 h1,
 h2,
 h3,
@@ -445,38 +441,6 @@ mark.tbd {
 
 .p-clubs b {
   color: #244b38;
-}
-
-.scroll-ball {
-  position: absolute;
-  z-index: 30;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(20, 23, 28, 0.78);
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.3), 0 2px 12px rgba(20, 23, 28, 0.22);
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  animation: ball-breathe 1.8s ease-in-out infinite;
-  transition: opacity 0.2s ease, scale 0.2s ease;
-  will-change: left, top, transform;
-}
-
-.scroll-ball.is-hidden {
-  opacity: 0;
-  scale: 0.7;
-}
-
-@keyframes ball-breathe {
-  0%,
-  100% {
-    scale: 0.92;
-  }
-
-  50% {
-    scale: 1.08;
-  }
 }
 
 body[data-t="clubs"] .shero h1 {
@@ -982,9 +946,5 @@ th {
   .hero.home-enter p,
   .hero.home-enter .row {
     animation: rise-in 0.35s ease-out both !important;
-  }
-
-  .scroll-ball {
-    display: none;
   }
 }
