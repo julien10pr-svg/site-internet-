@@ -185,7 +185,7 @@ function setupScrollRoute(){
   const connector=document.createElement('div');
   connector.className='route-connector';
   connector.setAttribute('aria-hidden','true');
-  connector.innerHTML='<svg viewBox="0 0 100 64" focusable="false"><path class="route-track" d="M50 0 C50 8 62 10 62 18 C62 28 38 27 38 37 C38 48 54 47 54 56 C54 60 52 62 50 64"/><path class="route-progress" d="M50 0 C50 8 62 10 62 18 C62 28 38 27 38 37 C38 48 54 47 54 56 C54 60 52 62 50 64"/><circle class="route-dot" cx="50" cy="0" r="4.2"/></svg>';
+  connector.innerHTML='<svg viewBox="0 0 100 64" focusable="false"><path class="route-track" d="M50 0 C50 8 62 10 62 18 C62 28 38 27 38 37 C38 48 54 47 54 56 C54 60 52 62 50 64"/><path class="route-progress" d="M50 0 C50 8 62 10 62 18 C62 28 38 27 38 37 C38 48 54 47 54 56 C54 60 52 62 50 64"/><circle class="route-dot" cx="50" cy="0" r="8.2"/></svg>';
   node.insertAdjacentElement('afterend',connector);
  });
 
@@ -210,7 +210,7 @@ function drawScrollRoute(){
  let active=0;
  for(let i=1;i<centers.length;i++)if(Math.abs(centers[i]-cursor)<Math.abs(centers[active]-cursor))active=i;
  const start=active===0?0:(centers[active-1]+centers[active])/2;
- const end=active===centers.length-1?document.documentElement.scrollHeight:(centers[active]+centers[active+1])/2;
+ const end=active===routeSegments.length-1?document.documentElement.scrollHeight:(centers[active]+centers[active+1])/2;
  const progress=end>start?Math.max(0,Math.min(1,(cursor-start)/(end-start))):0;
  routeSegments.forEach((s,i)=>{
   const amount=i<active?1:i===active?progress:0;
