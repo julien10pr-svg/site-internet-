@@ -648,44 +648,125 @@ textarea {
 }
 
 .photo-gallery {
-  overflow: clip;
+  text-align: center;
+}
+
+.album-shell {
+  width: min(100%, 720px);
+  margin: 0 auto;
 }
 
 .photo-album {
-  width: min(100%, 820px);
-  margin: 0 auto;
-  padding: 0.75rem 0 2rem;
-}
-
-.photo-album-card {
-  position: sticky;
-  top: calc(88px + var(--stack-offset));
-  z-index: var(--stack-index);
+  display: flex;
   width: 100%;
-  margin: 0 auto clamp(2rem, 4vw, 3rem);
-  padding: clamp(0.55rem, 1.5vw, 1rem);
-  transform: rotate(var(--stack-tilt));
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 16px 40px rgba(20, 23, 28, 0.12);
+  min-height: 300px;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1rem max(1rem, calc((100% - 300px) / 2));
+  cursor: grab;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.photo-album-card img {
+.photo-album::-webkit-scrollbar {
+  display: none;
+}
+
+.photo-album.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+  user-select: none;
+}
+
+.album-photo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(82vw, 300px);
+  height: 250px;
+  flex: 0 0 min(82vw, 300px);
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 -180px 0 0;
+  padding: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(20, 23, 28, 0.13);
+  scroll-snap-align: center;
+  transform: rotate(-2deg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.album-photo:nth-child(even) {
+  transform: rotate(2deg) translateY(5px);
+}
+
+.album-photo:hover,
+.album-photo.is-active {
+  z-index: 20;
+  transform: translateY(-7px) rotate(0deg);
+  box-shadow: 0 16px 34px rgba(20, 23, 28, 0.2);
+}
+
+.album-photo img {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 68vh;
-  border-radius: 8px;
+  height: 205px;
+  flex: 0 0 205px;
+  border-radius: 6px;
   background: #f6f5f2;
   object-fit: contain;
+  pointer-events: none;
 }
 
-.photo-album-card figcaption {
-  padding: 0.75rem 0.25rem 0.1rem;
+.album-photo figcaption {
+  overflow: hidden;
+  padding: 0.45rem 0.2rem 0;
   color: var(--mut);
-  font-size: 0.92rem;
+  font-size: 0.82rem;
   text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.album-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.album-navigation button {
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  font: 700 1.1rem/1 "Hanken Grotesk", sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.album-navigation button:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+.album-navigation span {
+  min-width: 3.5rem;
+  color: var(--mut);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .admin-gallery {
@@ -709,9 +790,11 @@ textarea {
 
 .admin-photo img {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
-  max-height: 300px;
+  max-height: 220px;
+  align-self: center;
   border-radius: 6px;
   background: #f6f5f2;
   object-fit: contain;
