@@ -59,7 +59,7 @@ physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</
 mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel','format']]},
 basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}};
 
-let content={...C}, offers=DEF_OFFERS, photos=[], reviews=[], user=null;
+let content={...C}, offers=DEF_OFFERS, reviews=[], user=null;
 const t=k=>content[k]??C[k]??'';
 function parseReviews(value){
  try{
@@ -69,28 +69,10 @@ function parseReviews(value){
 }
 async function loadData(){
  if(!live)return;
- try{const [c,o,m]=await Promise.all([sb.from('site_content').select('*'),sb.from('offers').select('*').eq('active',true).order('sort'),sb.from('media').select('*').eq('kind','photo').order('sort')]);
- (c.data||[]).forEach(r=>{if(r.key==='reviews.data')reviews=parseReviews(r.value);else content[r.key]=r.value}); if(o.data?.length)offers=o.data; photos=m.data||[];}catch(e){console.error(e)}
+ try{const [c,o]=await Promise.all([sb.from('site_content').select('*'),sb.from('offers').select('*').eq('active',true).order('sort')]);
+ (c.data||[]).forEach(r=>{if(r.key==='reviews.data')reviews=parseReviews(r.value);else content[r.key]=r.value}); if(o.data?.length)offers=o.data;}catch(e){console.error(e)}
 }
 const foot=()=>{$('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;$('#brand').innerHTML=tbd(t('brand'))};
-const gallery=()=>`<section class="wrap rv photo-gallery"><h2>Galerie</h2>${photos.length?`<div class="album-shell"><div class="photo-album" data-photo-album tabindex="0" aria-label="Album photo : faites défiler horizontalement">${photos.map((p,i)=>`<figure class="album-photo${i===0?' is-active':''}" data-photo-index="${i}"><img loading="lazy" src="${esc(p.url)}" alt="${esc(p.caption||'Photo de coaching')}">${p.caption?`<figcaption>${esc(p.caption)}</figcaption>`:''}</figure>`).join('')}</div><div class="album-navigation"><button type="button" data-gallery-prev aria-label="Photo précédente">←</button><span data-gallery-count aria-live="polite">1 / ${photos.length}</span><button type="button" data-gallery-next aria-label="Photo suivante">→</button></div></div>`:`<p class="reviews-empty">Les photos de l’accompagnement seront bientôt ajoutées.</p>`}</section>`;
-function setupGallery(){
- const track=$('[data-photo-album]');if(!track)return;
- const section=track.closest('.photo-gallery'),items=[...track.querySelectorAll('.album-photo')],count=section.querySelector('[data-gallery-count]');
- if(items.length<2){section.querySelectorAll('[data-gallery-prev],[data-gallery-next]').forEach(b=>b.hidden=true);return}
- let active=0,frame=0;
- const nearest=()=>{const mid=track.getBoundingClientRect().left+track.clientWidth/2;let best=0,distance=Infinity;items.forEach((item,i)=>{const r=item.getBoundingClientRect(),d=Math.abs(r.left+r.width/2-mid);if(d<distance){best=i;distance=d}});return best};
- const update=()=>{active=nearest();items.forEach((item,i)=>item.classList.toggle('is-active',i===active));count.textContent=`${active+1} / ${items.length}`};
- const move=direction=>{const i=Math.max(0,Math.min(items.length-1,nearest()+direction)),target=items[i];track.scrollTo({left:track.scrollLeft+target.getBoundingClientRect().left-items[nearest()].getBoundingClientRect().left,behavior:'smooth'})};
- let dragging=false,startX=0,startScroll=0;
- track.addEventListener('mousedown',e=>{if(e.button!==0)return;dragging=true;startX=e.clientX;startScroll=track.scrollLeft;track.classList.add('is-dragging')});
- window.addEventListener('mousemove',e=>{if(dragging)track.scrollLeft=startScroll-(e.clientX-startX)});
- window.addEventListener('mouseup',()=>{dragging=false;track.classList.remove('is-dragging')});
- section.querySelector('[data-gallery-prev]').onclick=()=>move(-1);section.querySelector('[data-gallery-next]').onclick=()=>move(1);
- track.addEventListener('scroll',()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(update)},{passive:true});
- items.forEach((item,i)=>item.addEventListener('mouseenter',()=>{active=i;items.forEach((card,j)=>card.classList.toggle('is-active',j===i));count.textContent=`${i+1} / ${items.length}`}));
- update();
-}
 const video=()=>{const u=t('video.url');let inner='<mark class="tbd">[Vidéo de présentation à ajouter]</mark>';
  const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
  return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`};
@@ -107,7 +89,7 @@ function setupReviews(){
 const pages={
 home(){return `<section class="hero wrap"><h1>${esc(t('home.title'))}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn" href="#/a-propos">Découvrir l’accompagnement</a><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
 <div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2><p>${esc(t(s.k+'.intro'))}</p><b>Découvrir l’accompagnement</b></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2><p>${esc(t('clubs.intro'))}</p><b>Découvrir nos interventions</b></a></div>
-<section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Qui accompagne ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}${video()}${gallery()}
+<section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Qui accompagne ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}${video()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`},
 service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
  return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
@@ -115,7 +97,7 @@ service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
 <section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}${x.tbc?' <mark class="tbd">[tarif à confirmer]</mark>':''}</p></div>`).join('')}</div>
 <p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
 <section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`},
-about(){return `<div class="shero rv"><div class="wrap"><h1>À propos</h1></div></div><div class="wrap"><section class="rv">${rich(t('about.text'))}<h2>Ma vision</h2>${rich(t('about.vision'))}</section></div>${gallery()}`},
+about(){return `<div class="shero rv"><div class="wrap"><h1>À propos</h1></div></div><div class="wrap"><section class="rv">${rich(t('about.text'))}<h2>Ma vision</h2>${rich(t('about.vision'))}</section></div>`},
 clubs(){return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
 <section class="wrap rv"><h2>Des interventions adaptées à vos besoins</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article><article class="box"><h3>Entreprises</h3>${rich(t('clubs.companies'))}</article></div></section>
 <section class="wrap rv clubs-offers"><h2>Offres et tarifs</h2><div class="grid"><article class="box"><h3>Fréquence des interventions</h3>${rich(t('clubs.frequency'))}</article><article class="box"><h3>Durée d’une intervention</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>Tarification</h3>${rich(t('clubs.pricing'))}</article></div></section>`},
@@ -161,7 +143,7 @@ async function admin(){
  const ok=session?(await sb.rpc('is_admin')).data:false;
  if(!ok){app.innerHTML=`<div class="wrap admin"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
   $('#lf').onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});if(error)$('#lm').innerHTML='<p class="msg err">'+error.message+'.</p>';else admin()};return}
- const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Avis:tReviews,Médias:tMedia};
+ const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Avis:tReviews};
  app.innerHTML=`<div class="wrap admin"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
  const show=n=>{app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));tabs[n]($('#tab'))};
  app.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>show(b.textContent));$('#out').onclick=async()=>{await sb.auth.signOut();admin()};show('Réservations');
@@ -193,13 +175,6 @@ async function tReviews(el){
  el.querySelector('#review-form').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget,submit=form.querySelector('button[type="submit"]'),text=form.elements.namedItem('text').value.trim(),name=form.elements.namedItem('name').value.trim();if(!text)return;const next=[...items,{text,name}];submit.disabled=true;if(await save(next))tReviews(el);else submit.disabled=false};
  el.querySelectorAll('[data-delete-review]').forEach(button=>button.onclick=async()=>{const next=items.filter((_,i)=>i!==Number(button.dataset.deleteReview));if(await save(next))tReviews(el)});
 }
-async function tMedia(el){const {data=[]}=await sb.from('media').select('*').order('created_at',{ascending:false});
- el.innerHTML=`<form id="mf"><label>Ajouter une photo<input type="file" name="f" accept="image/*" required></label><label>Légende<input name="cap"></label><button class="btn">Téléverser</button></form><p class="note">Vidéo : collez un lien YouTube ou un fichier .mp4 dans Contenus › video.url.</p>
- <div class="admin-gallery">${data.map(m=>`<article class="admin-photo"><img src="${esc(m.url)}" alt="${esc(m.caption||'Photo ajoutée')}" loading="lazy">${m.caption?`<p>${esc(m.caption)}</p>`:''}<button type="button" data-x="${m.id}" data-p="${esc(m.path||'')}">Supprimer</button></article>`).join('')||'<p>Aucune photo ajoutée pour le moment.</p>'}</div>`;
- $('#mf').onsubmit=async e=>{e.preventDefault();const f=e.target.f.files[0],path=`${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;const u=await sb.storage.from('media').upload(path,f);if(u.error)return toast(el,u.error.message,1);
-  const url=sb.storage.from('media').getPublicUrl(path).data.publicUrl;await sb.from('media').insert({url,path,caption:e.target.cap.value});tMedia(el)};
- el.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{if(b.dataset.p)await sb.storage.from('media').remove([b.dataset.p]);await sb.from('media').delete().eq('id',b.dataset.x);tMedia(el)})}
-
 // ---------- Routeur ----------
 let revealObserver;
 const rv=()=>{
@@ -214,7 +189,7 @@ async function route(){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
  document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
  if(key==='admin')await admin();
- else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews();setupGallery()}
+ else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews()}
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);
 }
