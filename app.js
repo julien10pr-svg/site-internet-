@@ -73,7 +73,7 @@ async function loadData(){
  (c.data||[]).forEach(r=>{if(r.key==='reviews.data')reviews=parseReviews(r.value);else content[r.key]=r.value}); if(o.data?.length)offers=o.data; photos=m.data||[];}catch(e){console.error(e)}
 }
 const foot=()=>{$('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;$('#brand').innerHTML=tbd(t('brand'))};
-const gallery=()=>`<section class="wrap rv"><h2>Galerie</h2>${photos.length?`<div class="gal">${photos.map(p=>`<img loading="lazy" src="${esc(p.url)}" alt="${esc(p.caption||'Photo')}">`).join('')}</div>`:`<p><mark class="tbd">[Galerie à alimenter depuis l’espace administrateur]</mark></p>`}</section>`;
+const gallery=()=>`<section class="wrap rv photo-gallery"><h2>Galerie</h2>${photos.length?`<div class="photo-album">${photos.map((p,i)=>`<figure class="photo-album-card" style="--stack-index:${i};--stack-offset:${Math.min(i*8,56)}px;--stack-tilt:${i%2?'0.35deg':'-0.35deg'}"><img loading="lazy" src="${esc(p.url)}" alt="${esc(p.caption||'Photo de coaching')}">${p.caption?`<figcaption>${esc(p.caption)}</figcaption>`:''}</figure>`).join('')}</div>`:`<p class="reviews-empty">Les photos de l’accompagnement seront bientôt ajoutées.</p>`}</section>`;
 const video=()=>{const u=t('video.url');let inner='<mark class="tbd">[Vidéo de présentation à ajouter]</mark>';
  const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
  return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`};
@@ -178,7 +178,7 @@ async function tReviews(el){
 }
 async function tMedia(el){const {data=[]}=await sb.from('media').select('*').order('created_at',{ascending:false});
  el.innerHTML=`<form id="mf"><label>Ajouter une photo<input type="file" name="f" accept="image/*" required></label><label>Légende<input name="cap"></label><button class="btn">Téléverser</button></form><p class="note">Vidéo : collez un lien YouTube ou un fichier .mp4 dans Contenus › video.url.</p>
- <div class="gal">${data.map(m=>`<div><img src="${esc(m.url)}" alt=""><button data-x="${m.id}" data-p="${esc(m.path||'')}">Supprimer</button></div>`).join('')}</div>`;
+ <div class="admin-gallery">${data.map(m=>`<article class="admin-photo"><img src="${esc(m.url)}" alt="${esc(m.caption||'Photo ajoutée')}" loading="lazy">${m.caption?`<p>${esc(m.caption)}</p>`:''}<button type="button" data-x="${m.id}" data-p="${esc(m.path||'')}">Supprimer</button></article>`).join('')||'<p>Aucune photo ajoutée pour le moment.</p>'}</div>`;
  $('#mf').onsubmit=async e=>{e.preventDefault();const f=e.target.f.files[0],path=`${Date.now()}-${f.name.replace(/[^\w.-]/g,'_')}`;const u=await sb.storage.from('media').upload(path,f);if(u.error)return toast(el,u.error.message,1);
   const url=sb.storage.from('media').getPublicUrl(path).data.publicUrl;await sb.from('media').insert({url,path,caption:e.target.cap.value});tMedia(el)};
  el.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{if(b.dataset.p)await sb.storage.from('media').remove([b.dataset.p]);await sb.from('media').delete().eq('id',b.dataset.x);tMedia(el)})}
