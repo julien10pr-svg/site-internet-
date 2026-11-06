@@ -169,12 +169,46 @@ const rv=()=>{
  revealObserver=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');revealObserver.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -30px 0px'});
  items.forEach(x=>revealObserver.observe(x))
 };
+function setupScrollRoute(){
+ const ns='http://www.w3.org/2000/svg';
+ const svg=document.createElementNS(ns,'svg');
+ svg.setAttribute('id','scroll-route');
+ svg.setAttribute('viewBox','0 0 46 1000');
+ svg.setAttribute('preserveAspectRatio','none');
+ svg.setAttribute('aria-hidden','true');
+ svg.innerHTML='<path class="scroll-route-track" d="M22 18 V150 H40 V290 H7 V430 H37 V570 H12 V710 H32 V850 H20 V982"/><path class="scroll-route-progress" d="M22 18 V150 H40 V290 H7 V430 H37 V570 H12 V710 H32 V850 H20 V982"/><ellipse class="scroll-route-dot" cx="22" cy="18" rx="8" ry="11.25"/>';
+ document.body.append(svg);
+ const guidePath=svg.querySelector('.scroll-route-track');
+ const progressPath=svg.querySelector('.scroll-route-progress');
+ const dot=svg.querySelector('.scroll-route-dot');
+ const length=guidePath.getTotalLength();
+ progressPath.style.strokeDasharray=String(length);
+ progressPath.style.strokeDashoffset=String(length);
+ let frame=0;
+ const update=()=>{
+  frame=0;
+  const maxScroll=document.documentElement.scrollHeight-window.innerHeight;
+  const progress=maxScroll>0?Math.max(0,Math.min(1,window.scrollY/maxScroll)):0;
+  const distance=length*progress;
+  progressPath.style.strokeDashoffset=String(length-distance);
+  const point=guidePath.getPointAtLength(distance);
+  dot.setAttribute('cx',point.x.toFixed(2));
+  dot.setAttribute('cy',point.y.toFixed(2));
+ };
+ const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};
+ window.addEventListener('scroll',schedule,{passive:true});
+ window.addEventListener('resize',schedule,{passive:true});
+ schedule();
+ return schedule;
+}
+const updateScrollRoute=setupScrollRoute();
+
 async function route(){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
- document.body.dataset.t=SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
+ document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
  if(key==='admin')await admin();
  else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key)}
- foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);
+ foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);requestAnimationFrame(updateScrollRoute);
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-resa]');if(a){const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];if(key){e.preventDefault();document.getElementById('resa')?.scrollIntoView()}}});
 $('.burger').onclick=e=>{const n=$('#nav');n.classList.toggle('open');e.target.setAttribute('aria-expanded',n.classList.contains('open'))};
