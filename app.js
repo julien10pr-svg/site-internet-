@@ -88,7 +88,7 @@ function setupReviews(){
 
 const pages={
 home(){return `<section class="hero wrap"><h1>${esc(t('home.title'))}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn" href="#/a-propos">Découvrir l’accompagnement</a><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
-<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2><p>${esc(t(s.k+'.intro'))}</p><b>Découvrir l’accompagnement</b></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2><p>${esc(t('clubs.intro'))}</p><b>Découvrir nos interventions</b></a></div>
+<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2></a></div>
 <section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Au fait, c’est qui Julien ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}${video()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`},
 service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
