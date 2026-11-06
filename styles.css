@@ -300,7 +300,7 @@ mark.tbd {
   min-width: 0;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: clamp(2.5rem, 5vw, 5rem) clamp(1.4rem, 3vw, 3rem);
   text-align: center;
   text-decoration: none;
@@ -315,17 +315,28 @@ mark.tbd {
 }
 
 .panel h2 {
-  max-width: 12ch;
+  display: flex;
+  width: 100%;
+  min-height: 3.3em;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
   font-size: clamp(1.8rem, 3.4vw, 3rem);
 }
 
 .panel p {
+  display: flex;
+  width: 100%;
   max-width: 34ch;
-  margin: 0 auto 1.25rem;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem auto 0;
 }
 
 .panel b {
   align-self: center;
+  margin-top: 1rem;
   border-bottom: 2px solid currentColor;
   font-weight: 700;
 }
