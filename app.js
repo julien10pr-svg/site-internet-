@@ -185,7 +185,7 @@ function setupScrollRoute(){
   const connector=document.createElement('div');
   connector.className='route-connector';
   connector.setAttribute('aria-hidden','true');
-  connector.innerHTML='<svg viewBox="0 0 100 64" focusable="false"><path class="route-track" d="M50 0 V12 H70 V32 H30 V52 H50 V64"/><path class="route-progress" d="M50 0 V12 H70 V32 H30 V52 H50 V64"/><circle class="route-dot" cx="50" cy="0" r="6"/></svg>';
+  connector.innerHTML='<svg viewBox="0 0 100 64" focusable="false"><path class="route-track" d="M50 0 C50 8 62 10 62 18 C62 28 38 27 38 37 C38 48 54 47 54 56 C54 60 52 62 50 64"/><path class="route-progress" d="M50 0 C50 8 62 10 62 18 C62 28 38 27 38 37 C38 48 54 47 54 56 C54 60 52 62 50 64"/><circle class="route-dot" cx="50" cy="0" r="4.2"/></svg>';
   node.insertAdjacentElement('afterend',connector);
  });
 
@@ -234,6 +234,7 @@ async function route(){
  if(key==='admin')await admin();
  else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key)}
  updateScrollRoute=setupScrollRoute();
+ if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,0);requestAnimationFrame(updateScrollRoute);
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-resa]');if(a){const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];if(key){e.preventDefault();document.getElementById('resa')?.scrollIntoView()}}});
