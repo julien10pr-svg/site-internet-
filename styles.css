@@ -258,7 +258,9 @@ mark.tbd {
 }
 
 .hero.home-enter h1 {
-  animation: title-pop-in 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation:
+    title-pop-in 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) both,
+    title-breathe 3.4s ease-in-out 1.1s infinite;
 }
 
 .hero.home-enter p {
@@ -283,6 +285,17 @@ mark.tbd {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes title-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(0) scale(1.035);
   }
 }
 
