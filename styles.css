@@ -355,7 +355,8 @@ mark.tbd {
 .panels {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  min-height: 62vh;
+  min-height: clamp(30rem, 62vh, 48rem);
+  align-items: stretch;
   transition: grid-template-columns 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -366,8 +367,8 @@ mark.tbd {
   min-width: 0;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: clamp(2.5rem, 5vw, 5rem) clamp(1.4rem, 3vw, 3rem);
+  justify-content: center;
+  padding: clamp(2rem, 4vw, 4rem) clamp(1.2rem, 2.5vw, 2.5rem);
   text-align: center;
   text-decoration: none;
   transition:
@@ -410,28 +411,11 @@ mark.tbd {
 .panel h2 {
   display: flex;
   width: 100%;
-  min-height: 3.3em;
+  max-width: 14ch;
   align-items: center;
   justify-content: center;
   margin: 0;
   font-size: clamp(1.8rem, 3.4vw, 3rem);
-}
-
-.panel p {
-  display: flex;
-  width: 100%;
-  max-width: 34ch;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  margin: 1rem auto 0;
-}
-
-.panel b {
-  align-self: center;
-  margin-top: 1rem;
-  border-bottom: 2px solid currentColor;
-  font-weight: 700;
 }
 
 .p-physique {
@@ -1043,7 +1027,7 @@ th {
   .panels {
     min-height: 0;
     grid-template-columns: 1fr;
-    grid-auto-rows: 22rem;
+    grid-auto-rows: clamp(13rem, 32vh, 17rem);
   }
 
   .panels .panel:hover,
