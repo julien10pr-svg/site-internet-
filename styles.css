@@ -557,7 +557,7 @@ body[data-t="basket"] .shero h1 span {
   justify-items: center;
   gap: 1.25rem;
   padding: clamp(3.5rem, 6vw, 5rem) 0;
-  border-top: 1px solid var(--line);
+  border-top: 2px solid color-mix(in srgb, var(--a) 38%, var(--line));
   text-align: center;
 }
 
