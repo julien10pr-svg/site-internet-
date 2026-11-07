@@ -326,7 +326,7 @@ mark.tbd {
   }
 
   50% {
-    transform: translateY(0) scale(1.035);
+    transform: translateY(0) scale(1.055);
   }
 }
 
@@ -505,6 +505,7 @@ body[data-t="clubs"] section.wrap.clubs-offers {
 
 .shero h1 {
   max-width: 18ch;
+  animation: title-breathe 3.4s ease-in-out infinite;
 }
 
 .shero p {
@@ -552,13 +553,29 @@ body[data-t="basket"] .shero h1 span {
 }
 
 .sec2 {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr;
   justify-items: center;
   gap: 1.25rem;
   padding: clamp(3.5rem, 6vw, 5rem) 0;
-  border-top: 2px solid color-mix(in srgb, var(--a) 38%, var(--line));
+  border-top: 0;
   text-align: center;
+}
+
+.sec2::before {
+  position: absolute;
+  top: 0;
+  right: calc((100vw - 100%) / -2);
+  left: calc((100vw - 100%) / -2);
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--a) 62%, transparent) 0%,
+    color-mix(in srgb, var(--a) 12%, transparent) 50%,
+    color-mix(in srgb, var(--a) 62%, transparent) 100%
+  );
+  content: "";
 }
 
 .sec2 h2 {
