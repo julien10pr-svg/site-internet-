@@ -1,3 +1,30 @@
+:root {
+  --ink: #14171c;
+  --mut: #5b6470;
+  --bg: #f6f5f2;
+  --line: #dcdad4;
+  --a: #f26a1b;
+  --b: #d6282b;
+  --hbg: #14171c;
+  --hfg: #fff;
+  --r: 10px;
+  --section-space: clamp(2.75rem, 5vw, 4rem);
+}
+
+body[data-t="physique"] {
+  --a: #f26a1b;
+  --b: #d6282b;
+  --hbg: linear-gradient(180deg, #fff0e5 0%, #fff7f2 52%, #fff 100%);
+  --hfg: #512a18;
+}
+
+body[data-t="mentale"] {
+  --a: #2b6cf0;
+  --b: #fff;
+  --hbg: linear-gradient(180deg, #eaf1ff 0%, #f5f8ff 52%, #fff 100%);
+  --hfg: #0f2a66;
+}
+
 body[data-t="basket"] {
   --a: #b88943;
   --b: #111;
@@ -5,13 +32,9 @@ body[data-t="basket"] {
   --hfg: #302a20;
 }
 
-.p-basket h2 {
-  color: #d7b36f;
-}
-
-body[data-t="basket"] .shero h1 span {
-  color: #b88943;
-}  --b: #dce7df;
+body[data-t="clubs"] {
+  --a: #244b38;
+  --b: #dce7df;
   --hbg: linear-gradient(180deg, #e5efe7 0%, #f3f8f4 52%, #fff 100%);
   --hfg: #203d30;
 }
@@ -422,7 +445,7 @@ mark.tbd {
 }
 
 .p-basket h2 {
-  color: #f26a1b;
+  color: #d7b36f;
 }
 
 .p-clubs {
@@ -501,7 +524,7 @@ body[data-t="physique"] .shero h1 {
 }
 
 body[data-t="basket"] .shero h1 span {
-  color: #f26a1b;
+  color: #b88943;
 }
 
 .grid {
@@ -1046,6 +1069,15 @@ th {
   .hero {
     padding-top: 4.5rem;
     padding-bottom: 4.5rem;
+  }
+
+  .hero h1 {
+    max-width: 100%;
+    font-size: clamp(2rem, 8.5vw, 3.2rem);
+  }
+
+  .home-title-break {
+    display: block;
   }
 
   .shero {
