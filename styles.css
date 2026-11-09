@@ -75,7 +75,7 @@ body {
   font: 17px/1.7 "Hanken Grotesk", system-ui, sans-serif;
 }
 
-/* Halo de couleurs discret, dont la teinte suit la page et le défilement. */
+/* Halo de couleurs animé, visible sans passer devant le contenu. */
 body::before {
   position: fixed;
   z-index: -1;
@@ -442,12 +442,12 @@ mark.tbd {
 }
 
 .p-physique {
-  background: linear-gradient(160deg, #f26a1b, #d6282b);
+  background: linear-gradient(145deg, #ff7a24 0%, #f05220 56%, #d9342d 100%);
   color: #fff;
 }
 
 .p-mentale {
-  background: #eaf1ff;
+  background: linear-gradient(145deg, #e4edff 0%, #edf3ff 55%, #dce8ff 100%);
   color: #0f2a66;
 }
 
@@ -456,12 +456,12 @@ mark.tbd {
 }
 
 .p-basket {
-  background: #0d0d0d;
+  background: linear-gradient(145deg, #171717 0%, #101010 56%, #24201b 100%);
   color: #fff;
 }
 
 .p-basket h2 {
-  color: #d7b36f;
+  color: #f26a1b;
 }
 
 .p-clubs {
@@ -846,8 +846,14 @@ th {
   overflow-x: auto;
 }
 
-/* Apparition progressive des sections publiques au défilement */
+/* Les contenus restent visibles si JavaScript ne démarre pas. */
 .rv {
+  opacity: 1;
+  transform: none;
+}
+
+/* Une fois le routeur lancé, les sections apparaissent doucement au scroll. */
+.js-ready .rv:not(.on) {
   opacity: 0;
   transform: translateY(24px);
   transition:
@@ -855,7 +861,7 @@ th {
     transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.rv.on {
+.js-ready .rv.on {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1191,7 +1197,9 @@ th {
     transition: none !important;
   }
 
-  .rv {
+  .rv,
+  .js-ready .rv:not(.on),
+  .js-ready .rv.on {
     opacity: 1;
     transform: none;
   }
