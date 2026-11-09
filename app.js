@@ -48,149 +48,103 @@ const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenu
 'faq.3.q':'Quelles sont les modalités d’annulation et de paiement ?','faq.3.a':'[À compléter]',
 'faq.4.q':'Les mineurs peuvent-ils réserver ?','faq.4.a':'Oui, avec les coordonnées du représentant légal, demandées lors de la réservation.',
 'video.url':''};
-
 const DEF_OFFERS=[
-['physique','Séance à l’unité','',5000],
-['physique','Pack de 5 séances','soit 45 € par séance',22500],
-['physique','Pack de 10 séances','soit 40 € par séance',40000],
-['mentale','Séance à l’unité','Séance individuelle',5000],
-['mentale','Pack de 5 séances','soit 40 € par séance',20000],
-['basket','1 personne','30 € par personne',3000],
-['basket','2 personnes','25 € par personne',5000],
-['basket','3 personnes','20 € par personne',6000],
-['basket','4 personnes','17 € par personne',6800,true]
+['physique','Séance à l’unité','',5000],['physique','Pack de 5 séances','soit 45 € par séance',22500],['physique','Pack de 10 séances','soit 40 € par séance',40000],
+['mentale','Séance à l’unité','Séance individuelle',5000],['mentale','Pack de 5 séances','soit 40 € par séance',20000],
+['basket','1 personne','30 € par personne',3000],['basket','2 personnes','25 € par personne',5000],['basket','3 personnes','20 € par personne',6000],['basket','4 personnes','17 € par personne',6800,true]
 ].map(([service,label,detail,price_cents,tbc])=>({service,label,detail,price_cents,tbc}));
 
 const SV={
 physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</span>',secs:[['Vision et méthodologie','vision'],['Besoins et objectifs','needs'],['Évaluation et testing','testing'],['Nutrition','nutrition']]},
 mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel','format']]},
-basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}
-};
+basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}};
 
 let content={...C}, offers=DEF_OFFERS, reviews=[], user=null;
 const t=k=>content[k]??C[k]??'';
-
 function parseReviews(value){
  try{
   const parsed=Array.isArray(value)?value:JSON.parse(value||'[]');
   return Array.isArray(parsed)?parsed.filter(r=>r&&typeof r.text==='string'&&r.text.trim()).map(r=>({text:r.text.trim(),name:typeof r.name==='string'?r.name.trim():''})):[];
  }catch{return []}
 }
-
 async function loadData(){
  if(!live)return;
- try{
-  const [c,o]=await Promise.all([
-   sb.from('site_content').select('*'),
-   sb.from('offers').select('*').eq('active',true).order('sort')
-  ]);
-  (c.data||[]).forEach(r=>{
-   if(r.key==='reviews.data')reviews=parseReviews(r.value);
-   else content[r.key]=r.value
+ try{const [c,o]=await Promise.all([sb.from('site_content').select('*'),sb.from('offers').select('*').eq('active',true).order('sort')]);
+ (c.data||[]).forEach(r=>{if(r.key==='reviews.data')reviews=parseReviews(r.value);else content[r.key]=r.value}); if(o.data?.length)offers=o.data;}catch(e){console.error(e)}
+}
+const foot=()=>{$('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;$('#brand').innerHTML=tbd(t('brand'))};
+const video=()=>{const u=t('video.url');let inner='<mark class="tbd">[Vidéo de présentation à ajouter]</mark>';
+ const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
+ return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`};
+const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${tbd(t('contact.phone'))}</p><p>${tbd(t('contact.zone'))}</p><p>${tbd(t('contact.social'))}</p></div>`;
+const reviewsSection=()=>`<section class="wrap rv reviews-section" aria-labelledby="reviews-title"><div class="reviews-heading"><h2 id="reviews-title">Vos avis</h2><p>Les retours d’expérience des personnes accompagnées.</p></div>${reviews.length?`<div class="reviews-carousel" data-reviews-carousel><article class="review-bubble" aria-live="polite"><blockquote><p data-review-text></p><cite data-review-name></cite></blockquote></article><div class="review-controls"><button type="button" data-review-prev aria-label="Avis précédent">←</button><span data-review-count aria-live="polite"></span><button type="button" data-review-next aria-label="Avis suivant">→</button></div></div>`:`<p class="reviews-empty">Les premiers avis seront affichés ici.</p>`}</section>`;
+function setupClubTabs(){
+ const tabs=[...document.querySelectorAll('[data-club-tab]')];
+ const panels=[...document.querySelectorAll('[data-club-panel]')];
+ if(!tabs.length||!panels.length)return;
+ const activate=name=>{
+  tabs.forEach(tab=>{
+   const selected=tab.dataset.clubTab===name;
+   tab.setAttribute('aria-selected',String(selected));
+   tab.tabIndex=selected?0:-1
   });
-  if(o.data?.length)offers=o.data;
- }catch(e){
-  console.error(e)
- }
+  panels.forEach(panel=>{
+   const selected=panel.dataset.clubPanel===name;
+   panel.hidden=!selected;
+   panel.classList.toggle('is-active',selected)
+  })
+ };
+ tabs.forEach((tab,index)=>{
+  tab.addEventListener('click',()=>activate(tab.dataset.clubTab));
+  tab.addEventListener('keydown',event=>{
+   if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;
+   event.preventDefault();
+   const next=tabs[(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length];
+   next.focus();
+   activate(next.dataset.clubTab)
+  })
+ });
+ activate(tabs.find(tab=>tab.getAttribute('aria-selected')==='true')?.dataset.clubTab||tabs[0].dataset.clubTab)
 }
 
-const foot=()=>{
- $('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;
- $('#brand').innerHTML=tbd(t('brand'))
-};
-
-const video=()=>{
- const u=t('video.url');
- let inner='<mark class="tbd">[Vidéo de présentation à ajouter]</mark>';
- const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);
- if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;
- else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
- return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`
-};
-
-const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${tbd(t('contact.phone'))}</p><p>${tbd(t('contact.zone'))}</p><p>${tbd(t('contact.social'))}</p></div>`;
-
-const reviewsSection=()=>`<section class="wrap rv reviews-section" aria-labelledby="reviews-title"><div class="reviews-heading"><h2 id="reviews-title">Vos avis</h2><p>Les retours d’expérience des personnes accompagnées.</p></div>${reviews.length?`<div class="reviews-carousel" data-reviews-carousel><article class="review-bubble" aria-live="polite"><blockquote><p data-review-text></p><cite data-review-name></cite></blockquote></article><div class="review-controls"><button type="button" data-review-prev aria-label="Avis précédent">←</button><span data-review-count aria-live="polite"></span><button type="button" data-review-next aria-label="Avis suivant">→</button></div></div>`:`<p class="reviews-empty">Les premiers avis seront affichés ici.</p>`}</section>`;
-
 function setupReviews(){
- const carousel=$('[data-reviews-carousel]');
- if(!carousel||!reviews.length)return;
- let index=0;
- const quote=carousel.querySelector('[data-review-text]');
- const name=carousel.querySelector('[data-review-name]');
- const count=carousel.querySelector('[data-review-count]');
- const show=()=>{
-  const review=reviews[index];
-  quote.textContent=`« ${review.text} »`;
-  name.textContent=review.name;
-  name.hidden=!review.name;
-  count.textContent=`${index+1} / ${reviews.length}`
- };
- carousel.querySelector('[data-review-prev]').onclick=()=>{
-  index=(index-1+reviews.length)%reviews.length;
-  show()
- };
- carousel.querySelector('[data-review-next]').onclick=()=>{
-  index=(index+1)%reviews.length;
-  show()
- };
- show()
+ const carousel=$('[data-reviews-carousel]');if(!carousel||!reviews.length)return;
+ let index=0;const quote=carousel.querySelector('[data-review-text]'),name=carousel.querySelector('[data-review-name]'),count=carousel.querySelector('[data-review-count]');
+ const show=()=>{const review=reviews[index];quote.textContent=`« ${review.text} »`;name.textContent=review.name;name.hidden=!review.name;count.textContent=`${index+1} / ${reviews.length}`};
+ carousel.querySelector('[data-review-prev]').onclick=()=>{index=(index-1+reviews.length)%reviews.length;show()};
+ carousel.querySelector('[data-review-next]').onclick=()=>{index=(index+1)%reviews.length;show()};show();
 }
 
 const pages={
-home(){
- const homeTitle=esc(t('home.title')).replace(/(Investir sur soi-même)/i,'<span class="home-title-break">$1</span>');
- return `<section class="hero wrap"><h1>${homeTitle}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
+home(){const homeTitle=esc(t('home.title')).replace(/(Investir sur soi-même)/i,'<span class="home-title-break">$1</span>');return `<section class="hero wrap"><h1>${homeTitle}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
 <div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2></a></div>
 <section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Au fait, c’est qui Julien ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}${video()}
-<section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`
-},
-service(id){
- const s=SV[id],o=offers.filter(x=>x.service===id);
+<section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`},
+service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
  return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
 <div class="wrap">${s.secs.map(([h,k])=>`<div class="sec2 rv"><h2>${h}</h2><div>${rich(t(s.k+'.'+k))}</div></div>`).join('')}
 <section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}${x.tbc?' <mark class="tbd">[tarif à confirmer]</mark>':''}</p></div>`).join('')}</div>
 <p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
-<section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`
-},
-about(){
- return `<div class="shero rv"><div class="wrap"><h1>À propos</h1></div></div><div class="wrap"><section class="rv">${rich(t('about.text'))}<h2>Ma vision</h2>${rich(t('about.vision'))}</section></div>`
-},
-clubs(){
- return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
-<section class="wrap rv"><h2>Des interventions adaptées à vos besoins</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article><article class="box"><h3>Entreprises</h3>${rich(t('clubs.companies'))}</article></div></section>
-<section class="wrap rv clubs-offers"><h2>Offres et tarifs</h2><div class="grid"><article class="box"><h3>Fréquence des interventions</h3>${rich(t('clubs.frequency'))}</article><article class="box"><h3>Durée d’une intervention</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>Tarification</h3>${rich(t('clubs.pricing'))}</article></div></section>`
-},
-contact(){
- return `<div class="shero rv"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`
-},
-faq(){
- return `<div class="shero rv"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`
-},
-mentions(){
- return `<div class="wrap"><section class="rv"><h1>Mentions légales</h1>${rich(t('legal.text'))}</section></div>`
-},
-confidentialite(){
- return `<div class="wrap"><section class="rv"><h1>Confidentialité</h1>${rich(t('privacy.text'))}</section></div>`
-}
-};
+<section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`},
+about(){return `<div class="shero rv"><div class="wrap"><h1>À propos</h1></div></div><div class="wrap"><section class="rv">${rich(t('about.text'))}<h2>Ma vision</h2>${rich(t('about.vision'))}</section></div>`},
+clubs(){return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
+<section class="wrap rv clubs-choices"><h2>Choisissez votre accompagnement</h2><div class="clubs-switch" role="tablist" aria-label="Type d’intervention"><button type="button" role="tab" id="clubs-tab-sport" aria-controls="clubs-panel-sport" aria-selected="true" data-club-tab="sport">Club sportif</button><button type="button" role="tab" id="clubs-tab-company" aria-controls="clubs-panel-company" aria-selected="false" data-club-tab="company" tabindex="-1">Entreprise</button></div>
+<div class="clubs-panel is-active" role="tabpanel" id="clubs-panel-sport" aria-labelledby="clubs-tab-sport" data-club-panel="sport"><h2>Interventions pour les clubs sportifs</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article></div></div>
+<div class="clubs-panel" role="tabpanel" id="clubs-panel-company" aria-labelledby="clubs-tab-company" data-club-panel="company" hidden><h2>Interventions en entreprise</h2><div class="grid"><article class="box"><h3>Équipes et collaborateurs</h3>${rich(t('clubs.companies'))}</article></div></div></section>
+<section class="wrap rv clubs-offers"><h2>Modalités et tarifs</h2><div class="grid"><article class="box"><h3>Fréquence des interventions</h3>${rich(t('clubs.frequency'))}</article><article class="box"><h3>Durée d’une intervention</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>Tarification</h3>${rich(t('clubs.pricing'))}</article></div></section>`},
+contact(){return `<div class="shero rv"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`},
+faq(){return `<div class="shero rv"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`},
+mentions(){return `<div class="wrap"><section class="rv"><h1>Mentions légales</h1>${rich(t('legal.text'))}</section></div>`},
+confidentialite(){return `<div class="wrap"><section class="rv"><h1>Confidentialité</h1>${rich(t('privacy.text'))}</section></div>`}};
 
 function booking(id){
- const box=$('#booking');
- if(!box)return;
- if(!live){
-  box.innerHTML='<p class="msg err">Réservation en ligne non connectée : Supabase n’est pas encore configuré (voir README). Aucune réservation ne peut être enregistrée pour le moment.</p>';
-  return
- }
- const o=offers.filter(x=>x.service===id&&x.id&&(x.sessions||1)>=1);
- let slot=null;
+ const box=$('#booking');if(!box)return;
+ if(!live){box.innerHTML='<p class="msg err">Réservation en ligne non connectée : Supabase n’est pas encore configuré (voir README). Aucune réservation ne peut être enregistrée pour le moment.</p>';return}
+ const o=offers.filter(x=>x.service===id&&x.id&&(x.sessions||1)>=1);let slot=null;
  box.innerHTML='<p>Chargement des créneaux…</p>';
  sb.rpc('get_open_slots',{p_service:id}).then(({data,error})=>{
   const list=(data||[]).filter(s=>s.remaining>0);
-  if(error||!list.length){
-   box.innerHTML=`<p>${error?'Créneaux indisponibles pour le moment.':'Aucun créneau ouvert actuellement. Revenez bientôt ou utilisez la page Contact.'}</p>`;
-   return
-  }
+  if(error||!list.length){box.innerHTML=`<p>${error?'Créneaux indisponibles pour le moment.':'Aucun créneau ouvert actuellement. Revenez bientôt ou utilisez la page Contact.'}</p>`;return}
   box.innerHTML=`<div class="slots">${list.map(s=>`<button class="slot" aria-pressed="false" data-id="${s.id}" data-r="${s.remaining}">${fmt(s.starts_at)}<br><small>${s.duration_min} min · ${s.remaining} place${s.remaining>1?'s':''}</small></button>`).join('')}</div>
   <form id="bf" hidden><label>Offre<select name="offer" required>${o.map(x=>`<option value="${x.id}" data-p="${x.participants}">${esc(x.label)} — ${eur(x.price_cents)}</option>`).join('')}</select></label>
   <label>Prénom<input name="first" required maxlength="80" autocomplete="given-name"></label><label>Nom<input name="last" required maxlength="80" autocomplete="family-name"></label>
@@ -201,248 +155,98 @@ function booking(id){
   <p class="note">La demande est enregistrée avec le statut « en attente ». Aucun paiement en ligne n’est proposé pour l’instant. ${DUR}</p>
   <button class="btn" style="background:var(--a)">Envoyer la demande</button><div id="res" role="status"></div></form>`;
   const f=$('#bf');
-  box.querySelectorAll('.slot').forEach(b=>b.onclick=()=>{
-   box.querySelectorAll('.slot').forEach(x=>x.setAttribute('aria-pressed','false'));
-   b.setAttribute('aria-pressed','true');
-   slot=b;
-   f.hidden=false;
-   [...f.offer.options].forEach(op=>op.disabled=+op.dataset.p>+b.dataset.r);
-   f.offer.selectedIndex=[...f.offer.options].findIndex(op=>!op.disabled)
-  });
+  box.querySelectorAll('.slot').forEach(b=>b.onclick=()=>{box.querySelectorAll('.slot').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');slot=b;f.hidden=false;
+   [...f.offer.options].forEach(op=>op.disabled=+op.dataset.p>+b.dataset.r);f.offer.selectedIndex=[...f.offer.options].findIndex(op=>!op.disabled)});
   f.minor.onchange=()=>$('#g').hidden=!f.minor.checked;
-  f.onsubmit=async e=>{
-   e.preventDefault();
-   const r=$('#res');
-   const {error}=await sb.rpc('book_slot',{
-    p_slot:slot.dataset.id,
-    p_offer:f.offer.value,
-    p_first:f.first.value,
-    p_last:f.last.value,
-    p_email:f.email.value,
-    p_phone:f.phone.value||null,
-    p_minor:f.minor.checked,
-    p_gname:f.gname.value||null,
-    p_gemail:f.gemail.value||null,
-    p_note:f.note.value||null
-   });
-   r.className='msg'+(error?' err':'');
-   r.textContent=error?error.message:'Demande enregistrée (en attente de confirmation). Vous serez recontacté.';
-   if(!error){
-    f.reset();
-    setTimeout(()=>booking(id),1500)
-   }
-  }
- })
+  f.onsubmit=async e=>{e.preventDefault();const r=$('#res');
+   const {error}=await sb.rpc('book_slot',{p_slot:slot.dataset.id,p_offer:f.offer.value,p_first:f.first.value,p_last:f.last.value,p_email:f.email.value,p_phone:f.phone.value||null,p_minor:f.minor.checked,p_gname:f.gname.value||null,p_gemail:f.gemail.value||null,p_note:f.note.value||null});
+   r.className='msg'+(error?' err':'');r.textContent=error?error.message:'Demande enregistrée (en attente de confirmation). Vous serez recontacté.';if(!error){f.reset();setTimeout(()=>booking(id),1500)}};
+ });
 }
 
 // ---------- Admin ----------
-const ST=['pending','confirmed','cancelled','done'];
-const STL={pending:'En attente',confirmed:'Confirmée',cancelled:'Annulée',done:'Réalisée'};
-const PS=['unpaid','paid','refunded'];
-const PSL={unpaid:'Non payé',paid:'Payé',refunded:'Remboursé'};
+const ST=['pending','confirmed','cancelled','done'],STL={pending:'En attente',confirmed:'Confirmée',cancelled:'Annulée',done:'Réalisée'},PS=['unpaid','paid','refunded'],PSL={unpaid:'Non payé',paid:'Payé',refunded:'Remboursé'};
 const opts=(a,l,v)=>a.map(x=>`<option value="${x}"${x===v?' selected':''}>${l[x]||x}</option>`).join('');
-
 async function admin(){
  const app=$('#app');
- if(!live){
-  app.innerHTML='<div class="wrap admin"><section><h1>Espace administrateur</h1><p class="msg err">Supabase n’est pas configuré (config.js).</p></section></div>';
-  return
- }
+ if(!live){app.innerHTML='<div class="wrap admin"><section><h1>Espace administrateur</h1><p class="msg err">Supabase n’est pas configuré (config.js).</p></section></div>';return}
  const {data:{session}}=await sb.auth.getSession();
  const ok=session?(await sb.rpc('is_admin')).data:false;
- if(!ok){
-  app.innerHTML=`<div class="wrap admin"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
-  $('#lf').onsubmit=async e=>{
-   e.preventDefault();
-   const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});
-   if(error)$('#lm').innerHTML='<p class="msg err">'+error.message+'.</p>';
-   else admin()
-  };
-  return
- }
+ if(!ok){app.innerHTML=`<div class="wrap admin"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
+  $('#lf').onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});if(error)$('#lm').innerHTML='<p class="msg err">'+error.message+'.</p>';else admin()};return}
  const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Avis:tReviews};
  app.innerHTML=`<div class="wrap admin"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
- const show=n=>{
-  app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));
-  tabs[n]($('#tab'))
- };
- app.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>show(b.textContent));
- $('#out').onclick=async()=>{
-  await sb.auth.signOut();
-  admin()
- };
- show('Réservations')
+ const show=n=>{app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));tabs[n]($('#tab'))};
+ app.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>show(b.textContent));$('#out').onclick=async()=>{await sb.auth.signOut();admin()};show('Réservations');
 }
-
-const toast=(el,m,e)=>{
- el.insertAdjacentHTML('afterbegin',`<p class="msg${e?' err':''}">${esc(m)}</p>`);
- setTimeout(()=>el.firstElementChild?.remove(),3000)
-};
-
-async function tBook(el){
- const {data=[]}=await sb.from('bookings').select('*,slots(starts_at,duration_min)').order('created_at',{ascending:false});
+const toast=(el,m,e)=>{el.insertAdjacentHTML('afterbegin',`<p class="msg${e?' err':''}">${esc(m)}</p>`);setTimeout(()=>el.firstElementChild?.remove(),3000)};
+async function tBook(el){const {data=[]}=await sb.from('bookings').select('*,slots(starts_at,duration_min)').order('created_at',{ascending:false});
  el.innerHTML=`<div class="tw"><table><tr><th>Créneau</th><th>Client</th><th>Prestation</th><th>Statut</th><th>Paiement</th></tr>${data.map(b=>`<tr><td>${b.slots?fmt(b.slots.starts_at):'-'}</td><td>${esc(b.first_name)} ${esc(b.last_name)}<br>${esc(b.email)} ${esc(b.phone||'')}${b.is_minor?`<br><em>Mineur · resp. : ${esc(b.guardian_name)} ${esc(b.guardian_email)}</em>`:''}${b.note?`<br>“${esc(b.note)}”`:''}</td><td>${SV[b.service]?.name} · ${b.participants} pers. · ${eur(b.amount_cents||0)}</td><td><select data-id="${b.id}" data-f="status">${opts(ST,STL,b.status)}</select></td><td><select data-id="${b.id}" data-f="payment_status">${opts(PS,PSL,b.payment_status)}</select></td></tr>`).join('')||'<tr><td colspan=5>Aucune réservation.</td></tr>'}</table></div><p class="note">Suivi interne uniquement : ce n’est pas une comptabilité officielle.</p>`;
- el.querySelectorAll('select').forEach(s=>s.onchange=async()=>{
-  const {error}=await sb.from('bookings').update({[s.dataset.f]:s.value}).eq('id',s.dataset.id);
-  toast(el,error?error.message:'Enregistré',!!error)
- })
-}
-
-async function tSlots(el){
- const {data=[]}=await sb.from('slots').select('*').order('starts_at');
+ el.querySelectorAll('select').forEach(s=>s.onchange=async()=>{const {error}=await sb.from('bookings').update({[s.dataset.f]:s.value}).eq('id',s.dataset.id);toast(el,error?error.message:'Enregistré',!!error)})}
+async function tSlots(el){const {data=[]}=await sb.from('slots').select('*').order('starts_at');
  el.innerHTML=`<form id="sf"><label>Type<select name="service">${Object.entries(SV).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select></label><label>Début<input name="at" type="datetime-local" required></label><label>Durée (min)<input name="d" type="number" value="60" min="15" step="5"></label><label>Places (max 4)<input name="c" type="number" value="1" min="1" max="4"></label><button class="btn">Créer le créneau</button></form>
  <div class="tw"><table>${data.map(s=>`<tr><td>${fmt(s.starts_at)}</td><td>${SV[s.service].name}</td><td>${s.duration_min} min · ${s.capacity} pl.</td><td>${s.status==='open'?'Ouvert':'Fermé'}</td><td><button data-t="${s.id}" data-s="${s.status}">${s.status==='open'?'Fermer':'Ouvrir'}</button> <button data-x="${s.id}">Supprimer</button></td></tr>`).join('')}</table></div>`;
- $('#sf').onsubmit=async e=>{
-  e.preventDefault();
-  const f=e.target;
-  const {error}=await sb.from('slots').insert({
-   service:f.service.value,
-   starts_at:new Date(f.at.value).toISOString(),
-   duration_min:+f.d.value,
-   capacity:+f.c.value
-  });
-  error?toast(el,error.message,1):tSlots(el)
- };
- el.querySelectorAll('[data-t]').forEach(b=>b.onclick=async()=>{
-  await sb.from('slots').update({status:b.dataset.s==='open'?'closed':'open'}).eq('id',b.dataset.t);
-  tSlots(el)
- });
- el.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{
-  const {error}=await sb.from('slots').delete().eq('id',b.dataset.x);
-  error?toast(el,'Suppression impossible (réservations liées) : fermez le créneau.',1):tSlots(el)
- })
-}
-
-async function tOffers(el){
- const {data=[]}=await sb.from('offers').select('*').order('service').order('sort');
+ $('#sf').onsubmit=async e=>{e.preventDefault();const f=e.target;const {error}=await sb.from('slots').insert({service:f.service.value,starts_at:new Date(f.at.value).toISOString(),duration_min:+f.d.value,capacity:+f.c.value});error?toast(el,error.message,1):tSlots(el)};
+ el.querySelectorAll('[data-t]').forEach(b=>b.onclick=async()=>{await sb.from('slots').update({status:b.dataset.s==='open'?'closed':'open'}).eq('id',b.dataset.t);tSlots(el)});
+ el.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const {error}=await sb.from('slots').delete().eq('id',b.dataset.x);error?toast(el,'Suppression impossible (réservations liées) : fermez le créneau.',1):tSlots(el)})}
+async function tOffers(el){const {data=[]}=await sb.from('offers').select('*').order('service').order('sort');
  el.innerHTML=`<div class="tw"><table><tr><th>Type</th><th>Libellé</th><th>Détail</th><th>Prix total (€)</th><th>Participants</th><th>Actif</th><th></th></tr>${data.map(o=>`<tr data-id="${o.id}"><td>${SV[o.service].name}</td><td><input value="${esc(o.label)}" data-f="label"></td><td><input value="${esc(o.detail||'')}" data-f="detail"></td><td><input type="number" step="0.5" value="${o.price_cents/100}" data-f="price"></td><td><input type="number" min="1" max="4" value="${o.participants}" data-f="participants"></td><td><input type="checkbox" ${o.active?'checked':''} data-f="active"></td><td><button>Enregistrer</button></td></tr>`).join('')}</table></div>
  <button class="btn" id="add">Ajouter une offre</button>`;
- el.querySelectorAll('tr[data-id] button').forEach(b=>b.onclick=async()=>{
-  const r=b.closest('tr'),g=f=>r.querySelector(`[data-f=${f}]`);
-  const {error}=await sb.from('offers').update({
-   label:g('label').value,
-   detail:g('detail').value,
-   price_cents:Math.round(g('price').value*100),
-   participants:+g('participants').value,
-   active:g('active').checked
-  }).eq('id',r.dataset.id);
-  toast(el,error?error.message:'Enregistré',!!error)
- });
- $('#add').onclick=async()=>{
-  const s=prompt('Type : physique, mentale ou basket ?');
-  if(!SV[s])return;
-  await sb.from('offers').insert({service:s,label:'Nouvelle offre',price_cents:0});
-  tOffers(el)
- }
-}
-
-async function tContent(el){
- const {data=[]}=await sb.from('site_content').select('*');
- const cur={...C};
- data.forEach(r=>cur[r.key]=r.value);
- el.innerHTML=`<form style="max-width:760px">${Object.keys(C).map(k=>`<label>${k}<textarea name="${k}" rows="${cur[k].length>120?4:1}">${esc(cur[k])}</textarea></label>`).join('')}<button class="btn">Enregistrer les contenus</button></form><p class="note">Les passages entre crochets [ ] s’affichent comme « à compléter » sur le site.</p>`;
- el.querySelector('form').onsubmit=async e=>{
-  e.preventDefault();
-  const rows=Object.keys(C).map(k=>({key:k,value:e.target[k].value}));
-  const {error}=await sb.from('site_content').upsert(rows);
-  toast(el,error?error.message:'Contenus enregistrés',!!error)
- }
-}
-
+ el.querySelectorAll('tr[data-id] button').forEach(b=>b.onclick=async()=>{const r=b.closest('tr'),g=f=>r.querySelector(`[data-f=${f}]`);const {error}=await sb.from('offers').update({label:g('label').value,detail:g('detail').value,price_cents:Math.round(g('price').value*100),participants:+g('participants').value,active:g('active').checked}).eq('id',r.dataset.id);toast(el,error?error.message:'Enregistré',!!error)});
+ $('#add').onclick=async()=>{const s=prompt('Type : physique, mentale ou basket ?');if(!SV[s])return;await sb.from('offers').insert({service:s,label:'Nouvelle offre',price_cents:0});tOffers(el)}}
+async function tContent(el){const {data=[]}=await sb.from('site_content').select('*');const cur={...C};data.forEach(r=>cur[r.key]=r.value);
+ const clubHeadings={'clubs.intro':'<h2 class="content-group-title">Clubs et Entreprises — introduction</h2>','clubs.players':'<h2 class="content-group-title">Club sportif</h2>','clubs.companies':'<h2 class="content-group-title">Entreprise</h2>','clubs.frequency':'<h2 class="content-group-title">Modalités et tarifs</h2>'};
+ const contentLabels={'clubs.intro':'Introduction commune','clubs.players':'Joueurs et joueuses','clubs.staff':'Staffs et entraîneurs','clubs.companies':'Interventions en entreprise','clubs.frequency':'Fréquence des interventions','clubs.duration':'Durée d’une intervention','clubs.pricing':'Tarification'};
+ el.innerHTML=`<form style="max-width:760px">${Object.keys(C).map(k=>`${clubHeadings[k]||''}<label>${contentLabels[k]||k}<textarea name="${k}" rows="${cur[k].length>120?4:1}">${esc(cur[k])}</textarea></label>`).join('')}<button class="btn">Enregistrer les contenus</button></form><p class="note">Les passages entre crochets [ ] s’affichent comme « à compléter » sur le site.</p>`;
+ el.querySelector('form').onsubmit=async e=>{e.preventDefault();const rows=Object.keys(C).map(k=>({key:k,value:e.target[k].value}));const {error}=await sb.from('site_content').upsert(rows);toast(el,error?error.message:'Contenus enregistrés',!!error)}}
 async function tReviews(el){
  const {data,error}=await sb.from('site_content').select('value').eq('key','reviews.data').maybeSingle();
  const items=parseReviews(data?.value);
  el.innerHTML=`<div class="admin-reviews"><h2>Ajouter un avis</h2><p class="note">Les avis enregistrés ici apparaissent publiquement sur la page d’accueil.</p><form id="review-form"><label>Commentaire<textarea name="text" rows="4" maxlength="1500" required placeholder="Saisir le commentaire"></textarea></label><label>Prénom ou nom affiché (facultatif)<input name="name" maxlength="80" placeholder="Ex. Camille"></label><button class="btn" type="submit">Ajouter l’avis</button></form><h2>Avis publiés (${items.length})</h2><div class="admin-review-list">${items.map((r,i)=>`<article class="box"><p>« ${esc(r.text)} »</p>${r.name?`<p><strong>${esc(r.name)}</strong></p>`:''}<button type="button" class="btn alt" data-delete-review="${i}">Supprimer</button></article>`).join('')||'<p>Aucun avis publié pour le moment.</p>'}</div></div>`;
  if(error)toast(el,`Chargement des avis impossible : ${error.message}`,true);
- const save=async next=>{
-  const {error:saveError}=await sb.from('site_content').upsert({key:'reviews.data',value:JSON.stringify(next)});
-  if(saveError){
-   toast(el,saveError.message,true);
-   return false
-  }
-  reviews=next;
-  return true
- };
- el.querySelector('#review-form').onsubmit=async e=>{
-  e.preventDefault();
-  const form=e.currentTarget;
-  const submit=form.querySelector('button[type="submit"]');
-  const text=form.elements.namedItem('text').value.trim();
-  const name=form.elements.namedItem('name').value.trim();
-  if(!text)return;
-  const next=[...items,{text,name}];
-  submit.disabled=true;
-  if(await save(next))tReviews(el);
-  else submit.disabled=false
- };
- el.querySelectorAll('[data-delete-review]').forEach(button=>button.onclick=async()=>{
-  const next=items.filter((_,i)=>i!==Number(button.dataset.deleteReview));
-  if(await save(next))tReviews(el)
- })
+ const save=async next=>{const {error:saveError}=await sb.from('site_content').upsert({key:'reviews.data',value:JSON.stringify(next)});if(saveError){toast(el,saveError.message,true);return false}reviews=next;return true};
+ el.querySelector('#review-form').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget,submit=form.querySelector('button[type="submit"]'),text=form.elements.namedItem('text').value.trim(),name=form.elements.namedItem('name').value.trim();if(!text)return;const next=[...items,{text,name}];submit.disabled=true;if(await save(next))tReviews(el);else submit.disabled=false};
+ el.querySelectorAll('[data-delete-review]').forEach(button=>button.onclick=async()=>{const next=items.filter((_,i)=>i!==Number(button.dataset.deleteReview));if(await save(next))tReviews(el)});
 }
-
 // ---------- Routeur ----------
 let revealObserver;
-
 const rv=()=>{
  if(revealObserver)revealObserver.disconnect();
  const items=document.querySelectorAll('#app .rv');
- if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-  items.forEach(x=>x.classList.add('on'));
-  return
- }
- revealObserver=new IntersectionObserver(es=>es.forEach(e=>{
-  if(e.isIntersecting){
-   e.target.classList.add('on');
-   revealObserver.unobserve(e.target)
-  }
- }),{threshold:.12,rootMargin:'0px 0px -30px 0px'});
+ if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){items.forEach(x=>x.classList.add('on'));return}
+ revealObserver=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');revealObserver.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -30px 0px'});
  items.forEach(x=>revealObserver.observe(x))
 };
 
+// Le fond accompagne doucement le défilement, sans animation lourde ni effet de curseur.
+let moodFrame=0;
+const syncScrollMood=()=>{
+ if(moodFrame)return;
+ moodFrame=requestAnimationFrame(()=>{
+  const maxScroll=Math.max(1,document.documentElement.scrollHeight-innerHeight);
+  const progress=Math.min(1,Math.max(0,scrollY/maxScroll));
+  const drift=progress*8;
+  document.documentElement.style.setProperty('--scroll-x',`${46+drift}%`);
+  document.documentElement.style.setProperty('--scroll-y',`${46+drift}%`);
+  moodFrame=0;
+ });
+};
+addEventListener('scroll',syncScrollMood,{passive:true});
+addEventListener('resize',syncScrollMood);
+
 async function route(preserveScroll=false){
  const currentScroll=scrollY;
- const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');
- const key=p||'home';
- document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');
- $('#nav').classList.remove('open');
+ const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
+ document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
  if(key==='admin')await admin();
- else{
-  $('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();
-  if(SV[key])booking(key);
-  if(key==='home')setupReviews()
- }
- if(key==='home'){
-  const hero=$('#app .hero');
-  if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))
- }
- foot();
- rv();
- if(anchor)document.getElementById(anchor)?.scrollIntoView();
- else scrollTo(0,preserveScroll?currentScroll:0)
+ else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews();if(key==='clubs')setupClubTabs()}
+ if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
+ foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,preserveScroll?currentScroll:0);syncScrollMood();
 }
-
-document.addEventListener('click',e=>{
- const a=e.target.closest('[data-resa]');
- if(a){
-  const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];
-  if(key){
-   e.preventDefault();
-   document.getElementById('resa')?.scrollIntoView()
-  }
- }
-});
-
-$('.burger').onclick=e=>{
- const n=$('#nav');
- n.classList.toggle('open');
- e.target.setAttribute('aria-expanded',n.classList.contains('open'))
-};
-
+document.addEventListener('click',e=>{const a=e.target.closest('[data-resa]');if(a){const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];if(key){e.preventDefault();document.getElementById('resa')?.scrollIntoView()}}});
+$('.burger').onclick=e=>{const n=$('#nav');n.classList.toggle('open');e.target.setAttribute('aria-expanded',n.classList.contains('open'))};
 if(!live)$('#banner').innerHTML='<div class="warn">Mode aperçu : Supabase n’est pas connecté. Les contenus affichés sont ceux par défaut et les réservations sont désactivées.</div>';
-
 addEventListener('hashchange',route);
-
 // Affiche le site tout de suite, même si Supabase répond lentement.
 route();
 loadData().then(()=>route(true));
