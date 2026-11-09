@@ -11,20 +11,20 @@ const DUR='Séance de référence : 1 h 15 de séance effective, suivie d’un d
 const TBC='[À compléter]';
 
 const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenus)
-'brand':'[Nom de l’activité à définir]',
-'home.title':'Préparer le corps, l’esprit et le geste.',
-'home.lead':'Préparation physique, préparation mentale et coaching de basket, en individuel ou en petit groupe. Un accompagnement construit autour de votre niveau et de vos objectifs.',
-'home.about':'Je termine un Master EOPS à l’Université de Lille, en alternance au sein du club de la Patriote de Templeuve. J’y entraîne les U18F Région et j’assiste les U18 France. J’interviens aussi à l’école de basket.\n\n[Phrase personnelle sur ma façon d’accompagner à rédiger]',
+'brand':'BET ON YOU',
+'home.title':'Le Meilleur choix ? Investir sur soi-même',
+'home.lead':'Tu veux miser sur toi ? Je t’accompagne en préparation physique, mentale, en nutrition et en coaching basket. Clubs et entreprises : des formations et interventions sur mesure autour de la performance, de la cohésion et du bien-être.',
+'home.about':'Étudiant en Master EOPS (Optimisation de la performance sportive), je suis passionné par les nouvelles méthodes d’entraînement pour vous faire progresser et vous apprendre à vous entraîner en autonomie.\n\nEntraîneur de basket auprès de jeunes de haut niveau, j’adore transmettre ma passion, mon savoir et mes compétences pour vous faire progresser, humainement et sportivement.\n\nPréparateur physique et mental diplômé, je suis également formé en réathlétisation du sportif pour accompagner au mieux votre retour à la pratique, physiquement et mentalement.\n\nLe bien-être physique et mental ne s’arrête pas aux clubs sportifs : j’interviens aussi en entreprise pour faire découvrir, pratiquer et former vos équipes, afin qu’elles se sentent mieux dans leur corps et leur esprit et travaillent dans de meilleures conditions.',
 'phys.intro':'Un travail physique structuré, pensé pour le sport pratiqué et le profil de chaque athlète.',
 'phys.vision':'[Vision et méthodologie à détailler]',
 'phys.needs':'[Besoins et objectifs concernés à détailler]',
 'phys.testing':'[Moyens d’évaluation et de testing à préciser]',
-'phys.nutrition':'L’accompagnement nutritionnel peut compléter le travail physique.\n\n[Place et contenu de l’accompagnement nutritionnel à préciser]',
+'phys.nutrition':'En complément de ton entraînement, je t’apporte des conseils en nutrition générale et sportive, ainsi qu’en hydratation à l’effort. L’objectif : adapter tes habitudes aux exigences de ta pratique.',
 'ment.intro':'Un accompagnement individuel pour travailler la confiance, la concentration et la gestion de la pression.',
 'ment.vision':'[Vision et méthodologie à détailler]',
 'ment.goals':'[Objectifs possibles et déroulement général à préciser]',
 'ment.format':'Les séances sont individuelles.\n\n[Détails des formats à préciser]',
-'bask.intro':'Du joueur débutant à celle ou celui qui vise une progression importante, par exemple une entrée au CREPS : un coaching adapté au niveau, aux objectifs et au profil.',
+'bask.intro':'Que tu sois débutant ou confirmé, que tu prépares des sélections ou que tu joues pour le plaisir d’apprendre, je t’accompagne avec des repères clairs, des conseils adaptés et une exigence nourrie par mon expérience et mes formations.',
 'bask.fund':'Travail des fondamentaux individuels : maniement, appuis, finitions, lecture de jeu.\n\n[Contenu à détailler]',
 'bask.shoot':'Développement technique et gestuelle de tir, avec un suivi progressif.\n\n[Contenu à détailler]',
 'bask.levels':'Chaque séance s’adapte au niveau, aux objectifs et au profil du joueur ou de la joueuse.',
@@ -37,7 +37,7 @@ const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenu
 'clubs.duration':'La durée de chaque intervention s’adapte à votre besoin : d’une heure à une demi-journée.',
 'clubs.pricing':'Le tarif varie selon le contenu, la durée et le public concerné. Une proposition personnalisée est établie après échange sur votre mission.',
 'loyalty':'Des avantages fidélité peuvent être proposés aux clients réguliers. Ils ne se cumulent pas automatiquement avec les tarifs de groupe ou les packs.',
-'about.text':'Je suis en deuxième année de Master EOPS à l’Université de Lille, en alternance à la Patriote de Templeuve : coach principal des U18F Région, assistant auprès des U18 France, et intervenant à l’école de basket.\n\nFormations : Brevet fédéral jeune en basket ; DETB en cours (trois évaluations sur quatre validées, diplôme non encore obtenu) ; AUEC en réathlétisation du sportif.\n\n[Texte de présentation personnelle à compléter]',
+'about.text':'Je suis en deuxième année de Master EOPS à l’Université de Lille, en alternance à la Patriote de Templeuve : coach principal des U18F Région, assistant auprès des U18 France et intervenant à l’école de basket.\n\nFormations : Brevet fédéral jeunes en basket ; DETB en cours (trois évaluations sur quatre validées) ; AUEC en réathlétisation du sportif.',
 'about.vision':'[Ma vision de l’accompagnement à rédiger]',
 'contact.email':'[E-mail à compléter]','contact.phone':'[Téléphone à compléter]','contact.zone':'[Adresse et zones d’intervention à compléter]','contact.social':'[Liens réseaux sociaux à compléter]',
 'pay.text':'[Modalités de paiement, d’annulation et de remboursement à définir]',
@@ -241,7 +241,7 @@ async function route(preserveScroll=false){
  if(key==='admin')await admin();
  else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews();if(key==='clubs')setupClubTabs()}
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
- foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,preserveScroll?currentScroll:0);syncScrollMood();
+ foot();rv();document.documentElement.classList.add('js-ready');if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,preserveScroll?currentScroll:0);syncScrollMood();
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-resa]');if(a){const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];if(key){e.preventDefault();document.getElementById('resa')?.scrollIntoView()}}});
 $('.burger').onclick=e=>{const n=$('#nav');n.classList.toggle('open');e.target.setAttribute('aria-expanded',n.classList.contains('open'))};
