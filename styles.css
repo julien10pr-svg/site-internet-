@@ -9,6 +9,9 @@
   --hfg: #fff;
   --r: 10px;
   --section-space: clamp(2.75rem, 5vw, 4rem);
+  --glow-one: rgba(242, 106, 27, 0.12);
+  --glow-two: rgba(43, 108, 240, 0.10);
+  --glow-three: rgba(36, 75, 56, 0.10);
 }
 
 body[data-t="physique"] {
@@ -16,6 +19,9 @@ body[data-t="physique"] {
   --b: #d6282b;
   --hbg: linear-gradient(180deg, #fff0e5 0%, #fff7f2 52%, #fff 100%);
   --hfg: #512a18;
+  --glow-one: rgba(242, 106, 27, 0.16);
+  --glow-two: rgba(214, 40, 43, 0.09);
+  --glow-three: rgba(242, 106, 27, 0.06);
 }
 
 body[data-t="mentale"] {
@@ -23,6 +29,9 @@ body[data-t="mentale"] {
   --b: #fff;
   --hbg: linear-gradient(180deg, #eaf1ff 0%, #f5f8ff 52%, #fff 100%);
   --hfg: #0f2a66;
+  --glow-one: rgba(43, 108, 240, 0.15);
+  --glow-two: rgba(103, 154, 255, 0.09);
+  --glow-three: rgba(43, 108, 240, 0.05);
 }
 
 body[data-t="basket"] {
@@ -30,6 +39,9 @@ body[data-t="basket"] {
   --b: #111;
   --hbg: linear-gradient(180deg, #f3eee5 0%, #faf8f3 52%, #fff 100%);
   --hfg: #302a20;
+  --glow-one: rgba(184, 137, 67, 0.12);
+  --glow-two: rgba(20, 23, 28, 0.06);
+  --glow-three: rgba(184, 137, 67, 0.05);
 }
 
 body[data-t="clubs"] {
@@ -37,6 +49,9 @@ body[data-t="clubs"] {
   --b: #dce7df;
   --hbg: linear-gradient(180deg, #e5efe7 0%, #f3f8f4 52%, #fff 100%);
   --hfg: #203d30;
+  --glow-one: rgba(36, 75, 56, 0.14);
+  --glow-two: rgba(117, 157, 126, 0.09);
+  --glow-three: rgba(36, 75, 56, 0.05);
 }
 
 body[data-t="home"] {
@@ -60,19 +75,20 @@ body {
   font: 17px/1.7 "Hanken Grotesk", system-ui, sans-serif;
 }
 
-/* Halo de couleurs animé, visible sans passer devant le contenu. */
+/* Halo de couleurs discret, dont la teinte suit la page et le défilement. */
 body::before {
   position: fixed;
   z-index: -1;
   inset: -12%;
   background:
-    radial-gradient(ellipse at 14% 20%, rgba(242, 106, 27, 0.14), transparent 38%),
-    radial-gradient(ellipse at 83% 28%, rgba(43, 108, 240, 0.12), transparent 40%),
-    radial-gradient(ellipse at 62% 88%, rgba(36, 75, 56, 0.13), transparent 42%);
-  background-size: 145% 145%;
+    radial-gradient(ellipse at 14% 20%, var(--glow-one), transparent 38%),
+    radial-gradient(ellipse at 83% 28%, var(--glow-two), transparent 40%),
+    radial-gradient(ellipse at 62% 88%, var(--glow-three), transparent 42%);
+  background-position: var(--scroll-x, 50%) var(--scroll-y, 50%);
+  background-size: 155% 155%;
   content: "";
   pointer-events: none;
-  animation: background-drift 18s ease-in-out infinite alternate;
+  will-change: background-position;
 }
 
 @keyframes background-drift {
@@ -326,7 +342,7 @@ mark.tbd {
   }
 
   50% {
-    transform: translateY(0) scale(1.055);
+    transform: translateY(0) scale(1.07);
   }
 }
 
@@ -363,7 +379,7 @@ mark.tbd {
   align-items: stretch;
   gap: clamp(0.45rem, 0.8vw, 0.75rem);
   padding: 0 clamp(0.45rem, 0.8vw, 0.75rem);
-  transition: grid-template-columns 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: grid-template-columns 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .panel {
@@ -379,10 +395,10 @@ mark.tbd {
   text-align: center;
   text-decoration: none;
   transition:
-    opacity 0.8s ease,
-    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.8s ease,
-    filter 0.8s ease;
+    opacity 0.75s ease,
+    transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.85s ease,
+    filter 0.75s ease;
 }
 
 @media (hover: hover) {
@@ -394,8 +410,8 @@ mark.tbd {
   .panel:hover,
   .panel:focus-visible {
     z-index: 1;
-    transform: translateY(-2px) scale(1.025);
-    box-shadow: 0 14px 30px rgba(20, 23, 28, 0.12);
+    transform: translateY(-3px) scale(1.035);
+    box-shadow: 0 18px 38px rgba(20, 23, 28, 0.16);
   }
 
   .panels:has(.panel:nth-child(1):hover) {
@@ -490,6 +506,62 @@ body[data-t="clubs"] section.wrap.clubs-offers {
   color: #244b38;
 }
 
+.clubs-choices {
+  padding-top: clamp(2.75rem, 5vw, 4rem) !important;
+  padding-bottom: clamp(2rem, 4vw, 3rem) !important;
+}
+
+.clubs-switch {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 1.25rem auto 2rem;
+}
+
+.clubs-switch button {
+  min-width: 10rem;
+  padding: 0.7em 1.25em;
+  border: 1px solid #b8c9bc;
+  border-radius: 999px;
+  background: #fff;
+  color: #244b38;
+  font: 700 1rem "Hanken Grotesk", sans-serif;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.clubs-switch button:hover {
+  transform: translateY(-1px);
+}
+
+.clubs-switch button[aria-selected="true"] {
+  border-color: #244b38;
+  background: #244b38;
+  color: #fff;
+}
+
+.clubs-panel[hidden] {
+  display: none;
+}
+
+.clubs-panel > h2 {
+  margin: 0 auto 1.5rem;
+  color: #244b38;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.clubs-panel .grid {
+  align-items: stretch;
+}
+
+.admin .content-group-title {
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 2px solid #d6e0d7;
+  color: #244b38;
+}
+
 .shero {
   padding: clamp(4.5rem, 9vw, 7rem) 0 clamp(4rem, 7vw, 5.5rem);
   background: var(--hbg);
@@ -566,14 +638,19 @@ body[data-t="basket"] .shero h1 span {
 .sec2::before {
   position: absolute;
   top: 0;
-  right: calc((100vw - 100%) / -2);
-  left: calc((100vw - 100%) / -2);
-  height: 2px;
+  left: 50%;
+  width: 100vw;
+  height: 3px;
+  transform: translateX(-50%);
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--a) 62%, transparent) 0%,
-    color-mix(in srgb, var(--a) 12%, transparent) 50%,
-    color-mix(in srgb, var(--a) 62%, transparent) 100%
+    color-mix(in srgb, var(--a) 90%, transparent) 0%,
+    color-mix(in srgb, var(--a) 72%, transparent) 10%,
+    color-mix(in srgb, var(--a) 24%, transparent) 36%,
+    color-mix(in srgb, var(--a) 14%, transparent) 50%,
+    color-mix(in srgb, var(--a) 24%, transparent) 64%,
+    color-mix(in srgb, var(--a) 72%, transparent) 90%,
+    color-mix(in srgb, var(--a) 90%, transparent) 100%
   );
   content: "";
 }
@@ -1076,6 +1153,12 @@ th {
     font-size: clamp(2rem, 8.5vw, 3.2rem);
   }
 
+  @keyframes title-breathe {
+    0%,
+    100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(0) scale(1.035); }
+  }
+
   .home-title-break {
     display: block;
   }
@@ -1121,4 +1204,5 @@ th {
   .hero.home-enter .row {
     animation: rise-in 0.35s ease-out both !important;
   }
+
 }
