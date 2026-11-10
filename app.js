@@ -60,35 +60,45 @@ mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['V
 basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}};
 
 const TIMELINE=[
- {year:'2020',tone:'physique',chapter:'Les premiers repères',events:[
-  {label:'FORMATION',title:'BAFA',detail:'Perfectionnement assistant sanitaire'},
-  {label:'SECOURISME',title:'PSC1',detail:'Premiers gestes de secours'}
+ {year:'2026–2027',tone:'clubs',chapter:'Master 2 et nouvelles missions',events:[
+  {label:'FORMATION',title:'Master 2 EOPS',detail:'Optimisation de la performance sportive — en cours'},
+  {label:'ENCADREMENT',title:'U18 France et U18 Région R1',detail:'Assistant U18 France et entraîneur U18 Région R1 à la Patriote de Templeuve'},
+  {label:'COACHING EN CLUB',title:'École de basket',detail:'Coaching au sein de mon club, la Patriote de Templeuve'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'},
+  {label:'PRÉPARATION PHYSIQUE',title:'Préparation physique',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'PRÉPARATION MENTALE',title:'Préparation mentale',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'NUTRITION',title:'Nutrition et hydratation',detail:'Conseils en nutrition du sportif et hydratation de l’effort'}
  ]},
- {year:'Juin 2021',tone:'mentale',chapter:'Un premier diplôme',events:[
-  {label:'DIPLÔME',title:'Baccalauréat scientifique',detail:'Obtention du bac scientifique'}
- ]},
- {year:'2022–2023',tone:'basket',chapter:'Les débuts sur le terrain',events:[
-  {label:'COACHING',title:'Première saison à Roncq',detail:'Coaching de l’équipe U13 garçons'},
-  {label:'FORMATION',title:'Brevet fédéral adulte',detail:'Validation du brevet fédéral de basket adulte'}
- ]},
- {year:'2023–2024',tone:'clubs',chapter:'Premières expériences régionales',events:[
-  {label:'ENCADREMENT',title:'U15 filles Région',detail:'Entraîneur à Roncq'},
-  {label:'SÉLECTION',title:'U11 garçons · Terrien Sud',detail:'Participation à la sélection'}
+ {year:'2025–2026',tone:'basket',chapter:'Master 1 et nouvelles responsabilités',events:[
+  {label:'FORMATION',title:'Master 1 EOPS obtenu',detail:'Optimisation de la performance sportive — Université de Lille'},
+  {label:'ENCADREMENT',title:'U18 France et U18 Région R1',detail:'Assistant U18 France et entraîneur U18 Région R1 à la Patriote de Templeuve'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'},
+  {label:'PRÉPARATION PHYSIQUE',title:'Préparation physique',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'PRÉPARATION MENTALE',title:'Préparation mentale',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'SPÉCIALISATION',title:'Réathlétisation du sportif',detail:'Formation AUEC en juin 2026'}
  ]},
  {year:'2024–2025',tone:'physique',chapter:'Une saison qui s’intensifie',events:[
   {label:'ENCADREMENT',title:'U15F et U18F Région',detail:'Entraîneur à Roncq'},
   {label:'SÉLECTION',title:'U11 garçons · Terrien Sud',detail:'Encadrement de la sélection'},
   {label:'UNIVERSITAIRE',title:'Championnat de France universitaire',detail:'Coach de l’équipe de basket de l’Université de Lille'},
   {label:'FORMATION',title:'DETB · 3 modules sur 4',detail:'Modules validés en mai 2025'},
-  {label:'DIPLÔME',title:'Licence STAPS · mention Bien',detail:'Diplôme obtenu en juin 2025'}
+  {label:'DIPLÔME',title:'Licence STAPS · mention Bien',detail:'Diplôme obtenu en juin 2025'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'}
  ]},
- {year:'2025–2026',tone:'basket',chapter:'De nouvelles responsabilités',events:[
-  {label:'ENCADREMENT',title:'U18 France et U18 Région R1',detail:'Assistant U18 France et entraîneur à la Patriote de Templeuve'},
-  {label:'SPÉCIALISATION',title:'Réathlétisation du sportif',detail:'Formation AUEC en juin 2026'}
+ {year:'2023–2024',tone:'clubs',chapter:'Premières expériences régionales',events:[
+  {label:'ENCADREMENT',title:'U15 filles Région',detail:'Entraîneur à Roncq'},
+  {label:'SÉLECTION',title:'U11 garçons · Terrien Sud',detail:'Participation à la sélection'}
  ]},
- {year:'2026–2027',tone:'clubs',chapter:'La suite à Templeuve',events:[
-  {label:'ENCADREMENT',title:'U18 France · U18 Région R1',detail:'Assistant U18 France et entraîneur U18 Région R1'},
-  {label:'TRANSMISSION',title:'École de basket',detail:'Intervenant à la Patriote de Templeuve'}
+ {year:'2022–2023',tone:'basket',chapter:'Les débuts sur le terrain',events:[
+  {label:'COACHING',title:'Première saison à Roncq',detail:'Coaching de l’équipe U13 garçons'},
+  {label:'FORMATION',title:'Brevet fédéral adulte',detail:'Validation du brevet fédéral de basket adulte'}
+ ]},
+ {year:'Juin 2021',tone:'mentale',chapter:'Un premier diplôme',events:[
+  {label:'DIPLÔME',title:'Baccalauréat scientifique',detail:'Obtention du bac scientifique'}
+ ]},
+ {year:'2020',tone:'physique',chapter:'Les premiers repères',events:[
+  {label:'FORMATION',title:'BAFA',detail:'Perfectionnement assistant sanitaire'},
+  {label:'SECOURISME',title:'PSC1',detail:'Premiers gestes de secours'}
  ]}
 ];
 
