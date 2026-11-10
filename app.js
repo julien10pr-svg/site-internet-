@@ -11,20 +11,20 @@ const DUR='Séance de référence : 1 h 15 de séance effective, suivie d’un d
 const TBC='[À compléter]';
 
 const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenus)
-'brand':'BET ON YOU',
-'home.title':'Le Meilleur choix ? Investir sur soi-même',
-'home.lead':'Tu veux miser sur toi ? Je t’accompagne en préparation physique, mentale, en nutrition et en coaching basket. Clubs et entreprises : des formations et interventions sur mesure autour de la performance, de la cohésion et du bien-être.',
-'home.about':'Étudiant en Master EOPS (Optimisation de la performance sportive), je suis passionné par les nouvelles méthodes d’entraînement pour vous faire progresser et vous apprendre à vous entraîner en autonomie.\n\nEntraîneur de basket auprès de jeunes de haut niveau, j’adore transmettre ma passion, mon savoir et mes compétences pour vous faire progresser, humainement et sportivement.\n\nPréparateur physique et mental diplômé, je suis également formé en réathlétisation du sportif pour accompagner au mieux votre retour à la pratique, physiquement et mentalement.\n\nLe bien-être physique et mental ne s’arrête pas aux clubs sportifs : j’interviens aussi en entreprise pour faire découvrir, pratiquer et former vos équipes, afin qu’elles se sentent mieux dans leur corps et leur esprit et travaillent dans de meilleures conditions.',
+'brand':'[Nom de l’activité à définir]',
+'home.title':'Préparer le corps, l’esprit et le geste.',
+'home.lead':'Préparation physique, préparation mentale et coaching de basket, en individuel ou en petit groupe. Un accompagnement construit autour de votre niveau et de vos objectifs.',
+'home.about':'Je termine un Master EOPS à l’Université de Lille, en alternance au sein du club de la Patriote de Templeuve. J’y entraîne les U18F Région et j’assiste les U18 France. J’interviens aussi à l’école de basket.\n\n[Phrase personnelle sur ma façon d’accompagner à rédiger]',
 'phys.intro':'Un travail physique structuré, pensé pour le sport pratiqué et le profil de chaque athlète.',
 'phys.vision':'[Vision et méthodologie à détailler]',
 'phys.needs':'[Besoins et objectifs concernés à détailler]',
 'phys.testing':'[Moyens d’évaluation et de testing à préciser]',
-'phys.nutrition':'En complément de ton entraînement, je t’apporte des conseils en nutrition générale et sportive, ainsi qu’en hydratation à l’effort. L’objectif : adapter tes habitudes aux exigences de ta pratique.',
+'phys.nutrition':'L’accompagnement nutritionnel peut compléter le travail physique.\n\n[Place et contenu de l’accompagnement nutritionnel à préciser]',
 'ment.intro':'Un accompagnement individuel pour travailler la confiance, la concentration et la gestion de la pression.',
 'ment.vision':'[Vision et méthodologie à détailler]',
 'ment.goals':'[Objectifs possibles et déroulement général à préciser]',
 'ment.format':'Les séances sont individuelles.\n\n[Détails des formats à préciser]',
-'bask.intro':'Que tu sois débutant ou confirmé, que tu prépares des sélections ou que tu joues pour le plaisir d’apprendre, je t’accompagne avec des repères clairs, des conseils adaptés et une exigence nourrie par mon expérience et mes formations.',
+'bask.intro':'Du joueur débutant à celle ou celui qui vise une progression importante, par exemple une entrée au CREPS : un coaching adapté au niveau, aux objectifs et au profil.',
 'bask.fund':'Travail des fondamentaux individuels : maniement, appuis, finitions, lecture de jeu.\n\n[Contenu à détailler]',
 'bask.shoot':'Développement technique et gestuelle de tir, avec un suivi progressif.\n\n[Contenu à détailler]',
 'bask.levels':'Chaque séance s’adapte au niveau, aux objectifs et au profil du joueur ou de la joueuse.',
@@ -37,7 +37,7 @@ const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenu
 'clubs.duration':'La durée de chaque intervention s’adapte à votre besoin : d’une heure à une demi-journée.',
 'clubs.pricing':'Le tarif varie selon le contenu, la durée et le public concerné. Une proposition personnalisée est établie après échange sur votre mission.',
 'loyalty':'Des avantages fidélité peuvent être proposés aux clients réguliers. Ils ne se cumulent pas automatiquement avec les tarifs de groupe ou les packs.',
-'about.text':'Je suis en deuxième année de Master EOPS à l’Université de Lille, en alternance à la Patriote de Templeuve : coach principal des U18F Région, assistant auprès des U18 France et intervenant à l’école de basket.\n\nFormations : Brevet fédéral jeunes en basket ; DETB en cours (trois évaluations sur quatre validées) ; AUEC en réathlétisation du sportif.',
+'about.text':'Je suis en deuxième année de Master EOPS à l’Université de Lille, en alternance à la Patriote de Templeuve : coach principal des U18F Région, assistant auprès des U18 France, et intervenant à l’école de basket.\n\nFormations : Brevet fédéral jeune en basket ; DETB en cours (trois évaluations sur quatre validées, diplôme non encore obtenu) ; AUEC en réathlétisation du sportif.\n\n[Texte de présentation personnelle à compléter]',
 'about.vision':'[Ma vision de l’accompagnement à rédiger]',
 'contact.email':'[E-mail à compléter]','contact.phone':'[Téléphone à compléter]','contact.zone':'[Adresse et zones d’intervention à compléter]','contact.social':'[Liens réseaux sociaux à compléter]',
 'pay.text':'[Modalités de paiement, d’annulation et de remboursement à définir]',
@@ -58,6 +58,16 @@ const SV={
 physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</span>',secs:[['Vision et méthodologie','vision'],['Besoins et objectifs','needs'],['Évaluation et testing','testing'],['Nutrition','nutrition']]},
 mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel','format']]},
 basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}};
+
+const TIMELINE=[
+ {year:'2020',tone:'physique',events:['Obtention du BAFA, avec perfectionnement assistant sanitaire.','Obtention du PSC1.']},
+ {year:'Juin 2021',tone:'mentale',events:['Obtention du baccalauréat scientifique.']},
+ {year:'2022–2023',tone:'basket',events:['Première saison de coaching basket, auprès des U13 garçons à Roncq.','Validation du Brevet fédéral adulte basket.']},
+ {year:'2023–2024',tone:'clubs',events:['Entraîneur des U15 filles Région à Roncq.','Sélectionneur des U11 garçons pour Terrien Sud.']},
+ {year:'2024–2025',tone:'physique',events:['Entraîneur des U15 filles Région et des U18 filles Région à Roncq.','Sélection des U11 garçons de Terrien Sud.','Coach de l’équipe de basket de l’Université de Lille en championnat de France universitaire.','Mai 2025 : validation de 3 modules sur 4 du DETB (diplôme d’État territorial de basket).','Juin 2025 : obtention de la licence STAPS, mention Bien.']},
+ {year:'2025–2026',tone:'basket',events:['Assistant auprès des U18 France et entraîneur des U18 Région R1 à la Patriote de Templeuve.','Juin 2026 : formation AUEC en réathlétisation du sportif.']},
+ {year:'2026–2027',tone:'clubs',events:['Assistant auprès des U18 France, entraîneur des U18 Région R1 et intervenant à l’école de basket de la Patriote de Templeuve.']}
+];
 
 let content={...C}, offers=DEF_OFFERS, reviews=[], user=null;
 const t=k=>content[k]??C[k]??'';
@@ -115,6 +125,24 @@ function setupReviews(){
  carousel.querySelector('[data-review-next]').onclick=()=>{index=(index+1)%reviews.length;show()};show();
 }
 
+let timelineFrame=0;
+function updateTimelineProgress(){
+ if(timelineFrame)return;
+ timelineFrame=requestAnimationFrame(()=>{
+  const timeline=$('[data-timeline]');
+  if(timeline){
+   const rect=timeline.getBoundingClientRect();
+   const trigger=innerHeight*.66;
+   const progress=Math.min(1,Math.max(0,(trigger-rect.top)/Math.max(1,rect.height)));
+   timeline.style.setProperty('--timeline-progress',String(progress));
+  }
+  timelineFrame=0;
+ });
+}
+function setupTimeline(){updateTimelineProgress()}
+addEventListener('scroll',updateTimelineProgress,{passive:true});
+addEventListener('resize',updateTimelineProgress);
+
 const pages={
 home(){const homeTitle=esc(t('home.title')).replace(/(Investir sur soi-même)/i,'<span class="home-title-break">$1</span>');return `<section class="hero wrap"><h1>${homeTitle}</h1><p>${esc(t('home.lead'))}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
 <div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2></a></div>
@@ -126,11 +154,11 @@ service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
 <section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}${x.tbc?' <mark class="tbd">[tarif à confirmer]</mark>':''}</p></div>`).join('')}</div>
 <p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
 <section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`},
-about(){return `<div class="shero rv"><div class="wrap"><h1>À propos</h1></div></div><div class="wrap"><section class="rv">${rich(t('about.text'))}<h2>Ma vision</h2>${rich(t('about.vision'))}</section></div>`},
+ about(){return `<div class="shero about-hero rv"><div class="wrap"><p class="timeline-kicker">MON PARCOURS</p><h1>Du premier terrain<br>aux nouveaux projets.</h1><p>Les étapes, les formations et les expériences qui m’ont construit.</p></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline-intro rv"><span class="timeline-eyebrow">ÉTAPE PAR ÉTAPE</span><h2>Une histoire de terrain,<br>d’apprentissage et de transmission.</h2><p>Chaque expérience m’a apporté de nouveaux repères pour accompagner les joueurs, les joueuses et les équipes.</p></div><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone}" style="--step:${index}"><div class="timeline-node" aria-hidden="true"><span>${String(index+1).padStart(2,'0')}</span></div><div class="timeline-card"><p class="timeline-year">${esc(item.year)}</p><ul>${item.events.map(event=>`<li>${esc(event)}</li>`).join('')}</ul></div></article>`).join('')}</div><div class="timeline-end rv"><span class="timeline-end-mark" aria-hidden="true">✦</span><p>La suite s’écrit sur le terrain.</p></div></section>`},
 clubs(){return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
 <section class="wrap rv clubs-choices"><h2>Choisissez votre accompagnement</h2><div class="clubs-switch" role="tablist" aria-label="Type d’intervention"><button type="button" role="tab" id="clubs-tab-sport" aria-controls="clubs-panel-sport" aria-selected="true" data-club-tab="sport">Club sportif</button><button type="button" role="tab" id="clubs-tab-company" aria-controls="clubs-panel-company" aria-selected="false" data-club-tab="company" tabindex="-1">Entreprise</button></div>
 <div class="clubs-panel is-active" role="tabpanel" id="clubs-panel-sport" aria-labelledby="clubs-tab-sport" data-club-panel="sport"><h2>Interventions pour les clubs sportifs</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article></div></div>
-<div class="clubs-panel" role="tabpanel" id="clubs-panel-company" aria-labelledby="clubs-tab-company" data-club-panel="company" hidden><h2>Interventions en entreprise</h2><div class="grid"><article class="box"><h3>Équipes et collaborateurs</h3>${rich(t('clubs.companies'))}</article></div></div></section>
+<div class="clubs-panel" role="tabpanel" id="clubs-panel-company" aria-labelledby="clubs-tab-company" data-club-panel="company" hidden><h2>Interventions en entreprise</h2><div class="grid"><article class="box"><h3>Équipes et collaborateurs</h3>${rich(t('clubs.companies'))}</div></div></section>
 <section class="wrap rv clubs-offers"><h2>Modalités et tarifs</h2><div class="grid"><article class="box"><h3>Fréquence des interventions</h3>${rich(t('clubs.frequency'))}</article><article class="box"><h3>Durée d’une intervention</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>Tarification</h3>${rich(t('clubs.pricing'))}</article></div></section>`},
 contact(){return `<div class="shero rv"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`},
 faq(){return `<div class="shero rv"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`},
@@ -239,9 +267,9 @@ async function route(preserveScroll=false){
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
  document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');$('#nav').classList.remove('open');
  if(key==='admin')await admin();
- else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews();if(key==='clubs')setupClubTabs()}
+ else{$('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();if(SV[key])booking(key);if(key==='home')setupReviews();if(key==='clubs')setupClubTabs();if(key==='a-propos')setupTimeline()}
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
- foot();rv();document.documentElement.classList.add('js-ready');if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,preserveScroll?currentScroll:0);syncScrollMood();
+ foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else scrollTo(0,preserveScroll?currentScroll:0);syncScrollMood();
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-resa]');if(a){const key=location.hash.match(/#\/(physique|mentale|basket)/)?.[1];if(key){e.preventDefault();document.getElementById('resa')?.scrollIntoView()}}});
 $('.burger').onclick=e=>{const n=$('#nav');n.classList.toggle('open');e.target.setAttribute('aria-expanded',n.classList.contains('open'))};
