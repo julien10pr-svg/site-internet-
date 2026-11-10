@@ -75,7 +75,7 @@ body {
   font: 17px/1.7 "Hanken Grotesk", system-ui, sans-serif;
 }
 
-/* Halo de couleurs animÃ©, visible sans passer devant le contenu. */
+/* Halo de couleurs animé, visible sans passer devant le contenu. */
 body::before {
   position: fixed;
   z-index: -1;
@@ -846,7 +846,7 @@ th {
   overflow-x: auto;
 }
 
-/* Apparition progressive des sections publiques au dÃ©filement */
+/* Apparition progressive des sections publiques au défilement */
 .rv {
   opacity: 0;
   transform: translateY(24px);
@@ -860,7 +860,7 @@ th {
   transform: translateY(0);
 }
 
-/* Avis : une bulle visible Ã  la fois, avec une pointe faÃ§on bande dessinÃ©e */
+/* Avis : une bulle visible à la fois, avec une pointe façon bande dessinée */
 .reviews-section {
   padding-top: clamp(2.5rem, 5vw, 4rem);
   padding-bottom: clamp(3rem, 6vw, 5rem);
@@ -999,7 +999,7 @@ th {
   font-size: 0.9rem;
 }
 
-/* Lâ€™espace admin conserve une mise en page pratique et lisible */
+/* L’espace admin conserve une mise en page pratique et lisible */
 #app .wrap.admin {
   text-align: left;
 }
@@ -1207,7 +1207,7 @@ th {
 
 }
 
-/* Frise chronologique du parcours â€” les jalons sâ€™activent au dÃ©filement. */
+/* Frise chronologique du parcours — les jalons s’activent au défilement. */
 .about-hero {
   position: relative;
   overflow: hidden;
