@@ -119,7 +119,6 @@ body:not(.is-ready) footer {
   visibility: hidden;
 }
 
-/* Halo de couleurs animé, visible sans passer devant le contenu. */
 body::before {
   position: fixed;
   z-index: -1;
@@ -703,13 +702,13 @@ body[data-t="basket"] .shero h1 span {
   transform: translateX(-50%);
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--a) 90%, transparent) 0%,
-    color-mix(in srgb, var(--a) 72%, transparent) 10%,
-    color-mix(in srgb, var(--a) 24%, transparent) 36%,
-    color-mix(in srgb, var(--a) 14%, transparent) 50%,
-    color-mix(in srgb, var(--a) 24%, transparent) 64%,
-    color-mix(in srgb, var(--a) 72%, transparent) 90%,
-    color-mix(in srgb, var(--a) 90%, transparent) 100%
+    color-mix(in srgb, var(--a) 38%, transparent) 0%,
+    color-mix(in srgb, var(--a) 30%, transparent) 10%,
+    color-mix(in srgb, var(--a) 15%, transparent) 36%,
+    color-mix(in srgb, var(--a) 8%, transparent) 50%,
+    color-mix(in srgb, var(--a) 15%, transparent) 64%,
+    color-mix(in srgb, var(--a) 30%, transparent) 90%,
+    color-mix(in srgb, var(--a) 38%, transparent) 100%
   );
   content: "";
 }
@@ -905,7 +904,6 @@ th {
   overflow-x: auto;
 }
 
-/* Apparition progressive des sections publiques au défilement */
 .rv {
   opacity: 0;
   transform: translateY(24px);
@@ -919,7 +917,6 @@ th {
   transform: translateY(0);
 }
 
-/* Avis : une bulle visible à la fois, avec une pointe façon bande dessinée */
 .reviews-section {
   padding-top: clamp(2.5rem, 5vw, 4rem);
   padding-bottom: clamp(3rem, 6vw, 5rem);
@@ -1058,7 +1055,6 @@ th {
   font-size: 0.9rem;
 }
 
-/* L’espace admin conserve une mise en page pratique et lisible */
 #app .wrap.admin {
   text-align: left;
 }
@@ -1263,7 +1259,6 @@ th {
   .hero.home-enter .row {
     animation: rise-in 0.35s ease-out both !important;
   }
-
 }
 
 .about-hero {
@@ -1571,7 +1566,6 @@ th {
   }
 }
 
-/* Sélecteur d’accompagnement ouvert par le bouton Réserver hors d’une page de prestation. */
 .reservation-chooser-backdrop {
   position: fixed;
   z-index: 1000;
@@ -1701,6 +1695,14 @@ th {
     position: sticky;
     z-index: 50;
     min-height: 64px;
+  }
+
+  .top .brand {
+    position: absolute;
+    left: 50%;
+    width: calc(100% - 120px);
+    transform: translateX(-50%);
+    text-align: center;
   }
 
   .burger {
