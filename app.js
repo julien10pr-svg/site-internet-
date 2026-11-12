@@ -1,110 +1,259 @@
-257
-258
-259
-260
-261
-262
-263
-264
-265
-266
-267
-268
-269
-270
-271
-272
-273
-274
-275
-276
-277
-278
-279
-280
-281
-282
-283
-284
-285
-286
-287
-288
-289
-290
-291
-292
-293
-294
-295
-296
-297
-298
-299
-300
-301
-302
-303
-304
-305
-306
-307
-308
-309
-310
-311
-312
-313
-314
-315
-316
-317
-318
-319
-320
-321
-322
-323
-324
-325
-326
-327
-328
-329
-330
-331
-332
-333
-334
-335
-336
-337
-338
-339
-340
-341
-342
-343
-344
-345
-346
-347
-348
-349
-350
-351
-352
-353
-354
-355
-356
-357
-358
-359
-360
-361
-362
-363
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+const cfg=window.SITE_CONFIG||{}, live=!!(cfg.supabaseUrl&&cfg.supabaseAnonKey);
+const sb=live?createClient(cfg.supabaseUrl,cfg.supabaseAnonKey):null;
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tbd=s=>esc(s).replace(/\[[^\]]+\]/g,m=>`<mark class="tbd">${m}</mark>`);
+const rich=s=>String(s??'').split(/\n\n+/).map(p=>`<p style="margin:0 auto 1.35em;line-height:1.75">${tbd(p).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}</p>`).join('');
+const eur=c=>(c/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:c%100?2:0});
+const fmt=d=>new Date(d).toLocaleString('fr-FR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Paris'});
+const DUR='Séance de référence : 1 h 15 de séance effective, suivie d’un débriefing et de conseils.';
+const TBC='[À compléter]';
+
+const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenus)
+'brand':'[Nom de l’activité à définir]',
+'home.title':'Préparer le corps, l’esprit et le geste.',
+'home.lead':'Tu veux miser sur toi ? Je t’accompagne en préparation physique, mentale, en nutrition et en coaching basket. Clubs et entreprises : des formations et interventions sur mesure autour de la performance, de la cohésion et du bien-être.',
+'home.about':'Je termine un Master EOPS à l’Université de Lille, en alternance au sein du club de la Patriote de Templeuve. J’y entraîne les U18F Région et j’assiste les U18 France. J’interviens aussi à l’école de basket.\n\n[Phrase personnelle sur ma façon d’accompagner à rédiger]',
+'phys.intro':'Un travail physique structuré, pensé pour le sport pratiqué et le profil de chaque athlète.',
+'phys.vision':'[Vision et méthodologie à détailler]',
+'phys.needs':'[Besoins et objectifs concernés à détailler]',
+'phys.testing':'[Moyens d’évaluation et de testing à préciser]',
+'phys.nutrition':'L’accompagnement nutritionnel peut compléter le travail physique.\n\n[Place et contenu de l’accompagnement nutritionnel à préciser]',
+'ment.intro':'Un accompagnement individuel pour travailler la confiance, la concentration et la gestion de la pression.',
+'ment.vision':'[Vision et méthodologie à détailler]',
+'ment.goals':'[Objectifs possibles et déroulement général à préciser]',
+'ment.format':'Les séances sont individuelles.\n\n[Détails des formats à préciser]',
+'bask.intro':'Du joueur débutant à celle ou celui qui vise une progression importante, par exemple une entrée au CREPS : un coaching adapté au niveau, aux objectifs et au profil.',
+'bask.fund':'Travail des fondamentaux individuels : maniement, appuis, finitions, lecture de jeu.\n\n[Contenu à détailler]',
+'bask.shoot':'Développement technique et gestuelle de tir, avec un suivi progressif.\n\n[Contenu à détailler]',
+'bask.levels':'Chaque séance s’adapte au niveau, aux objectifs et au profil du joueur ou de la joueuse.',
+'bask.groups':'Les petits groupes sont limités à 4 personnes. Le tarif par personne diminue avec la taille du groupe, et le groupe se réserve ensemble.',
+'clubs.intro':'Des interventions adaptées aux clubs sportifs, quel que soit le sport, et aux entreprises : préparation physique et mentale, formation des staffs, cohésion d’équipe et bien-être.',
+'clubs.players':'Un accompagnement en préparation physique et mentale, construit selon les besoins des joueurs et joueuses, leur discipline et les objectifs du club.',
+'clubs.staff':'Des formations et temps d’échange pour les entraîneurs et les staffs : mieux comprendre les principes de préparation physique et mentale, puis les intégrer dans leur pratique.',
+'clubs.companies':'Des ateliers autour de la cohésion d’équipe, du bien-être et de l’activité physique, adaptés aux besoins de votre entreprise.',
+'clubs.frequency':'Les interventions peuvent être ponctuelles ou s’inscrire dans un accompagnement mensuel, sur un semestre ou sur une année.',
+'clubs.duration':'La durée de chaque intervention s’adapte à votre besoin : d’une heure à une demi-journée.',
+'clubs.pricing':'Le tarif varie selon le contenu, la durée et le public concerné. Une proposition personnalisée est établie après échange sur votre mission.',
+'loyalty':'Des avantages fidélité peuvent être proposés aux clients réguliers. Ils ne se cumulent pas automatiquement avec les tarifs de groupe ou les packs.',
+'about.text':'Je suis en deuxième année de Master EOPS à l’Université de Lille, en alternance à la Patriote de Templeuve : coach principal des U18F Région, assistant auprès des U18 France, et intervenant à l’école de basket.\n\nFormations : Brevet fédéral jeune en basket ; DETB en cours (trois évaluations sur quatre validées, diplôme non encore obtenu) ; AUEC en réathlétisation du sportif.\n\n[Texte de présentation personnelle à compléter]',
+'contact.email':'[E-mail à compléter]','contact.phone':'[Téléphone à compléter]','contact.zone':'[Adresse et zones d’intervention à compléter]','contact.social':'[Liens réseaux sociaux à compléter]',
+'pay.text':'[Modalités de paiement, d’annulation et de remboursement à définir]',
+'legal.text':'[Éditeur : nom, statut, SIRET, adresse, contact à compléter]\n\nHébergeur : Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis.\n\n[Autres mentions légales à compléter]',
+'privacy.text':'Les données saisies lors d’une réservation (identité, e-mail, téléphone, message) servent uniquement à traiter la réservation et à vous contacter. Pour un participant mineur, les coordonnées du représentant légal sont demandées. Les données sont stockées chez Supabase.\n\n[Responsable du traitement, durée de conservation, droits d’accès et de suppression, contact à compléter]',
+'faq.1.q':'Comment réserver ?','faq.1.a':'Choisissez un créneau ouvert sur la page de l’accompagnement, puis renseignez vos informations. [Processus de confirmation à préciser]',
+'faq.2.q':'Quelle est la durée d’une séance ?','faq.2.a':DUR,
+'faq.3.q':'Quelles sont les modalités d’annulation et de paiement ?','faq.3.a':'[À compléter]',
+'faq.4.q':'Les mineurs peuvent-ils réserver ?','faq.4.a':'Oui, avec les coordonnées du représentant légal, demandées lors de la réservation.',
+'video.url':''};
+const DEF_OFFERS=[
+['physique','Séance à l’unité','',5000],['physique','Pack de 5 séances','soit 45 € par séance',22500],['physique','Pack de 10 séances','soit 40 € par séance',40000],
+['mentale','Séance à l’unité','Séance individuelle',5000],['mentale','Pack de 5 séances','soit 40 € par séance',20000],
+['basket','1 personne','30 € par personne',3000],['basket','2 personnes','25 € par personne',5000],['basket','3 personnes','20 € par personne',6000],['basket','4 personnes','17 € par personne',6800,true]
+].map(([service,label,detail,price_cents,tbc])=>({service,label,detail,price_cents,tbc}));
+
+const SV={
+physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</span>',secs:[['Vision et méthodologie','vision'],['Besoins et objectifs','needs'],['Évaluation et testing','testing'],['Nutrition','nutrition']]},
+mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel','format']]},
+basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}};
+
+const TIMELINE=[
+ {year:'2026–2027',tone:'clubs',chapter:'Master 2 et nouvelles missions',events:[
+  {label:'FORMATION',title:'Master 2 EOPS',detail:'Optimisation de la performance sportive — en cours'},
+  {label:'ENCADREMENT',title:'U18 France et U18 Région R1',detail:'Assistant U18 France et entraîneur U18 Région R1 à la Patriote de Templeuve'},
+  {label:'COACHING EN CLUB',title:'École de basket',detail:'Coaching au sein de mon club, la Patriote de Templeuve'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'},
+  {label:'PRÉPARATION PHYSIQUE',title:'Préparation physique',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'PRÉPARATION MENTALE',title:'Préparation mentale',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'NUTRITION',title:'Nutrition et hydratation',detail:'Conseils en nutrition du sportif et hydratation de l’effort'}
+ ]},
+ {year:'2025–2026',tone:'basket',chapter:'Master 1 et nouvelles responsabilités',events:[
+  {label:'FORMATION',title:'Master 1 EOPS obtenu',detail:'Optimisation de la performance sportive — Université de Lille'},
+  {label:'ENCADREMENT',title:'U18 France et U18 Région R1',detail:'Assistant U18 France et entraîneur U18 Région R1 à la Patriote de Templeuve'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'},
+  {label:'PRÉPARATION PHYSIQUE',title:'Préparation physique',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'PRÉPARATION MENTALE',title:'Préparation mentale',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'SPÉCIALISATION',title:'Réathlétisation du sportif',detail:'Formation AUEC en juin 2026'}
+ ]},
+ {year:'2024–2025',tone:'physique',chapter:'Une saison qui s’intensifie',events:[
+  {label:'ENCADREMENT',title:'U15F et U18F Région',detail:'Entraîneur à Roncq'},
+  {label:'SÉLECTION',title:'U11 garçons · Terrien Sud',detail:'Encadrement de la sélection'},
+  {label:'UNIVERSITAIRE',title:'Championnat de France universitaire',detail:'Coach de l’équipe de basket de l’Université de Lille'},
+  {label:'FORMATION',title:'DETB · 3 modules sur 4',detail:'Modules validés en mai 2025'},
+  {label:'DIPLÔME',title:'Licence STAPS · mention Bien',detail:'Diplôme obtenu en juin 2025'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'}
+ ]},
+ {year:'2023–2024',tone:'clubs',chapter:'Premières expériences régionales',events:[
+  {label:'ENCADREMENT',title:'U15 filles Région',detail:'Entraîneur à Roncq'},
+  {label:'SÉLECTION',title:'U11 garçons · Terrien Sud',detail:'Participation à la sélection'}
+ ]},
+ {year:'2022–2023',tone:'basket',chapter:'Les débuts sur le terrain',events:[
+  {label:'COACHING',title:'Première saison à Roncq',detail:'Coaching de l’équipe U13 garçons'},
+  {label:'FORMATION',title:'Brevet fédéral adulte',detail:'Validation du brevet fédéral de basket adulte'}
+ ]},
+ {year:'Juin 2021',tone:'mentale',chapter:'Un premier diplôme',events:[
+  {label:'DIPLÔME',title:'Baccalauréat scientifique',detail:'Obtention du bac scientifique'}
+ ]},
+ {year:'2020',tone:'physique',chapter:'Les premiers repères',events:[
+  {label:'FORMATION',title:'BAFA',detail:'Perfectionnement assistant sanitaire'},
+  {label:'SECOURISME',title:'PSC1',detail:'Premiers gestes de secours'}
+ ]}
+];
+
+let content={...C}, offers=DEF_OFFERS, reviews=[], user=null;
+const t=k=>content[k]??C[k]??'';
+function parseReviews(value){
+ try{
+  const parsed=Array.isArray(value)?value:JSON.parse(value||'[]');
+  return Array.isArray(parsed)?parsed.filter(r=>r&&typeof r.text==='string'&&r.text.trim()).map(r=>({text:r.text.trim(),name:typeof r.name==='string'?r.name.trim():''})):[];
+ }catch{return []}
+}
+async function loadData(){
+ if(!live)return;
+ try{const [c,o]=await Promise.all([sb.from('site_content').select('*'),sb.from('offers').select('*').eq('active',true).order('sort')]);
+ (c.data||[]).forEach(r=>{if(r.key==='reviews.data')reviews=parseReviews(r.value);else content[r.key]=r.value}); if(o.data?.length)offers=o.data;}catch(e){console.error(e)}
+}
+const foot=()=>{$('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;$('#brand').innerHTML=tbd(t('brand'))};
+const video=()=>{const u=t('video.url');let inner='<mark class="tbd">[Vidéo de présentation à ajouter]</mark>';
+ const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
+ return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`};
+const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${tbd(t('contact.phone'))}</p><p>${tbd(t('contact.zone'))}</p><p>${tbd(t('contact.social'))}</p></div>`;
+const reviewsSection=()=>`<section class="wrap rv reviews-section" aria-labelledby="reviews-title"><div class="reviews-heading"><h2 id="reviews-title">Vos avis</h2><p>Les retours d’expérience des personnes accompagnées.</p></div>${reviews.length?`<div class="reviews-carousel" data-reviews-carousel><article class="review-bubble" aria-live="polite"><blockquote><p data-review-text></p><cite data-review-name></cite></blockquote></article><div class="review-controls"><button type="button" data-review-prev aria-label="Avis précédent">←</button><span data-review-count aria-live="polite"></span><button type="button" data-review-next aria-label="Avis suivant">→</button></div></div>`:`<p class="reviews-empty">Les premiers avis seront affichés ici.</p>`}</section>`;
+function setupClubTabs(){
+ const tabs=[...document.querySelectorAll('[data-club-tab]')];
+ const panels=[...document.querySelectorAll('[data-club-panel]')];
+ if(!tabs.length||!panels.length)return;
+ const activate=name=>{
+  tabs.forEach(tab=>{
+   const selected=tab.dataset.clubTab===name;
+   tab.setAttribute('aria-selected',String(selected));
+   tab.tabIndex=selected?0:-1
+  });
+  panels.forEach(panel=>{
+   const selected=panel.dataset.clubPanel===name;
+   panel.hidden=!selected;
+   panel.classList.toggle('is-active',selected)
+  })
+ };
+ tabs.forEach((tab,index)=>{
+  tab.addEventListener('click',()=>activate(tab.dataset.clubTab));
+  tab.addEventListener('keydown',event=>{
+   if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;
+   event.preventDefault();
+   const next=tabs[(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length];
+   next.focus();
+   activate(next.dataset.clubTab)
+  })
+ });
+ activate(tabs.find(tab=>tab.getAttribute('aria-selected')==='true')?.dataset.clubTab||tabs[0].dataset.clubTab)
+}
+
+function setupReviews(){
+ const carousel=$('[data-reviews-carousel]');if(!carousel||!reviews.length)return;
+ let index=0;const quote=carousel.querySelector('[data-review-text]'),name=carousel.querySelector('[data-review-name]'),count=carousel.querySelector('[data-review-count]');
+ const show=()=>{const review=reviews[index];quote.textContent=`« ${review.text} »`;name.textContent=review.name;name.hidden=!review.name;count.textContent=`${index+1} / ${reviews.length}`};
+ carousel.querySelector('[data-review-prev]').onclick=()=>{index=(index-1+reviews.length)%reviews.length;show()};
+ carousel.querySelector('[data-review-next]').onclick=()=>{index=(index+1)%reviews.length;show()};show();
+}
+
+let timelineFrame=0;
+function updateTimelineProgress(){
+ if(timelineFrame)return;
+ timelineFrame=requestAnimationFrame(()=>{
+  const timeline=$('[data-timeline]');
+  if(timeline){
+   const rect=timeline.getBoundingClientRect();
+   const trigger=innerHeight*.66;
+   const progress=Math.min(1,Math.max(0,(trigger-rect.top)/Math.max(1,rect.height)));
+   timeline.style.setProperty('--timeline-progress',String(progress));
+  }
+  timelineFrame=0;
+ });
+}
+function setupTimeline(){updateTimelineProgress()}
+addEventListener('scroll',updateTimelineProgress,{passive:true});
+addEventListener('resize',updateTimelineProgress);
+
+const pages={
+home(){const homeTitle=esc(t('home.title')).replace(/(Investir sur soi-même)/i,'<span class="home-title-break">$1</span>');const homeLead=esc(t('home.lead').replace(/\s+(Clubs et entreprises\s*:)/i,'\n\n$1'));return `<section class="hero wrap"><h1>${homeTitle}</h1><p>${homeLead}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
+<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2></a></div>
+<section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Au fait, c’est qui Julien ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}
+<section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`},
+service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
+ return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
+<div class="wrap">${s.secs.map(([h,k])=>`<div class="sec2 rv"><h2>${h}</h2><div>${rich(t(s.k+'.'+k))}</div></div>`).join('')}
+<section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}</p></div>`).join('')}</div>
+<p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
+<section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`},
+ about(){return `<div class="shero about-hero rv"><div class="wrap"><h1>Mon parcours</h1></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone} ${index%2?'timeline-left':'timeline-right'}" style="--step:${index}" aria-label="${esc(item.year)} — ${esc(item.chapter)}"><div class="timeline-node" aria-hidden="true"></div><div class="timeline-card"><div class="timeline-card-top"><p class="timeline-year">${esc(item.year)}</p></div><div class="timeline-events">${item.events.map((event,eventIndex)=>`<div class="timeline-event" style="--event-step:${eventIndex}"><div class="timeline-event-copy"><span class="timeline-label">${esc(event.label)}</span><h3>${esc(event.title)}</h3><p>${esc(event.detail)}</p></div></div>`).join('')}</div></div></article>`).join('')}</div></section>`},
+clubs(){return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
+<section class="wrap rv clubs-choices"><h2>Choisissez votre accompagnement</h2><div class="clubs-switch" role="tablist" aria-label="Type d’intervention"><button type="button" role="tab" id="clubs-tab-sport" aria-controls="clubs-panel-sport" aria-selected="true" data-club-tab="sport">Club sportif</button><button type="button" role="tab" id="clubs-tab-company" aria-controls="clubs-panel-company" aria-selected="false" data-club-tab="company" tabindex="-1">Entreprise</button></div>
+<div class="clubs-panel is-active" role="tabpanel" id="clubs-panel-sport" aria-labelledby="clubs-tab-sport" data-club-panel="sport"><h2>Interventions pour les clubs sportifs</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article></div></div>
+<div class="clubs-panel" role="tabpanel" id="clubs-panel-company" aria-labelledby="clubs-tab-company" data-club-panel="company" hidden><h2>Interventions en entreprise</h2><div class="grid"><article class="box"><h3>Équipes et collaborateurs</h3>${rich(t('clubs.companies'))}</article></div></div></section>
+<section class="wrap rv clubs-offers"><h2>Modalités et tarifs</h2><div class="grid"><article class="box"><h3>Fréquence des interventions</h3>${rich(t('clubs.frequency'))}</article><article class="box"><h3>Durée d’une intervention</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>Tarification</h3>${rich(t('clubs.pricing'))}</article></div></section>`},
+contact(){return `<div class="shero rv"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`},
+faq(){return `<div class="shero rv"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`},
+mentions(){return `<div class="wrap"><section class="rv"><h1>Mentions légales</h1>${rich(t('legal.text'))}</section></div>`},
+confidentialite(){return `<div class="wrap"><section class="rv"><h1>Confidentialité</h1>${rich(t('privacy.text'))}</section></div>`}};
+
+function booking(id){
+ const box=$('#booking');if(!box)return;
+ if(!live){box.innerHTML='<p class="msg err">Réservation en ligne non connectée : Supabase n’est pas encore configuré (voir README). Aucune réservation ne peut être enregistrée pour le moment.</p>';return}
+ const o=offers.filter(x=>x.service===id&&x.id&&(x.sessions||1)>=1);let slot=null;
+ box.innerHTML='<p>Chargement des créneaux…</p>';
+ sb.rpc('get_open_slots',{p_service:id}).then(({data,error})=>{
+  const list=(data||[]).filter(s=>s.remaining>0);
+  if(error||!list.length){box.innerHTML=`<p>${error?'Créneaux indisponibles pour le moment.':'Aucun créneau ouvert actuellement. Revenez bientôt ou utilisez la page Contact.'}</p>`;return}
+  box.innerHTML=`<div class="slots">${list.map(s=>`<button class="slot" aria-pressed="false" data-id="${s.id}" data-r="${s.remaining}">${fmt(s.starts_at)}<br><small>${s.duration_min} min · ${s.remaining} place${s.remaining>1?'s':''}</small></button>`).join('')}</div>
+  <form id="bf" hidden><label>Offre<select name="offer" required>${o.map(x=>`<option value="${x.id}" data-p="${x.participants}">${esc(x.label)} — ${eur(x.price_cents)}</option>`).join('')}</select></label>
+  <label>Prénom<input name="first" required maxlength="80" autocomplete="given-name"></label><label>Nom<input name="last" required maxlength="80" autocomplete="family-name"></label>
+  <label>E-mail<input name="email" type="email" required autocomplete="email"></label><label>Téléphone (facultatif)<input name="phone" type="tel" autocomplete="tel"></label>
+  <label class="chk"><input type="checkbox" name="minor"> <span>Le participant est mineur</span></label>
+  <div id="g" hidden><label>Représentant légal : nom<input name="gname"></label><label>Représentant légal : e-mail<input name="gemail" type="email"></label></div>
+  <label>Message (facultatif)<textarea name="note" rows="3" maxlength="1000"></textarea></label>
+  <p class="note">La demande est enregistrée avec le statut « en attente ». Aucun paiement en ligne n’est proposé pour l’instant. ${DUR}</p>
+  <button class="btn" style="background:var(--a)">Envoyer la demande</button><div id="res" role="status"></div></form>`;
+  const f=$('#bf');
+  box.querySelectorAll('.slot').forEach(b=>b.onclick=()=>{box.querySelectorAll('.slot').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');slot=b;f.hidden=false;
+   [...f.offer.options].forEach(op=>op.disabled=+op.dataset.p>+b.dataset.r);f.offer.selectedIndex=[...f.offer.options].findIndex(op=>!op.disabled)});
+  f.minor.onchange=()=>$('#g').hidden=!f.minor.checked;
+  f.onsubmit=async e=>{e.preventDefault();const r=$('#res');
+   const {error}=await sb.rpc('book_slot',{p_slot:slot.dataset.id,p_offer:f.offer.value,p_first:f.first.value,p_last:f.last.value,p_email:f.email.value,p_phone:f.phone.value||null,p_minor:f.minor.checked,p_gname:f.gname.value||null,p_gemail:f.gemail.value||null,p_note:f.note.value||null});
+   r.className='msg'+(error?' err':'');r.textContent=error?error.message:'Demande enregistrée (en attente de confirmation). Vous serez recontacté.';if(!error){f.reset();setTimeout(()=>booking(id),1500)}};
+ });
+}
+
+// ---------- Admin ----------
+const ST=['pending','confirmed','cancelled','done'],STL={pending:'En attente',confirmed:'Confirmée',cancelled:'Annulée',done:'Réalisée'},PS=['unpaid','paid','refunded'],PSL={unpaid:'Non payé',paid:'Payé',refunded:'Remboursé'};
+const opts=(a,l,v)=>a.map(x=>`<option value="${x}"${x===v?' selected':''}>${l[x]||x}</option>`).join('');
+async function admin(){
+ const app=$('#app');
+ if(!live){app.innerHTML='<div class="wrap admin"><section><h1>Espace administrateur</h1><p class="msg err">Supabase n’est pas configuré (config.js).</p></section></div>';return}
+ const {data:{session}}=await sb.auth.getSession();
+ const ok=session?(await sb.rpc('is_admin')).data:false;
+ if(!ok){app.innerHTML=`<div class="wrap admin"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
+  $('#lf').onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});if(error)$('#lm').innerHTML='<p class="msg err">'+error.message+'.</p>';else admin()};return}
+ const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Avis:tReviews};
+ app.innerHTML=`<div class="wrap admin"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
+ const show=n=>{app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));tabs[n]($('#tab'))};
+ app.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>show(b.textContent));$('#out').onclick=async()=>{await sb.auth.signOut();admin()};show('Réservations');
+}
+const toast=(el,m,e)=>{el.insertAdjacentHTML('afterbegin',`<p class="msg${e?' err':''}">${esc(m)}</p>`);setTimeout(()=>el.firstElementChild?.remove(),3000)};
+async function tBook(el){const {data=[]}=await sb.from('bookings').select('*,slots(starts_at,duration_min)').order('created_at',{ascending:false});
+ el.innerHTML=`<div class="tw"><table><tr><th>Créneau</th><th>Client</th><th>Prestation</th><th>Statut</th><th>Paiement</th></tr>${data.map(b=>`<tr><td>${b.slots?fmt(b.slots.starts_at):'-'}</td><td>${esc(b.first_name)} ${esc(b.last_name)}<br>${esc(b.email)} ${esc(b.phone||'')}${b.is_minor?`<br><em>Mineur · resp. : ${esc(b.guardian_name)} ${esc(b.guardian_email)}</em>`:''}${b.note?`<br>“${esc(b.note)}”`:''}</td><td>${SV[b.service]?.name} · ${b.participants} pers. · ${eur(b.amount_cents||0)}</td><td><select data-id="${b.id}" data-f="status">${opts(ST,STL,b.status)}</select></td><td><select data-id="${b.id}" data-f="payment_status">${opts(PS,PSL,b.payment_status)}</select></td></tr>`).join('')||'<tr><td colspan=5>Aucune réservation.</td></tr>'}</table></div><p class="note">Suivi interne uniquement : ce n’est pas une comptabilité officielle.</p>`;
+ el.querySelectorAll('select').forEach(s=>s.onchange=async()=>{const {error}=await sb.from('bookings').update({[s.dataset.f]:s.value}).eq('id',s.dataset.id);toast(el,error?error.message:'Enregistré',!!error)})}
+async function tSlots(el){const {data=[]}=await sb.from('slots').select('*').order('starts_at');
+ el.innerHTML=`<form id="sf"><label>Type<select name="service">${Object.entries(SV).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select></label><label>Début<input name="at" type="datetime-local" required></label><label>Durée (min)<input name="d" type="number" value="60" min="15" step="5"></label><label>Places (max 4)<input name="c" type="number" value="1" min="1" max="4"></label><button class="btn">Créer le créneau</button></form>
+ <div class="tw"><table>${data.map(s=>`<tr><td>${fmt(s.starts_at)}</td><td>${SV[s.service].name}</td><td>${s.duration_min} min · ${s.capacity} pl.</td><td>${s.status==='open'?'Ouvert':'Fermé'}</td><td><button data-t="${s.id}" data-s="${s.status}">${s.status==='open'?'Fermer':'Ouvrir'}</button> <button data-x="${s.id}">Supprimer</button></td></tr>`).join('')}</table></div>`;
+ $('#sf').onsubmit=async e=>{e.preventDefault();const f=e.target;const {error}=await sb.from('slots').insert({service:f.service.value,starts_at:new Date(f.at.value).toISOString(),duration_min:+f.d.value,capacity:+f.c.value});error?toast(el,error.message,1):tSlots(el)};
+ el.querySelectorAll('[data-t]').forEach(b=>b.onclick=async()=>{await sb.from('slots').update({status:b.dataset.s==='open'?'closed':'open'}).eq('id',b.dataset.t);tSlots(el)});
+ el.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const {error}=await sb.from('slots').delete().eq('id',b.dataset.x);error?toast(el,'Suppression impossible (réservations liées) : fermez le créneau.',1):tSlots(el)})}
+async function tOffers(el){const {data=[]}=await sb.from('offers').select('*').order('service').order('sort');
+ el.innerHTML=`<div class="tw"><table><tr><th>Type</th><th>Libellé</th><th>Détail</th><th>Prix total (€)</th><th>Participants</th><th>Actif</th><th></th></tr>${data.map(o=>`<tr data-id="${o.id}"><td>${SV[o.service].name}</td><td><input value="${esc(o.label)}" data-f="label"></td><td><input value="${esc(o.detail||'')}" data-f="detail"></td><td><input type="number" step="0.5" value="${o.price_cents/100}" data-f="price"></td><td><input type="number" min="1" max="4" value="${o.participants}" data-f="participants"></td><td><input type="checkbox" ${o.active?'checked':''} data-f="active"></td><td><button>Enregistrer</button></td></tr>`).join('')}</table></div>
+ <button class="btn" id="add">Ajouter une offre</button>`;
+ el.querySelectorAll('tr[data-id] button').forEach(b=>b.onclick=async()=>{const r=b.closest('tr'),g=f=>r.querySelector(`[data-f=${f}]`);const {error}=await sb.from('offers').update({label:g('label').value,detail:g('detail').value,price_cents:Math.round(g('price').value*100),participants:+g('participants').value,active:g('active').checked}).eq('id',r.dataset.id);toast(el,error?error.message:'Enregistré',!!error)});
+ $('#add').onclick=async()=>{const s=prompt('Type : physique, mentale ou basket ?');if(!SV[s])return;await sb.from('offers').insert({service:s,label:'Nouvelle offre',price_cents:0});tOffers(el)}}
 async function tContent(el){const {data=[]}=await sb.from('site_content').select('*');const cur={...C};data.forEach(r=>cur[r.key]=r.value);
  const clubHeadings={'clubs.intro':'<h2 class="content-group-title">Clubs et Entreprises — introduction</h2>','clubs.players':'<h2 class="content-group-title">Club sportif</h2>','clubs.companies':'<h2 class="content-group-title">Entreprise</h2>','clubs.frequency':'<h2 class="content-group-title">Modalités et tarifs</h2>'};
  const contentLabels={'clubs.intro':'Introduction commune','clubs.players':'Joueurs et joueuses','clubs.staff':'Staffs et entraîneurs','clubs.companies':'Interventions en entreprise','clubs.frequency':'Fréquence des interventions','clubs.duration':'Durée d’une intervention','clubs.pricing':'Tarification'};
@@ -150,7 +299,7 @@ function openReservationChooser(){
  const overlay=document.createElement('div');
  overlay.className='reservation-chooser-backdrop';
  overlay.dataset.reservationChooser='';
- overlay.innerHTML=`<section class="reservation-chooser" role="dialog" aria-modal="true" aria-labelledby="reservation-chooser-title"><button type="button" class="reservation-chooser-close" aria-label="Fermer">×</button><p class="reservation-chooser-kicker">CHOISIR UN ACCOMPAGNEMENT</p><h2 id="reservation-chooser-title">Que souhaitez-vous réserver ?</h2><div class="reservation-chooser-options"><a href="#/mentale#resa"><span>Préparation mentale</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/basket#resa"><span>Coaching individuel basket</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/physique#resa"><span>Préparation physique</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/clubs"><span>Clubs et Entreprises</span><b>Échanger sur un projet <span aria-hidden="true">→</span></b></a></div></section>`;
+ overlay.innerHTML=`<section class="reservation-chooser" role="dialog" aria-modal="true" aria-labelledby="reservation-chooser-title"><button type="button" class="reservation-chooser-close" aria-label="Fermer">×</button><p class="reservation-chooser-kicker">CHOISIR UN ACCOMPAGNEMENT</p><h2 id="reservation-chooser-title">Que souhaitez-vous réserver ?</h2><div class="reservation-chooser-options"><a href="#/physique#resa"><span>Préparation physique</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/mentale#resa"><span>Préparation mentale</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/basket#resa"><span>Coaching individuel basket</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/clubs"><span>Clubs et Entreprises</span><b>Échanger sur un projet <span aria-hidden="true">→</span></b></a></div></section>`;
  document.body.append(overlay);
  const close=()=>overlay.remove();
  overlay.querySelector('.reservation-chooser-close').addEventListener('click',close);
@@ -161,13 +310,6 @@ function openReservationChooser(){
 }
 
 history.scrollRestoration='manual';
-// Ordre uniforme des rubriques dans le menu téléphone et ordinateur.
-const navOrder=['mentale','basket','physique','clubs'];
-const navPrimary=$('.nav-primary');
-if(navPrimary){
- const navLinks=new Map([...navPrimary.querySelectorAll('a')].map(link=>[link.getAttribute('href').replace(/^#\//,''),link]));
- navOrder.forEach(key=>{const link=navLinks.get(key);if(link)navPrimary.append(link)});
-}
 async function route(preserveScroll=false){
  const currentScroll=scrollY;
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
@@ -177,20 +319,6 @@ async function route(preserveScroll=false){
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else{const behavior=document.documentElement.style.scrollBehavior;document.documentElement.style.scrollBehavior='auto';scrollTo(0,preserveScroll===true?currentScroll:0);document.documentElement.style.scrollBehavior=behavior}syncScrollMood();
 }
-// Les onglets de navigation doivent toujours ramener en haut de leur page,
-// y compris si l’on reclique sur l’onglet de la page déjà ouverte.
-$('#nav').addEventListener('click',e=>{
- const link=e.target.closest('a[href^="#/"]:not([data-resa])');
- if(!link)return;
- e.preventDefault();
- const target=link.getAttribute('href');
- if(location.hash===target){
-  const behavior=document.documentElement.style.scrollBehavior;
-  document.documentElement.style.scrollBehavior='auto';
-  scrollTo(0,0);
-  document.documentElement.style.scrollBehavior=behavior;
- }else location.hash=target;
-});
 document.addEventListener('click',e=>{
  const a=e.target.closest('[data-resa]');
  if(!a)return;
