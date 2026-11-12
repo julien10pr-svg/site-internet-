@@ -1,1785 +1,600 @@
-:root {
-  --ink: #14171c;
-  --mut: #5b6470;
-  --bg: #f6f5f2;
-  --line: #dcdad4;
-  --a: #b88943;
-  --b: #d6282b;
-  --hbg: #14171c;
-  --hfg: #fff;
-  --r: 10px;
-  --section-space: clamp(2.75rem, 5vw, 4rem);
-  --glow-one: rgba(212, 175, 55, 0.12);
-  --glow-two: rgba(43, 108, 240, 0.10);
-  --glow-three: rgba(36, 75, 56, 0.10);
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+
+document.body.classList.remove('is-ready');
+
+const watermark=document.createElement('div');
+watermark.className='site-watermark';
+watermark.setAttribute('aria-hidden','true');
+watermark.innerHTML='<svg viewBox="0 0 1000 1000" focusable="false"><circle cx="500" cy="500" r="410" fill="none" stroke="currentColor" stroke-width="14"/><text class="watermark-monogram" x="500" y="545" text-anchor="middle">BY</text><text class="watermark-name" x="500" y="690" text-anchor="middle">BET ON YOU</text></svg>';
+document.body.prepend(watermark);
+
+const cfg=window.SITE_CONFIG||{}, live=!!(cfg.supabaseUrl&&cfg.supabaseAnonKey);
+const sb=live?createClient(cfg.supabaseUrl,cfg.supabaseAnonKey):null;
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tbd=s=>esc(s).replace(/\[[^\]]+\]/g,m=>`<mark class="tbd">${m}</mark>`);
+const rich=s=>String(s??'').split(/\n\n+/).map(p=>`<p style="margin:0 auto 1.35em;line-height:1.75">${tbd(p).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}</p>`).join('');
+const eur=c=>(c/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR',minimumFractionDigits:c%100?2:0});
+const fmt=d=>new Date(d).toLocaleString('fr-FR',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Paris'});
+const DUR='Séance de référence : 1 h 15 de séance effective, suivie d’un débriefing et de conseils.';
+const TBC='[À compléter]';
+
+const C={
+'brand':'[Nom de l’activité à définir]',
+'home.title':'Préparer le corps, l’esprit et le geste.',
+'home.lead':'Tu veux miser sur toi ? Je t’accompagne en préparation physique, mentale, en nutrition et en coaching basket. Clubs et entreprises : des formations et interventions sur mesure autour de la performance, de la cohésion et du bien-être.',
+'home.about':'Je termine un Master EOPS à l’Université de Lille, en alternance au sein du club de la Patriote de Templeuve. J’y entraîne les U18F Région et j’assiste les U18 France. J’interviens aussi à l’école de basket.\n\n[Phrase personnelle sur ma façon d’accompagner à rédiger]',
+'phys.intro':'Un travail physique structuré, pensé pour le sport pratiqué et le profil de chaque athlète.',
+'phys.vision':'[Vision et méthodologie à détailler]',
+'phys.needs':'[Besoins et objectifs concernés à détailler]',
+'phys.testing':'[Moyens d’évaluation et de testing à préciser]',
+'phys.nutrition':'L’accompagnement nutritionnel peut compléter le travail physique.\n\n[Place et contenu de l’accompagnement nutritionnel à préciser]',
+'ment.intro':'Un accompagnement individuel pour travailler la confiance, la concentration et la gestion de la pression.',
+'ment.vision':'[Vision et méthodologie à détailler]',
+'ment.goals':'[Objectifs possibles et déroulement général à préciser]',
+'ment.format':'Les séances sont individuelles.\n\n[Détails des formats à préciser]',
+'bask.intro':'Du joueur débutant à celle ou celui qui vise une progression importante, par exemple une entrée au CREPS : un coaching adapté au niveau, aux objectifs et au profil.',
+'bask.fund':'Travail des fondamentaux individuels : maniement, appuis, finitions, lecture de jeu.\n\n[Contenu à détailler]',
+'bask.shoot':'Développement technique et gestuelle de tir, avec un suivi progressif.\n\n[Contenu à détailler]',
+'bask.levels':'Chaque séance s’adapte au niveau, aux objectifs et au profil du joueur ou de la joueuse.',
+'bask.groups':'Les petits groupes sont limités à 4 personnes. Le tarif par personne diminue avec la taille du groupe, et le groupe se réserve ensemble.',
+'clubs.intro':'Des interventions adaptées aux clubs sportifs, quel que soit le sport, et aux entreprises : préparation physique et mentale, formation des staffs, cohésion d’équipe et bien-être.',
+'clubs.players':'Un accompagnement en préparation physique et mentale, construit selon les besoins des joueurs et joueuses, leur discipline et les objectifs du club.',
+'clubs.staff':'Des formations et temps d’échange pour les entraîneurs et les staffs : mieux comprendre les principes de préparation physique et mentale, puis les intégrer dans leur pratique.',
+'clubs.companies':'Des ateliers autour de la cohésion d’équipe, du bien-être et de l’activité physique, adaptés aux besoins de votre entreprise.',
+'clubs.frequency':'Les interventions peuvent être ponctuelles ou s’inscrire dans un accompagnement mensuel, sur un semestre ou sur une année.',
+'clubs.duration':'La durée de chaque intervention s’adapte à votre besoin : d’une heure à une demi-journée.',
+'clubs.pricing':'Le tarif varie selon le contenu, la durée et le public concerné. Une proposition personnalisée est établie après échange sur votre mission.',
+'loyalty':'Des avantages fidélité peuvent être proposés aux clients réguliers. Ils ne se cumulent pas automatiquement avec les tarifs de groupe ou les packs.',
+'about.text':'Je suis en deuxième année de Master EOPS à l’Université de Lille, en alternance à la Patriote de Templeuve : coach principal des U18F Région, assistant auprès des U18 France, et intervenant à l’école de basket.\n\nFormations : Brevet fédéral jeune en basket ; DETB en cours (trois évaluations sur quatre validées, diplôme non encore obtenu) ; AUEC en réathlétisation du sportif.\n\n[Texte de présentation personnelle à compléter]',
+'contact.email':'[E-mail à compléter]',
+'contact.phone':'[Téléphone à compléter]',
+'contact.zone':'[Adresse et zones d’intervention à compléter]',
+'contact.social':'[Liens réseaux sociaux à compléter]',
+'pay.text':'[Modalités de paiement, d’annulation et de remboursement à définir]',
+'legal.text':'[Éditeur : nom, statut, SIRET, adresse, contact à compléter]\n\nHébergeur : Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis.\n\n[Autres mentions légales à compléter]',
+'privacy.text':'Les données saisies lors d’une réservation (identité, e-mail, téléphone, message) servent uniquement à traiter la réservation et à vous contacter. Pour un participant mineur, les coordonnées du représentant légal sont demandées. Les données sont stockées chez Supabase.\n\n[Responsable du traitement, durée de conservation, droits d’accès et de suppression, contact à compléter]',
+'faq.1.q':'Comment réserver ?',
+'faq.1.a':'Choisissez un créneau ouvert sur la page de l’accompagnement, puis renseignez vos informations. [Processus de confirmation à préciser]',
+'faq.2.q':'Quelle est la durée d’une séance ?',
+'faq.2.a':DUR,
+'faq.3.q':'Quelles sont les modalités d’annulation et de paiement ?',
+'faq.3.a':'[À compléter]',
+'faq.4.q':'Les mineurs peuvent-ils réserver ?',
+'faq.4.a':'Oui, avec les coordonnées du représentant légal, demandées lors de la réservation.',
+'video.url':''
+};
+
+const DEF_OFFERS=[
+['physique','Séance à l’unité','',5000],
+['physique','Pack de 5 séances','soit 45 € par séance',22500],
+['physique','Pack de 10 séances','soit 40 € par séance',40000],
+['mentale','Séance à l’unité','Séance individuelle',5000],
+['mentale','Pack de 5 séances','soit 40 € par séance',20000],
+['basket','1 personne','30 € par personne',3000],
+['basket','2 personnes','25 € par personne',5000],
+['basket','3 personnes','20 € par personne',6000],
+['basket','4 personnes','17 € par personne',6800,true]
+].map(([service,label,detail,price_cents,tbc])=>({service,label,detail,price_cents,tbc}));
+
+const SV={
+mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel','format']]},
+basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]},
+physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</span>',secs:[['Vision et méthodologie','vision'],['Besoins et objectifs','needs'],['Évaluation et testing','testing'],['Nutrition','nutrition']]}};
+
+const TIMELINE=[
+ {year:'2026–2027',tone:'clubs',chapter:'Master 2 et nouvelles missions',events:[
+  {label:'FORMATION',title:'Master 2 EOPS',detail:'Optimisation de la performance sportive — en cours'},
+  {label:'ENCADREMENT',title:'U18 France et U18 Région R1',detail:'Assistant U18 France et entraîneur U18 Région R1 à la Patriote de Templeuve'},
+  {label:'COACHING EN CLUB',title:'École de basket',detail:'Coaching au sein de mon club, la Patriote de Templeuve'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'},
+  {label:'PRÉPARATION PHYSIQUE',title:'Préparation physique',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'PRÉPARATION MENTALE',title:'Préparation mentale',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'NUTRITION',title:'Nutrition et hydratation',detail:'Conseils en nutrition du sportif et hydratation de l’effort'}
+ ]},
+ {year:'2025–2026',tone:'basket',chapter:'Master 1 et nouvelles responsabilités',events:[
+  {label:'FORMATION',title:'Master 1 EOPS obtenu',detail:'Optimisation de la performance sportive — Université de Lille'},
+  {label:'ENCADREMENT',title:'U18 France et U18 Région R1',detail:'Assistant U18 France et entraîneur U18 Région R1 à la Patriote de Templeuve'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'},
+  {label:'PRÉPARATION PHYSIQUE',title:'Préparation physique',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'PRÉPARATION MENTALE',title:'Préparation mentale',detail:'Accompagnement adapté aux besoins et aux objectifs'},
+  {label:'SPÉCIALISATION',title:'Réathlétisation du sportif',detail:'Formation AUEC en juin 2026'}
+ ]},
+ {year:'2024–2025',tone:'physique',chapter:'Une saison qui s’intensifie',events:[
+  {label:'ENCADREMENT',title:'U15F et U18F Région',detail:'Entraîneur à Roncq'},
+  {label:'SÉLECTION',title:'U11 garçons · Terrien Sud',detail:'Encadrement de la sélection'},
+  {label:'UNIVERSITAIRE',title:'Championnat de France universitaire',detail:'Coach de l’équipe de basket de l’Université de Lille'},
+  {label:'FORMATION',title:'DETB · 3 modules sur 4',detail:'Modules validés en mai 2025'},
+  {label:'DIPLÔME',title:'Licence STAPS · mention Bien',detail:'Diplôme obtenu en juin 2025'},
+  {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'}
+ ]},
+ {year:'2023–2024',tone:'clubs',chapter:'Premières expériences régionales',events:[
+  {label:'ENCADREMENT',title:'U15 filles Région',detail:'Entraîneur à Roncq'},
+  {label:'SÉLECTION',title:'U11 garçons · Terrien Sud',detail:'Participation à la sélection'}
+ ]},
+ {year:'2022–2023',tone:'basket',chapter:'Les débuts sur le terrain',events:[
+  {label:'COACHING',title:'Première saison à Roncq',detail:'Coaching de l’équipe U13 garçons'},
+  {label:'FORMATION',title:'Brevet fédéral adulte',detail:'Validation du brevet fédéral de basket adulte'}
+ ]},
+ {year:'Juin 2021',tone:'mentale',chapter:'Un premier diplôme',events:[
+  {label:'DIPLÔME',title:'Baccalauréat scientifique',detail:'Obtention du bac scientifique'}
+ ]},
+ {year:'2020',tone:'physique',chapter:'Les premiers repères',events:[
+  {label:'FORMATION',title:'BAFA',detail:'Perfectionnement assistant sanitaire'},
+  {label:'SECOURISME',title:'PSC1',detail:'Premiers gestes de secours'}
+ ]}
+];
+
+let content={...C}, offers=DEF_OFFERS, reviews=[], user=null;
+const t=k=>content[k]??C[k]??'';
+
+function parseReviews(value){
+ try{
+  const parsed=Array.isArray(value)?value:JSON.parse(value||'[]');
+  return Array.isArray(parsed)?parsed.filter(r=>r&&typeof r.text==='string'&&r.text.trim()).map(r=>({text:r.text.trim(),name:typeof r.name==='string'?r.name.trim():''})):[];
+ }catch{return []}
 }
 
-body[data-t="physique"] {
-  --a: #7046a3;
-  --b: #c0c0c0;
-  --hbg: linear-gradient(180deg, #f1edf5 0%, #f8f6fa 52%, #fff 100%);
-  --hfg: #5b3585;
-  --glow-one: rgba(112, 70, 163, 0.12);
-  --glow-two: rgba(192, 192, 192, 0.14);
-  --glow-three: rgba(212, 175, 55, 0.06);
+async function loadData(){
+ if(!live)return;
+ try{
+  const [c,o]=await Promise.all([
+   sb.from('site_content').select('*'),
+   sb.from('offers').select('*').eq('active',true).order('sort')
+  ]);
+  (c.data||[]).forEach(r=>{
+   if(r.key==='reviews.data')reviews=parseReviews(r.value);
+   else content[r.key]=r.value
+  });
+  if(o.data?.length)offers=o.data;
+ }catch(e){
+  console.error(e)
+ }
 }
 
-body[data-t="mentale"] {
-  --a: #2b6cf0;
-  --b: #fff;
-  --hbg: linear-gradient(180deg, #eaf1ff 0%, #f5f8ff 52%, #fff 100%);
-  --hfg: #0f2a66;
-  --glow-one: rgba(43, 108, 240, 0.15);
-  --glow-two: rgba(103, 154, 255, 0.09);
-  --glow-three: rgba(43, 108, 240, 0.05);
+const foot=()=>{
+ $('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;
+ $('#brand').innerHTML=tbd(t('brand'))
+};
+
+const video=()=>{
+ const u=t('video.url');
+ let inner='<mark class="tbd">[Vidéo de présentation à ajouter]</mark>';
+ const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);
+ if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;
+ else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
+ return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`
+};
+
+const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${tbd(t('contact.phone'))}</p><p>${tbd(t('contact.zone'))}</p><p>${tbd(t('contact.social'))}</p></div>`;
+
+const reviewsSection=()=>`<section class="wrap rv reviews-section" aria-labelledby="reviews-title"><div class="reviews-heading"><h2 id="reviews-title">Vos avis</h2><p>Les retours d’expérience des personnes accompagnées.</p></div>${reviews.length?`<div class="reviews-carousel" data-reviews-carousel><article class="review-bubble" aria-live="polite"><blockquote><p data-review-text></p><cite data-review-name></cite></blockquote></article><div class="review-controls"><button type="button" data-review-prev aria-label="Avis précédent">←</button><span data-review-count aria-live="polite"></span><button type="button" data-review-next aria-label="Avis suivant">→</button></div></div>`:`<p class="reviews-empty">Les premiers avis seront affichés ici.</p>`}</section>`;
+
+function setupClubTabs(){
+ const tabs=[...document.querySelectorAll('[data-club-tab]')];
+ const panels=[...document.querySelectorAll('[data-club-panel]')];
+ if(!tabs.length||!panels.length)return;
+ const activate=name=>{
+  tabs.forEach(tab=>{
+   const selected=tab.dataset.clubTab===name;
+   tab.setAttribute('aria-selected',String(selected));
+   tab.tabIndex=selected?0:-1
+  });
+  panels.forEach(panel=>{
+   const selected=panel.dataset.clubPanel===name;
+   panel.hidden=!selected;
+   panel.classList.toggle('is-active',selected)
+  })
+ };
+ tabs.forEach((tab,index)=>{
+  tab.addEventListener('click',()=>activate(tab.dataset.clubTab));
+  tab.addEventListener('keydown',event=>{
+   if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;
+   event.preventDefault();
+   const next=tabs[(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length];
+   next.focus();
+   activate(next.dataset.clubTab)
+  })
+ });
+ activate(tabs.find(tab=>tab.getAttribute('aria-selected')==='true')?.dataset.clubTab||tabs[0].dataset.clubTab)
 }
 
-body[data-t="basket"] {
-  --a: #b88943;
-  --b: #111;
-  --hbg: linear-gradient(180deg, #f3eee5 0%, #faf8f3 52%, #fff 100%);
-  --hfg: #302a20;
-  --glow-one: rgba(184, 137, 67, 0.12);
-  --glow-two: rgba(20, 23, 28, 0.06);
-  --glow-three: rgba(184, 137, 67, 0.05);
+function setupReviews(){
+ const carousel=$('[data-reviews-carousel]');
+ if(!carousel||!reviews.length)return;
+ let index=0;
+ const quote=carousel.querySelector('[data-review-text]');
+ const name=carousel.querySelector('[data-review-name]');
+ const count=carousel.querySelector('[data-review-count]');
+ const show=()=>{
+  const review=reviews[index];
+  quote.textContent=`« ${review.text} »`;
+  name.textContent=review.name;
+  name.hidden=!review.name;
+  count.textContent=`${index+1} / ${reviews.length}`
+ };
+ carousel.querySelector('[data-review-prev]').onclick=()=>{
+  index=(index-1+reviews.length)%reviews.length;
+  show()
+ };
+ carousel.querySelector('[data-review-next]').onclick=()=>{
+  index=(index+1)%reviews.length;
+  show()
+ };
+ show()
 }
 
-body[data-t="clubs"] {
-  --a: #244b38;
-  --b: #dce7df;
-  --hbg: linear-gradient(180deg, #e5efe7 0%, #f3f8f4 52%, #fff 100%);
-  --hfg: #203d30;
-  --glow-one: rgba(36, 75, 56, 0.14);
-  --glow-two: rgba(117, 157, 126, 0.09);
-  --glow-three: rgba(36, 75, 56, 0.05);
-}
-
-body[data-t="home"] {
-  --section-space: clamp(1.75rem, 3.5vw, 2.5rem);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  position: relative;
-  isolation: isolate;
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font: 17px/1.7 "Hanken Grotesk", system-ui, sans-serif;
-}
-
-/* Filigrane de marque fixe : il reste en place pendant le défilement. */
-.site-watermark {
-  position: fixed;
-  z-index: -1;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  color: #284866;
-  opacity: 0.035;
-  pointer-events: none;
-}
-
-.site-watermark svg {
-  display: block;
-  width: min(145vw, 140vh, 1450px);
-  height: auto;
-  overflow: visible;
-}
-
-.watermark-monogram {
-  fill: currentColor;
-  font-family: Archivo, "Hanken Grotesk", sans-serif;
-  font-size: 340px;
-  font-weight: 900;
-  letter-spacing: -34px;
-}
-
-.watermark-name {
-  fill: currentColor;
-  font-family: Archivo, "Hanken Grotesk", sans-serif;
-  font-size: 65px;
-  font-weight: 700;
-  letter-spacing: 18px;
-}
-
-/* Le premier rendu attend les textes publiés pour éviter le flash des valeurs par défaut. */
-body:not(.is-ready) .top,
-body:not(.is-ready) #banner,
-body:not(.is-ready) #app,
-body:not(.is-ready) footer {
-  visibility: hidden;
-}
-
-/* Halo de couleurs animé, visible sans passer devant le contenu. */
-body::before {
-  position: fixed;
-  z-index: -1;
-  inset: -12%;
-  background:
-    radial-gradient(ellipse at 14% 20%, var(--glow-one), transparent 38%),
-    radial-gradient(ellipse at 83% 28%, var(--glow-two), transparent 40%),
-    radial-gradient(ellipse at 62% 88%, var(--glow-three), transparent 42%);
-  background-position: var(--scroll-x, 50%) var(--scroll-y, 50%);
-  background-size: 155% 155%;
-  content: "";
-  pointer-events: none;
-  will-change: background-position;
-}
-
-@keyframes background-drift {
-  from {
-    background-position: 0% 0%;
+let timelineFrame=0;
+function updateTimelineProgress(){
+ if(timelineFrame)return;
+ timelineFrame=requestAnimationFrame(()=>{
+  const timeline=$('[data-timeline]');
+  if(timeline){
+   const rect=timeline.getBoundingClientRect();
+   const trigger=innerHeight*.66;
+   const progress=Math.min(1,Math.max(0,(trigger-rect.top)/Math.max(1,rect.height)));
+   timeline.style.setProperty('--timeline-progress',String(progress))
   }
+  timelineFrame=0
+ })
+}
+function setupTimeline(){updateTimelineProgress()}
+addEventListener('scroll',updateTimelineProgress,{passive:true});
+addEventListener('resize',updateTimelineProgress);
 
-  to {
-    background-position: 100% 100%;
+const pages={
+home(){
+ const homeTitle=esc(t('home.title')).replace(/(Investir sur soi-même)/i,'<span class="home-title-break">$1</span>');
+ const homeLead=esc(t('home.lead').replace(/\s+(Clubs et entreprises\s*:)/i,'\n\n$1'));
+ return `<section class="hero wrap"><h1>${homeTitle}</h1><p>${homeLead}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
+<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2></a></div>
+<section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Au fait, c’est qui Julien ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}
+<section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`
+},
+service(id){
+ const s=SV[id],o=offers.filter(x=>x.service===id);
+ return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
+<div class="wrap">${s.secs.map(([h,k])=>`<div class="sec2 rv"><h2>${h}</h2><div>${rich(t(s.k+'.'+k))}</div></div>`).join('')}
+<section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}</p></div>`).join('')}</div>
+<p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
+<section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`
+},
+about(){
+ return `<div class="shero about-hero rv"><div class="wrap"><h1>Mon parcours</h1></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone} ${index%2?'timeline-left':'timeline-right'}" style="--step:${index}" aria-label="${esc(item.year)} — ${esc(item.chapter)}"><div class="timeline-node" aria-hidden="true"></div><div class="timeline-card"><div class="timeline-card-top"><p class="timeline-year">${esc(item.year)}</p></div><div class="timeline-events">${item.events.map((event,eventIndex)=>`<div class="timeline-event" style="--event-step:${eventIndex}"><div class="timeline-event-copy"><span class="timeline-label">${esc(event.label)}</span><h3>${esc(event.title)}</h3><p>${esc(event.detail)}</p></div></div>`).join('')}</div></div></article>`).join('')}</div></section>`
+},
+clubs(){
+ return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
+<section class="wrap rv clubs-choices"><h2>Choisissez votre accompagnement</h2><div class="clubs-switch" role="tablist" aria-label="Type d’intervention"><button type="button" role="tab" id="clubs-tab-sport" aria-controls="clubs-panel-sport" aria-selected="true" data-club-tab="sport">Club sportif</button><button type="button" role="tab" id="clubs-tab-company" aria-controls="clubs-panel-company" aria-selected="false" data-club-tab="company" tabindex="-1">Entreprise</button></div>
+<div class="clubs-panel is-active" role="tabpanel" id="clubs-panel-sport" aria-labelledby="clubs-tab-sport" data-club-panel="sport"><h2>Interventions pour les clubs sportifs</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article></div></div>
+<div class="clubs-panel" role="tabpanel" id="clubs-panel-company" aria-labelledby="clubs-tab-company" data-club-panel="company" hidden><h2>Interventions en entreprise</h2><div class="grid"><article class="box"><h3>Équipes et collaborateurs</h3>${rich(t('clubs.companies'))}</article></div></div></section>
+<section class="wrap rv clubs-offers"><h2>Modalités et tarifs</h2><div class="grid"><article class="box"><h3>Fréquence des interventions</h3>${rich(t('clubs.frequency'))}</article><article class="box"><h3>Durée d’une intervention</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>Tarification</h3>${rich(t('clubs.pricing'))}</article></div></section>`
+},
+contact(){
+ return `<div class="shero rv"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`
+},
+faq(){
+ return `<div class="shero rv"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`
+},
+mentions(){
+ return `<div class="wrap"><section class="rv"><h1>Mentions légales</h1>${rich(t('legal.text'))}</section></div>`
+},
+confidentialite(){
+ return `<div class="wrap"><section class="rv"><h1>Confidentialité</h1>${rich(t('privacy.text'))}</section></div>`
+}
+};
+
+function booking(id){
+ const box=$('#booking');
+ if(!box)return;
+ if(!live){
+  box.innerHTML='<p class="msg err">Réservation en ligne non connectée : Supabase n’est pas encore configuré (voir README). Aucune réservation ne peut être enregistrée pour le moment.</p>';
+  return
+ }
+ const o=offers.filter(x=>x.service===id&&x.id&&(x.sessions||1)>=1);
+ let slot=null;
+ box.innerHTML='<p>Chargement des créneaux…</p>';
+ sb.rpc('get_open_slots',{p_service:id}).then(({data,error})=>{
+  const list=(data||[]).filter(s=>s.remaining>0);
+  if(error||!list.length){
+   box.innerHTML=`<p>${error?'Créneaux indisponibles pour le moment.':'Aucun créneau ouvert actuellement. Revenez bientôt ou utilisez la page Contact.'}</p>`;
+   return
   }
-}
-
-h1,
-h2,
-h3,
-.brand {
-  margin: 0 0 0.7em;
-  font-family: Archivo, sans-serif;
-  font-stretch: 112%;
-  line-height: 1.08;
-  letter-spacing: -0.025em;
-}
-
-h1 {
-  font-size: clamp(2.5rem, 7vw, 5.5rem);
-  font-weight: 850;
-}
-
-h2 {
-  font-size: clamp(1.8rem, 3.8vw, 2.8rem);
-  font-weight: 800;
-}
-
-h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-a {
-  color: inherit;
-}
-
-p {
-  max-width: 68ch;
-  margin: 0 auto 1.1em;
-}
-
-:focus-visible {
-  outline: 3px solid var(--a);
-  outline-offset: 3px;
-}
-
-.top {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem clamp(1.2rem, 3vw, 2rem);
-  background: rgba(246, 245, 242, 0.94);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
-}
-
-.brand {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-nav {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  pointer-events: none;
-}
-
-.nav-primary,
-.nav-secondary {
-  display: flex;
-  align-items: center;
-  gap: clamp(0.8rem, 1.8vw, 1.5rem);
-  pointer-events: auto;
-}
-
-.nav-primary {
-  grid-column: 2;
-  justify-content: center;
-}
-
-.nav-secondary {
-  grid-column: 3;
-  justify-content: flex-end;
-  padding-right: clamp(1.2rem, 3vw, 2rem);
-}
-
-nav a {
-  font-size: 0.98rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-nav a:hover {
-  color: var(--a);
-}
-
-nav .cta,
-.btn {
-  display: inline-block;
-  padding: 0.75em 1.25em;
-  border: 0;
-  border-radius: 999px;
-  background: var(--ink);
-  color: #fff;
-  font: 700 1rem "Hanken Grotesk", sans-serif;
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform 0.25s ease, background 0.25s ease;
-}
-
-.top nav .cta {
-  align-self: center;
-  margin: 0;
-  padding: 0.62em 1.05em;
-  font-size: 0.94rem;
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-nav .cta:hover,
-.btn:hover {
-  transform: translateY(-2px);
-  background: var(--a);
-  color: #fff;
-}
-
-.btn.alt {
-  border: 2px solid currentColor;
-  background: transparent;
-  color: inherit;
-}
-
-.btn.alt:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: inherit;
-}
-
-.burger {
-  display: none;
-  padding: 0.45em 1em;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: transparent;
-  font: inherit;
-  cursor: pointer;
-}
-
-#banner .warn {
-  padding: 0.7rem 1.2rem;
-  border-bottom: 1px solid #e6d27a;
-  background: #fff3bf;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.wrap {
-  width: min(100%, 1200px);
-  margin: 0 auto;
-  padding: 0 clamp(1.2rem, 4vw, 2.5rem);
-}
-
-#app .wrap:not(.admin) {
-  text-align: center;
-}
-
-#app > section:not(.hero),
-#app .wrap:not(.admin) > section {
-  padding-block: var(--section-space) !important;
-}
-
-#app > section:not(.hero) > h2,
-#app > section:not(.hero) > h1,
-#app .wrap:not(.admin) > section > h2,
-#app .wrap:not(.admin) > section > h1 {
-  margin-bottom: clamp(1rem, 2vw, 1.5rem);
-}
-
-#app .wrap:not(.admin) p {
-  margin-right: auto;
-  margin-left: auto;
-}
-
-mark.tbd {
-  padding: 0.05em 0.35em;
-  border-radius: 4px;
-  background: repeating-linear-gradient(
-    45deg,
-    #fff3bf,
-    #fff3bf 6px,
-    #ffe98a 6px,
-    #ffe98a 12px
-  );
-  color: #6b5400;
-}
-
-.hero {
-  padding-top: clamp(5rem, 11vh, 8.5rem);
-  padding-bottom: clamp(4.5rem, 9vh, 7rem);
-  text-align: center;
-}
-
-.hero h1 {
-  max-width: 18ch;
-  margin: 0 auto 0.45em;
-}
-
-.hero.home-enter h1 {
-  animation:
-    title-pop-in 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) both,
-    title-breathe 3.4s ease-in-out 1.1s infinite;
-}
-
-.hero.home-enter p {
-  animation: rise-in 0.75s 0.18s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.hero.home-enter .row {
-  animation: rise-in 0.75s 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-@keyframes title-pop-in {
-  from {
-    opacity: 0;
-    transform: translateY(22px) scale(0.92);
+  box.innerHTML=`<div class="slots">${list.map(s=>`<button class="slot" aria-pressed="false" data-id="${s.id}" data-r="${s.remaining}">${fmt(s.starts_at)}<br><small>${s.duration_min} min · ${s.remaining} place${s.remaining>1?'s':''}</small></button>`).join('')}</div>
+  <form id="bf" hidden><label>Offre<select name="offer" required>${o.map(x=>`<option value="${x.id}" data-p="${x.participants}">${esc(x.label)} — ${eur(x.price_cents)}</option>`).join('')}</select></label>
+  <label>Prénom<input name="first" required maxlength="80" autocomplete="given-name"></label><label>Nom<input name="last" required maxlength="80" autocomplete="family-name"></label>
+  <label>E-mail<input name="email" type="email" required autocomplete="email"></label><label>Téléphone (facultatif)<input name="phone" type="tel" autocomplete="tel"></label>
+  <label class="chk"><input type="checkbox" name="minor"> <span>Le participant est mineur</span></label>
+  <div id="g" hidden><label>Représentant légal : nom<input name="gname"></label><label>Représentant légal : e-mail<input name="gemail" type="email"></label></div>
+  <label>Message (facultatif)<textarea name="note" rows="3" maxlength="1000"></textarea></label>
+  <p class="note">La demande est enregistrée avec le statut « en attente ». Aucun paiement en ligne n’est proposé pour l’instant. ${DUR}</p>
+  <button class="btn" style="background:var(--a)">Envoyer la demande</button><div id="res" role="status"></div></form>`;
+  const f=$('#bf');
+  box.querySelectorAll('.slot').forEach(b=>b.onclick=()=>{
+   box.querySelectorAll('.slot').forEach(x=>x.setAttribute('aria-pressed','false'));
+   b.setAttribute('aria-pressed','true');
+   slot=b;
+   f.hidden=false;
+   [...f.offer.options].forEach(op=>op.disabled=+op.dataset.p>+b.dataset.r);
+   f.offer.selectedIndex=[...f.offer.options].findIndex(op=>!op.disabled)
+  });
+  f.minor.onchange=()=>$('#g').hidden=!f.minor.checked;
+  f.onsubmit=async e=>{
+   e.preventDefault();
+   const r=$('#res');
+   const {error}=await sb.rpc('book_slot',{p_slot:slot.dataset.id,p_offer:f.offer.value,p_first:f.first.value,p_last:f.last.value,p_email:f.email.value,p_phone:f.phone.value||null,p_minor:f.minor.checked,p_gname:f.gname.value||null,p_gemail:f.gemail.value||null,p_note:f.note.value||null});
+   r.className='msg'+(error?' err':'');
+   r.textContent=error?error.message:'Demande enregistrée (en attente de confirmation). Vous serez recontacté.';
+   if(!error){f.reset();setTimeout(()=>booking(id),1500)}
   }
-
-  68% {
-    opacity: 1;
-    transform: translateY(0) scale(1.025);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes title-breathe {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-
-  50% {
-    transform: translateY(0) scale(1.07);
-  }
-}
-
-.hero p {
-  max-width: 58ch;
-  margin: 0 auto 1.5em;
-  color: var(--mut);
-  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
-  white-space: pre-line;
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-  gap: 0.85rem;
-  flex-wrap: wrap;
-}
-
-.panels {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  min-height: clamp(30rem, 62vh, 48rem);
-  align-items: stretch;
-  gap: clamp(0.45rem, 0.8vw, 0.75rem);
-  padding: 0 clamp(0.45rem, 0.8vw, 0.75rem);
-  transition: grid-template-columns 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.panel {
-  position: relative;
-  z-index: 0;
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(2rem, 4vw, 4rem) clamp(1.2rem, 2.5vw, 2.5rem);
-  border-radius: 18px;
-  text-align: center;
-  text-decoration: none;
-  transition:
-    opacity 0.75s ease,
-    transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 0.85s ease,
-    filter 0.75s ease;
-}
-
-@media (hover: hover) {
-  .panels:hover .panel:not(:hover) {
-    opacity: 0.94;
-    filter: saturate(0.96);
-  }
-
-  .panel:hover,
-  .panel:focus-visible {
-    z-index: 1;
-    transform: translateY(-3px) scale(1.035);
-    box-shadow: 0 18px 38px rgba(20, 23, 28, 0.16);
-  }
-
-  .panels:has(.panel:nth-child(1):hover) {
-    grid-template-columns: 1.12fr 1fr 1fr 1fr;
-  }
-
-  .panels:has(.panel:nth-child(2):hover) {
-    grid-template-columns: 1fr 1.12fr 1fr 1fr;
-  }
-
-  .panels:has(.panel:nth-child(3):hover) {
-    grid-template-columns: 1fr 1fr 1.12fr 1fr;
-  }
-
-  .panels:has(.panel:nth-child(4):hover) {
-    grid-template-columns: 1fr 1fr 1fr 1.12fr;
-  }
-}
-
-.panel h2 {
-  display: flex;
-  width: 100%;
-  max-width: 14ch;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  font-size: clamp(1.8rem, 3.4vw, 3rem);
-}
-
-.p-physique {
-  background: linear-gradient(155deg, #8b68b3 0%, #7046a3 72%, #5f378f 100%);
-  color: #fff;
-}
-
-.p-mentale {
-  background: #eaf1ff;
-  color: #0f2a66;
-}
-
-.p-mentale b {
-  color: #2b6cf0;
-}
-
-.p-basket {
-  background: #0d0d0d;
-  color: #fff;
-}
-
-.p-basket h2 {
-  color: #d7b36f;
-}
-
-.p-clubs {
-  background: linear-gradient(145deg, #e7efe8 0%, #d5e3d7 55%, #c4d8c8 100%);
-  color: #263b30;
-}
-
-.p-clubs h2 {
-  color: #244b38;
-}
-
-.p-clubs b {
-  color: #244b38;
-}
-
-body[data-t="clubs"] .shero h1 {
-  color: #244b38;
-}
-
-body[data-t="clubs"] .shero .btn {
-  background: #244b38;
-}
-
-body[data-t="clubs"] .shero .btn:hover {
-  background: #183a29;
-}
-
-body[data-t="clubs"] .shero + section.wrap.rv {
-  padding-bottom: clamp(1.25rem, 2.2vw, 2rem) !important;
-}
-
-body[data-t="clubs"] section.wrap.clubs-offers {
-  padding-top: clamp(1.25rem, 2.2vw, 2rem) !important;
-}
-
-.clubs-offers .box {
-  border-color: #d6e0d7;
-  background: #fff;
-}
-
-.clubs-offers .box h3 {
-  color: #244b38;
-}
-
-.clubs-offers .box p {
-  margin-bottom: 0.6em !important;
-  line-height: 1.55 !important;
-}
-
-.clubs-choices {
-  padding-top: clamp(2.75rem, 5vw, 4rem) !important;
-  padding-bottom: clamp(2rem, 4vw, 3rem) !important;
-}
-
-.clubs-switch {
-  display: flex;
-  justify-content: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  margin: 1.25rem auto 2rem;
-}
-
-.clubs-switch button {
-  min-width: 10rem;
-  padding: 0.7em 1.25em;
-  border: 1px solid #b8c9bc;
-  border-radius: 999px;
-  background: #fff;
-  color: #244b38;
-  font: 700 1rem "Hanken Grotesk", sans-serif;
-  cursor: pointer;
-  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
-}
-
-.clubs-switch button:hover {
-  transform: translateY(-1px);
-}
-
-.clubs-switch button[aria-selected="true"] {
-  border-color: #244b38;
-  background: #244b38;
-  color: #fff;
-}
-
-.clubs-panel[hidden] {
-  display: none;
-}
-
-.clubs-panel > h2 {
-  margin: 0 auto 1.5rem;
-  color: #244b38;
-  font-size: clamp(1.45rem, 3vw, 2rem);
-}
-
-.clubs-panel .grid {
-  align-items: stretch;
-}
-
-.admin .content-group-title {
-  margin: 2rem 0 0.75rem;
-  padding-bottom: 0.55rem;
-  border-bottom: 2px solid #d6e0d7;
-  color: #244b38;
-}
-
-.shero {
-  padding: clamp(4.5rem, 9vw, 7rem) 0 clamp(4rem, 7vw, 5.5rem);
-  background: var(--hbg);
-  color: var(--hfg);
-  text-align: center;
-}
-
-.shero .wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.shero h1 {
-  max-width: 18ch;
-  animation: title-breathe 3.4s ease-in-out infinite;
-}
-
-.shero p {
-  max-width: 58ch;
-  margin: 0 auto 1.5em;
-  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
-  opacity: 0.94;
-}
-
-body[data-t="mentale"] .shero h1 {
-  color: #2b6cf0;
-}
-
-body[data-t="physique"] .shero h1 {
-  color: #7046a3;
-}
-
-body[data-t="basket"] .shero h1 span {
-  color: #b88943;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
-  text-align: center;
-}
-
-.box {
-  padding: clamp(1.4rem, 2.5vw, 2rem);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: #fff;
-  text-align: center;
-}
-
-.price {
-  color: var(--a);
-  font: 800 2rem Archivo, sans-serif;
-}
-
-.price small {
-  color: var(--mut);
-  font: 500 0.9rem "Hanken Grotesk", sans-serif;
-}
-
-.sec2 {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  justify-items: center;
-  gap: 1.25rem;
-  padding: clamp(3.5rem, 6vw, 5rem) 0;
-  border-top: 0;
-  text-align: center;
-}
-
-.sec2::before {
-  display: none;
-}
-
-.sec2 h2 {
-  max-width: 22ch;
-  margin: 0 auto;
-}
-
-.sec2 > div {
-  width: min(100%, 72ch);
-}
-
-.sec2 p {
-  margin: 0 auto 1.1em;
-}
-
-.note {
-  width: min(100%, 72ch);
-  margin: 1.5rem auto;
-  padding: 1rem 1.25rem;
-  border-left: 4px solid var(--a);
-  border-radius: 0 var(--r) var(--r) 0;
-  background: #fff;
-  text-align: center;
-}
-
-.slots {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.slot {
-  padding: 0.7em 1em;
-  border: 2px solid var(--line);
-  border-radius: var(--r);
-  background: #fff;
-  font: inherit;
-  text-align: center;
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.slot:hover {
-  transform: translateY(-2px);
-  border-color: var(--a);
-}
-
-.slot[aria-pressed="true"] {
-  border-color: var(--a);
-  background: var(--a);
-  color: #fff;
-}
-
-form {
-  display: grid;
-  width: min(100%, 640px);
-  gap: 1rem;
-  margin: 1.5rem auto 0;
-  text-align: left;
-}
-
-label {
-  display: grid;
-  gap: 0.4rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-align: left;
-}
-
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 0.7em 0.85em;
-  border: 1px solid #b9b6ad;
-  border-radius: 8px;
-  background: #fff;
-  font: inherit;
-  text-align: left;
-}
-
-.chk {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.65rem;
-}
-
-.chk input {
-  width: auto;
-  margin-top: 0.35rem;
-}
-
-.msg {
-  padding: 0.9rem 1.1rem;
-  border-radius: 8px;
-  background: #e7f6ea;
-}
-
-.msg.err {
-  background: #fde5e5;
-}
-
-.vid {
-  display: grid;
-  width: min(100%, 900px);
-  aspect-ratio: 16 / 9;
-  place-items: center;
-  overflow: hidden;
-  margin: 0 auto;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: #fff;
-}
-
-.vid iframe,
-.vid video {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-details.box {
-  margin: 0 auto 0.9rem;
-  text-align: center;
-}
-
-details summary {
-  cursor: pointer;
-}
-
-details.box p {
-  margin-top: 1rem;
-}
-
-footer {
-  padding: 2.5rem 1.2rem;
-  background: var(--ink);
-  color: #d6d8dc;
-  font-size: 0.92rem;
-  text-align: center;
-}
-
-footer a {
-  display: inline-block;
-  margin: 0 0.5rem;
-}
-
-.tabs {
-  display: flex;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.2rem;
-}
-
-.tabs button {
-  padding: 0.5em 1em;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
-  font: inherit;
-  cursor: pointer;
-}
-
-.tabs button[aria-selected="true"] {
-  background: var(--ink);
-  color: #fff;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  font-size: 0.9rem;
-  text-align: left;
-}
-
-td,
-th {
-  padding: 0.7rem;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: top;
-}
-
-.tw {
-  overflow-x: auto;
-}
-
-/* Apparition progressive des sections publiques au défilement */
-.rv {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.75s ease,
-    transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.rv.on {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Avis : une bulle visible à la fois, avec une pointe façon bande dessinée */
-.reviews-section {
-  padding-top: clamp(2.5rem, 5vw, 4rem);
-  padding-bottom: clamp(3rem, 6vw, 5rem);
-  text-align: center;
-}
-
-.reviews-heading p {
-  margin: 0 auto 1.75rem;
-  color: var(--mut);
-}
-
-.reviews-carousel {
-  width: min(100%, 760px);
-  margin: 0 auto;
-}
-
-.review-bubble {
-  position: relative;
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 12px 32px rgba(20, 23, 28, 0.06);
-  text-align: center;
-}
-
-.review-bubble::before,
-.review-bubble::after {
-  position: absolute;
-  top: 50%;
-  width: 0;
-  height: 0;
-  content: "";
-  transform: translateY(-50%);
-}
-
-.review-bubble::before {
-  left: -18px;
-  border-top: 12px solid transparent;
-  border-right: 18px solid var(--line);
-  border-bottom: 12px solid transparent;
-}
-
-.review-bubble::after {
-  left: -16px;
-  border-top: 11px solid transparent;
-  border-right: 17px solid #fff;
-  border-bottom: 11px solid transparent;
-}
-
-.review-bubble blockquote {
-  margin: 0;
-}
-
-.review-bubble blockquote p {
-  max-width: 58ch;
-  margin: 0 auto;
-  font-size: clamp(1.05rem, 2vw, 1.35rem);
-  line-height: 1.7;
-}
-
-.review-bubble cite {
-  display: block;
-  margin-top: 1rem;
-  color: var(--mut);
-  font-size: 0.95rem;
-  font-style: normal;
-  font-weight: 700;
-}
-
-.review-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.25rem;
-}
-
-.review-controls button {
-  display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: #fff;
-  color: var(--ink);
-  font: 700 1.25rem/1 "Hanken Grotesk", sans-serif;
-  cursor: pointer;
-  transition: color 0.2s, background 0.2s, transform 0.2s;
-}
-
-.review-controls button:hover {
-  transform: translateY(-2px);
-  background: var(--ink);
-  color: #fff;
-}
-
-.review-controls span {
-  min-width: 3.5rem;
-  color: var(--mut);
-  font-size: 0.9rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.reviews-empty {
-  width: min(100%, 760px);
-  margin: 0 auto;
-  padding: 1.5rem;
-  border: 1px dashed var(--line);
-  border-radius: var(--r);
-  color: var(--mut);
-  text-align: center;
-}
-
-.admin-reviews h2 {
-  margin: 2rem 0 1rem;
-}
-
-.admin-reviews .note {
-  margin: 0 0 1rem;
-}
-
-.admin-review-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  gap: 1rem;
-}
-
-.admin-review-list .box {
-  text-align: left;
-}
-
-.admin-review-list .btn.alt {
-  padding: 0.45em 0.9em;
-  font-size: 0.9rem;
-}
-
-/* L’espace admin conserve une mise en page pratique et lisible */
-#app .wrap.admin {
-  text-align: left;
-}
-
-.admin section {
-  padding: 2.5rem 0;
-}
-
-.admin form {
-  margin-right: 0;
-  margin-left: 0;
-}
-
-.admin .box,
-.admin table,
-.admin .note {
-  text-align: left;
-}
-
-.admin .tabs {
-  justify-content: flex-start;
-}
-
-@media (max-width: 1050px) {
-  .burger {
-    display: block;
-  }
-
-  nav {
-    position: absolute;
-    inset: auto 0 auto;
-    top: 100%;
-    display: none;
-    grid-template-columns: 1fr;
-    align-items: stretch;
-    gap: 0;
-    padding: 1rem 1.2rem 1.25rem;
-    border-bottom: 1px solid var(--line);
-    background: var(--bg);
-    pointer-events: auto;
-  }
-
-  .nav-primary,
-  .nav-secondary {
-    grid-column: 1;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.25rem;
-    padding: 0;
-  }
-
-  .nav-secondary {
-    margin-top: 0.25rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--line);
-  }
-
-  nav.open {
-    display: flex;
-  }
-
-  nav a {
-    padding: 0.55rem 0;
-  }
-
-  nav .cta {
-    align-self: flex-start;
-    margin-top: 0.4rem;
-  }
-}
-
-@media (max-width: 820px) {
-  .burger {
-    display: block;
-  }
-
-  nav {
-    position: absolute;
-    inset: auto 0 auto;
-    top: 100%;
-    display: none;
-    grid-template-columns: 1fr;
-    align-items: stretch;
-    gap: 0;
-    padding: 1rem 1.2rem 1.25rem;
-    border-bottom: 1px solid var(--line);
-    background: var(--bg);
-    pointer-events: auto;
-  }
-
-  .nav-primary,
-  .nav-secondary {
-    grid-column: 1;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.25rem;
-    padding: 0;
-  }
-
-  .nav-secondary {
-    margin-top: 0.25rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--line);
-  }
-
-  nav.open {
-    display: flex;
-  }
-
-  nav a {
-    padding: 0.55rem 0;
-  }
-
-  nav .cta {
-    align-self: flex-start;
-    margin-top: 0.4rem;
-  }
-
-  .panels:has(.panel:nth-child(1):hover),
-  .panels:has(.panel:nth-child(2):hover),
-  .panels:has(.panel:nth-child(3):hover),
-  .panels:has(.panel:nth-child(4):hover) {
-    grid-template-columns: 1fr;
-  }
-
-  .panels {
-    min-height: 0;
-    grid-template-columns: 1fr;
-    grid-auto-rows: clamp(13rem, 32vh, 17rem);
-    gap: 0.65rem;
-    padding: 0 0.65rem;
-  }
-
-  .panels .panel:hover,
-  .panels .panel:focus-visible {
-    transform: none;
-    box-shadow: none;
-  }
-
-  .panel {
-    min-height: 0;
-  }
-
-  .hero {
-    padding-top: 4.5rem;
-    padding-bottom: 4.5rem;
-  }
-
-  .hero h1 {
-    max-width: 100%;
-    font-size: clamp(2rem, 8.5vw, 3.2rem);
-  }
-
-  @keyframes title-breathe {
-    0%,
-    100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(0) scale(1.035); }
-  }
-
-  .home-title-break {
-    display: block;
-  }
-
-  .shero {
-    padding-top: 4rem;
-    padding-bottom: 4rem;
-  }
-
-  .sec2 {
-    gap: 1rem;
-    padding: 3rem 0;
-  }
-
-  .tw table {
-    min-width: 680px;
-  }
-
-  .review-controls {
-    margin-top: 1.5rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation: none !important;
-    transition: none !important;
-  }
-
-  .rv {
-    opacity: 1;
-    transform: none;
-  }
-
-  .hero.home-enter h1 {
-    animation: title-pop-in 0.5s ease-out both !important;
-  }
-
-  .hero.home-enter p,
-  .hero.home-enter .row {
-    animation: rise-in 0.35s ease-out both !important;
-  }
-}
-
-/* Frise chronologique du parcours — les jalons s’activent au défilement. */
-.about-hero {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(4.5rem, 10vw, 8rem) 0 clamp(3rem, 6vw, 5rem);
-  background:
-    radial-gradient(ellipse at 8% 20%, rgba(212, 175, 55, .14), transparent 32%),
-    radial-gradient(ellipse at 92% 18%, rgba(43, 108, 240, .14), transparent 32%),
-    radial-gradient(ellipse at 78% 100%, rgba(36, 75, 56, .12), transparent 34%),
-    var(--bg);
-  color: var(--ink);
-  text-align: center;
-}
-
-.about-hero .timeline-kicker,
-.timeline-eyebrow {
-  margin: 0 auto 1rem;
-  color: var(--mut);
-  font-size: .76rem;
-  font-weight: 800;
-  letter-spacing: .18em;
-}
-
-.about-hero h1 {
-  max-width: 16ch;
-  margin: 0 auto 1.2rem;
-  font-size: clamp(2.65rem, 7vw, 6rem);
-  line-height: .98;
-}
-
-.about-hero .wrap > p:last-child {
-  max-width: 42ch;
-  margin-right: auto;
-  margin-left: auto;
-  color: var(--mut);
-  font-size: clamp(1.05rem, 2vw, 1.3rem);
-}
-
-.timeline-section {
-  padding-top: clamp(3rem, 6vw, 5rem);
-  padding-bottom: clamp(4rem, 8vw, 7rem);
-}
-
-.timeline-intro {
-  max-width: 700px;
-  margin: 0 auto clamp(3rem, 7vw, 5.5rem);
-  text-align: center;
-}
-
-.timeline-intro h2 {
-  margin-bottom: .7rem;
-  font-size: clamp(2rem, 4.2vw, 3.4rem);
-}
-
-.timeline-intro > p:last-child {
-  max-width: 54ch;
-  margin-right: auto;
-  margin-left: auto;
-  color: var(--mut);
-  font-size: 1.08rem;
-}
-
-.timeline {
-  --timeline-progress: 0;
-  --timeline-track: linear-gradient(180deg, #244b38 0%, #b88943 30%, #2b6cf0 60%, #4b0082 100%);
-  position: relative;
-  width: min(100%, 1080px);
-  margin: 0 auto;
-  padding: 1rem 0 .5rem;
-}
-
-.timeline-rail {
-  position: absolute;
-  z-index: 0;
-  top: 1rem;
-  bottom: 1rem;
-  left: 50%;
-  width: 5px;
-  overflow: hidden;
-  border-radius: 99px;
-  background: rgba(20, 23, 28, .09);
-  transform: translateX(-50%);
-}
-
-.timeline-rail::after {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--timeline-track);
-  content: "";
-  transform: scaleY(var(--timeline-progress));
-  transform-origin: top center;
-  transition: transform .12s linear;
-  will-change: transform;
-}
-
-.timeline-item {
-  --step-color: #b88943;
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 92px minmax(0, 1fr);
-  align-items: start;
-  min-height: 190px;
-  margin: 0 0 clamp(2.6rem, 5vw, 4rem);
-  opacity: 0;
-  filter: blur(5px);
-  transition: opacity .7s ease, transform .8s cubic-bezier(.2,.75,.22,1), filter .8s ease;
-  transition-delay: calc(var(--step) * 55ms);
-}
-
-.timeline-item:last-of-type { margin-bottom: 0; }
-.timeline-item.timeline-right { transform: translate3d(70px, 30px, 0) scale(.97); }
-.timeline-item.timeline-left { transform: translate3d(-70px, 30px, 0) scale(.97); }
-.timeline-item.on { opacity: 1; filter: blur(0); transform: translate3d(0,0,0) scale(1); }
-.timeline-item.tone-physique { --step-color: #7046a3; }
-.timeline-item.tone-mentale { --step-color: #2b6cf0; }
-.timeline-item.tone-basket { --step-color: #b88943; }
-.timeline-item.tone-clubs { --step-color: #244b38; }
-
-.timeline-node {
-  position: relative;
-  z-index: 2;
-  grid-column: 2;
-  grid-row: 1;
-  display: grid;
-  width: 68px;
-  height: 68px;
-  margin-top: 1.2rem;
-  place-items: center;
-  justify-self: center;
-  border: 7px solid var(--bg);
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--step-color) 45%, transparent), 0 10px 25px rgba(20,23,28,.12);
-  color: var(--step-color);
-  transform: scale(.72);
-  transition: transform .65s cubic-bezier(.18,.85,.25,1.3), background .35s ease, color .35s ease, box-shadow .45s ease;
-}
-
-.timeline-node span { font-size: .72rem; font-weight: 800; letter-spacing: .04em; }
-.timeline-item.on .timeline-node {
-  background: var(--step-color);
-  color: white;
-  transform: scale(1);
-  box-shadow: 0 0 0 7px color-mix(in srgb, var(--step-color) 14%, transparent), 0 12px 28px rgba(20,23,28,.16);
-}
-
-.timeline-card {
-  position: relative;
-  grid-row: 1;
-  padding: clamp(1.35rem, 3vw, 2.15rem);
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--step-color) 26%, var(--line));
-  border-radius: 24px;
-  background: linear-gradient(145deg, #fff 0%, color-mix(in srgb, var(--step-color) 4%, #fff) 100%);
-  box-shadow: 0 16px 42px rgba(20,23,28,.065);
-  text-align: center;
-  transition: box-shadow .45s ease, border-color .45s ease;
-}
-.timeline-card::before {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 6px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--step-color) 58%, white), var(--step-color));
-  content: "";
-}
-.timeline-item.timeline-left .timeline-card { grid-column: 1; }
-.timeline-item.timeline-right .timeline-card { grid-column: 3; }
-.timeline-item.on .timeline-card { box-shadow: 0 24px 58px rgba(20,23,28,.11); }
-
-.timeline-card-top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: .55rem;
-  margin: 0 0 1.15rem;
-}
-.timeline-year {
-  margin: 0;
-  color: var(--step-color);
-  font-family: Archivo, sans-serif;
-  font-size: clamp(1.5rem, 2.8vw, 2.15rem);
-  font-weight: 850;
-  letter-spacing: -.035em;
-  line-height: 1;
-}
-.timeline-chapter {
-  color: var(--mut);
-  font-size: .82rem;
-  font-weight: 700;
-}
-
-.timeline-events { display: grid; gap: .72rem; }
-.timeline-event {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: .75rem;
-  align-items: start;
-  padding: .9rem 1rem;
-  border: 1px solid color-mix(in srgb, var(--step-color) 13%, transparent);
-  border-radius: 15px;
-  background: rgba(255,255,255,.78);
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity .45s ease, transform .55s cubic-bezier(.2,.75,.25,1);
-  transition-delay: calc(160ms + var(--event-step) * 110ms);
-}
-.timeline-item.on .timeline-event { opacity: 1; transform: translateY(0); }
-.timeline-event-copy { min-width: 0; text-align: center; }
-.timeline-label {
-  display: block;
-  margin: 0 0 .18rem;
-  color: var(--step-color);
-  font-size: .63rem;
-  font-weight: 850;
-  letter-spacing: .12em;
-}
-.timeline-event h3 {
-  margin: 0 0 .16rem;
-  font-size: clamp(1rem, 1.5vw, 1.13rem);
-  line-height: 1.3;
-}
-.timeline-event p { margin: 0; color: var(--mut); font-size: .92rem; line-height: 1.48; }
-
-.timeline-end {
-  display: grid;
-  justify-items: center;
-  gap: .65rem;
-  margin: 3rem auto 0;
-  color: var(--mut);
-  text-align: center;
-}
-.timeline-end-mark {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: white;
-  color: #244b38;
-  box-shadow: 0 8px 24px rgba(20,23,28,.07);
-}
-.timeline-end p { margin: 0; font-weight: 700; }
-
-@media (max-width: 760px) {
-  .timeline-section { padding-top: 2.8rem; }
-  .timeline { width: 100%; padding: .4rem 0; }
-  .timeline-rail { top: .4rem; bottom: .4rem; left: 50%; width: 4px; }
-  .timeline-item,
-  .timeline-item.timeline-left,
-  .timeline-item.timeline-right {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    min-height: 0;
-    margin-bottom: 2rem;
-    transform: translate3d(0,25px,0) scale(.98);
-  }
-  .timeline-item.on { transform: translate3d(0,0,0) scale(1); }
-  .timeline-node {
-    grid-column: 1;
-    grid-row: 1;
-    width: 48px;
-    height: 48px;
-    margin: 0 auto .75rem;
-    border-width: 5px;
-  }
-  .timeline-item .timeline-card,
-  .timeline-item.timeline-left .timeline-card,
-  .timeline-item.timeline-right .timeline-card {
-    z-index: 1;
-    grid-column: 1;
-    grid-row: 2;
-    width: 100%;
-  }
-  .timeline-card { padding: 1.2rem 1rem; border-radius: 19px; }
-  .timeline-card-top { gap: .4rem; margin-bottom: .9rem; }
-  .timeline-year { font-size: 1.55rem; }
-  .timeline-chapter { font-size: .76rem; }
-  .timeline-event { padding: .8rem .7rem; }
-  .timeline-event h3 { font-size: 1rem; }
-  .timeline-event p { font-size: .88rem; }
-  .about-hero h1 { font-size: clamp(2.45rem, 11vw, 4rem); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .timeline-rail::after { transform: scaleY(1); }
-  .timeline-item,
-  .timeline-item.timeline-left,
-  .timeline-item.timeline-right,
-  .timeline-item.on,
-  .timeline-node,
-  .timeline-event,
-  .timeline-item.on .timeline-event {
-    opacity: 1;
-    filter: none;
-    transform: none;
-    transition: none;
-  }
-}
-
-/* Sélecteur d’accompagnement ouvert par le bouton Réserver hors d’une page de prestation. */
-.reservation-chooser-backdrop {
-  position: fixed;
-  z-index: 1000;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 1.25rem;
-  background: rgba(20, 23, 28, 0.52);
-  backdrop-filter: blur(7px);
-  animation: chooser-fade-in 0.22s ease both;
-}
-
-.reservation-chooser {
-  position: relative;
-  width: min(100%, 680px);
-  max-height: min(90vh, 800px);
-  overflow: auto;
-  padding: clamp(1.5rem, 5vw, 3rem);
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  border-radius: 24px;
-  background: var(--bg);
-  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.22);
-  text-align: center;
-  animation: chooser-rise-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.reservation-chooser-close {
-  position: absolute;
-  top: 0.85rem;
-  right: 0.85rem;
-  display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: #fff;
-  color: var(--ink);
-  font: 400 1.5rem/1 "Hanken Grotesk", sans-serif;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.reservation-chooser-close:hover {
-  transform: rotate(90deg);
-  background: var(--ink);
-  color: #fff;
-}
-
-.reservation-chooser-kicker {
-  margin: 0 auto 0.7rem;
-  color: var(--mut);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-}
-
-.reservation-chooser h2 {
-  max-width: 18ch;
-  margin: 0 auto 1.5rem;
-  font-size: clamp(1.65rem, 4vw, 2.4rem);
-}
-
-.reservation-chooser-options {
-  display: grid;
-  gap: 0.7rem;
-  text-align: left;
-}
-
-.reservation-chooser-options a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: #fff;
-  text-decoration: none;
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-}
-
-.reservation-chooser-options a:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--a) 48%, var(--line));
-  box-shadow: 0 10px 24px rgba(20, 23, 28, 0.08);
-}
-
-.reservation-chooser-options a > span {
-  font-weight: 700;
-}
-
-.reservation-chooser-options b {
-  color: var(--a);
-  font-size: 0.88rem;
-  white-space: nowrap;
-}
-
-@keyframes chooser-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes chooser-rise-in {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@media (max-width: 560px) {
-  .reservation-chooser-options a {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reservation-chooser-backdrop,
-  .reservation-chooser {
-    animation: none;
-  }
-}
-
-/* Menu téléphone : panneau vertical séparé, sans chevauchement des deux groupes de liens. */
-@media (max-width: 820px) {
-  .top {
-    position: sticky;
-    z-index: 50;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    align-items: center;
-    min-height: 64px;
-  }
-
-  .top .brand {
-    position: static;
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: center;
-    width: max-content;
-    max-width: calc(100vw - 150px);
-    margin: 0;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .burger {
-    position: relative;
-    z-index: 52;
-    grid-column: 3;
-    grid-row: 1;
-    justify-self: end;
-    margin-left: 0;
-    min-width: 76px;
-    min-height: 42px;
-    background: rgba(255, 255, 255, 0.75);
-  }
-
-  .top nav#nav:not(.open) {
-    display: none !important;
-  }
-
-  .top nav#nav.open {
-    position: absolute;
-    display: flex;
-    inset: auto 0.75rem auto;
-    top: calc(100% + 0.45rem);
-    z-index: 51;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 0.65rem;
-    width: auto;
-    max-height: calc(100dvh - 5.5rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 0.8rem;
-    border: 1px solid rgba(112, 70, 163, 0.16);
-    border-radius: 18px;
-    background: rgba(250, 249, 251, 0.98);
-    box-shadow: 0 14px 36px rgba(33, 20, 45, 0.16);
-    pointer-events: auto;
-  }
-
-  .top nav#nav.open .nav-primary,
-  .top nav#nav.open .nav-secondary {
-    display: flex;
-    flex: 0 0 auto;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 0.2rem;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-  }
-
-  .top nav#nav.open .nav-secondary {
-    padding-top: 0.65rem;
-    border-top: 1px solid rgba(112, 70, 163, 0.14);
-  }
-
-  .top nav#nav.open a {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    min-height: 44px;
-    padding: 0.65rem 0.8rem;
-    border-radius: 11px;
-    font-size: 1rem;
-    line-height: 1.25;
-  }
-
-  .top nav#nav.open a:hover,
-  .top nav#nav.open a:focus-visible {
-    background: rgba(112, 70, 163, 0.08);
-  }
-
-  .top nav#nav.open .cta {
-    align-self: stretch;
-    justify-content: center;
-    min-height: 46px;
-    margin: 0.25rem 0 0;
-    background: var(--ink);
-    color: #fff;
-  }
-}
+ })
+}
+
+// ---------- Admin ----------
+const ST=['pending','confirmed','cancelled','done'];
+const STL={pending:'En attente',confirmed:'Confirmée',cancelled:'Annulée',done:'Réalisée'};
+const PS=['unpaid','paid','refunded'];
+const PSL={unpaid:'Non payé',paid:'Payé',refunded:'Remboursé'};
+const opts=(a,l,v)=>a.map(x=>`<option value="${x}"${x===v?' selected':''}>${l[x]||x}</option>`).join('');
+
+async function admin(){
+ const app=$('#app');
+ if(!live){
+  app.innerHTML='<div class="wrap admin"><section><h1>Espace administrateur</h1><p class="msg err">Supabase n’est pas configuré (config.js).</p></section></div>';
+  return
+ }
+ const {data:{session}}=await sb.auth.getSession();
+ const ok=session?(await sb.rpc('is_admin')).data:false;
+ if(!ok){
+  app.innerHTML=`<div class="wrap admin"><section><h1>Espace administrateur</h1><form id="lf"><label>E-mail<input name="e" type="email" required></label><label>Mot de passe<input name="p" type="password" required></label><button class="btn">Se connecter</button><div id="lm"></div></form>${session?'<p class="msg err">Ce compte n’est pas autorisé.</p>':''}</section></div>`;
+  $('#lf').onsubmit=async e=>{
+   e.preventDefault();
+   const {error}=await sb.auth.signInWithPassword({email:e.target.e.value,password:e.target.p.value});
+   if(error)$('#lm').innerHTML='<p class="msg err">'+error.message+'.</p>';
+   else admin()
+  };
+  return
+ }
+ const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Avis:tReviews};
+ app.innerHTML=`<div class="wrap admin"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
+ const show=n=>{
+  app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));
+  tabs[n]($('#tab'))
+ };
+ app.querySelectorAll('[role=tab]').forEach(b=>b.onclick=()=>show(b.textContent));
+ $('#out').onclick=async()=>{await sb.auth.signOut();admin()};
+ show('Réservations')
+}
+
+const toast=(el,m,e)=>{
+ el.insertAdjacentHTML('afterbegin',`<p class="msg${e?' err':''}">${esc(m)}</p>`);
+ setTimeout(()=>el.firstElementChild?.remove(),3000)
+};
+
+async function tBook(el){
+ const {data=[]}=await sb.from('bookings').select('*,slots(starts_at,duration_min)').order('created_at',{ascending:false});
+ el.innerHTML=`<div class="tw"><table><tr><th>Créneau</th><th>Client</th><th>Prestation</th><th>Statut</th><th>Paiement</th></tr>${data.map(b=>`<tr><td>${b.slots?fmt(b.slots.starts_at):'-'}</td><td>${esc(b.first_name)} ${esc(b.last_name)}<br>${esc(b.email)} ${esc(b.phone||'')}${b.is_minor?`<br><em>Mineur · resp. : ${esc(b.guardian_name)} ${esc(b.guardian_email)}</em>`:''}${b.note?`<br>“${esc(b.note)}”`:''}</td><td>${SV[b.service]?.name} · ${b.participants} pers. · ${eur(b.amount_cents||0)}</td><td><select data-id="${b.id}" data-f="status">${opts(ST,STL,b.status)}</select></td><td><select data-id="${b.id}" data-f="payment_status">${opts(PS,PSL,b.payment_status)}</select></td></tr>`).join('')||'<tr><td colspan=5>Aucune réservation.</td></tr>'}</table></div><p class="note">Suivi interne uniquement : ce n’est pas une comptabilité officielle.</p>`;
+ el.querySelectorAll('select').forEach(s=>s.onchange=async()=>{
+  const {error}=await sb.from('bookings').update({[s.dataset.f]:s.value}).eq('id',s.dataset.id);
+  toast(el,error?error.message:'Enregistré',!!error)
+ })
+}
+
+async function tSlots(el){
+ const {data=[]}=await sb.from('slots').select('*').order('starts_at');
+ el.innerHTML=`<form id="sf"><label>Type<select name="service">${Object.entries(SV).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select></label><label>Début<input name="at" type="datetime-local" required></label><label>Durée (min)<input name="d" type="number" value="60" min="15" step="5"></label><label>Places (max 4)<input name="c" type="number" value="1" min="1" max="4"></label><button class="btn">Créer le créneau</button></form>
+ <div class="tw"><table>${data.map(s=>`<tr><td>${fmt(s.starts_at)}</td><td>${SV[s.service].name}</td><td>${s.duration_min} min · ${s.capacity} pl.</td><td>${s.status==='open'?'Ouvert':'Fermé'}</td><td><button data-t="${s.id}" data-s="${s.status}">${s.status==='open'?'Fermer':'Ouvrir'}</button> <button data-x="${s.id}">Supprimer</button></td></tr>`).join('')}</table></div>`;
+ $('#sf').onsubmit=async e=>{
+  e.preventDefault();
+  const f=e.target;
+  const {error}=await sb.from('slots').insert({service:f.service.value,starts_at:new Date(f.at.value).toISOString(),duration_min:+f.d.value,capacity:+f.c.value});
+  error?toast(el,error.message,1):tSlots(el)
+ };
+ el.querySelectorAll('[data-t]').forEach(b=>b.onclick=async()=>{
+  await sb.from('slots').update({status:b.dataset.s==='open'?'closed':'open'}).eq('id',b.dataset.t);
+  tSlots(el)
+ });
+ el.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{
+  const {error}=await sb.from('slots').delete().eq('id',b.dataset.x);
+  error?toast(el,'Suppression impossible (réservations liées) : fermez le créneau.',1):tSlots(el)
+ })
+}
+
+async function tOffers(el){
+ const {data=[]}=await sb.from('offers').select('*').order('service').order('sort');
+ el.innerHTML=`<div class="tw"><table><tr><th>Type</th><th>Libellé</th><th>Détail</th><th>Prix total (€)</th><th>Participants</th><th>Actif</th><th></th></tr>${data.map(o=>`<tr data-id="${o.id}"><td>${SV[o.service].name}</td><td><input value="${esc(o.label)}" data-f="label"></td><td><input value="${esc(o.detail||'')}" data-f="detail"></td><td><input type="number" step="0.5" value="${o.price_cents/100}" data-f="price"></td><td><input type="number" min="1" max="4" value="${o.participants}" data-f="participants"></td><td><input type="checkbox" ${o.active?'checked':''} data-f="active"></td><td><button>Enregistrer</button></td></tr>`).join('')}</table></div>
+ <button class="btn" id="add">Ajouter une offre</button>`;
+ el.querySelectorAll('tr[data-id] button').forEach(b=>b.onclick=async()=>{
+  const r=b.closest('tr'),g=f=>r.querySelector(`[data-f=${f}]`);
+  const {error}=await sb.from('offers').update({label:g('label').value,detail:g('detail').value,price_cents:Math.round(g('price').value*100),participants:+g('participants').value,active:g('active').checked}).eq('id',r.dataset.id);
+  toast(el,error?error.message:'Enregistré',!!error)
+ });
+ $('#add').onclick=async()=>{
+  const s=prompt('Type : physique, mentale ou basket ?');
+  if(!SV[s])return;
+  await sb.from('offers').insert({service:s,label:'Nouvelle offre',price_cents:0});
+  tOffers(el)
+ }
+}
+
+async function tContent(el){
+ const {data=[]}=await sb.from('site_content').select('*');
+ const cur={...C};
+ data.forEach(r=>cur[r.key]=r.value);
+ const clubHeadings={
+  'clubs.intro':'<h2 class="content-group-title">Clubs et Entreprises — introduction</h2>',
+  'clubs.players':'<h2 class="content-group-title">Club sportif</h2>',
+  'clubs.companies':'<h2 class="content-group-title">Entreprise</h2>',
+  'clubs.frequency':'<h2 class="content-group-title">Modalités et tarifs</h2>'
+ };
+ const contentLabels={
+  'clubs.intro':'Introduction commune',
+  'clubs.players':'Joueurs et joueuses',
+  'clubs.staff':'Staffs et entraîneurs',
+  'clubs.companies':'Interventions en entreprise',
+  'clubs.frequency':'Fréquence des interventions',
+  'clubs.duration':'Durée d’une intervention',
+  'clubs.pricing':'Tarification'
+ };
+ el.innerHTML=`<form style="max-width:760px">${Object.keys(C).map(k=>`${clubHeadings[k]||''}<label>${contentLabels[k]||k}<textarea name="${k}" rows="${cur[k].length>120?4:1}">${esc(cur[k])}</textarea></label>`).join('')}<button class="btn">Enregistrer les contenus</button></form><p class="note">Les passages entre crochets [ ] s’affichent comme « à compléter » sur le site.</p>`;
+ el.querySelector('form').onsubmit=async e=>{
+  e.preventDefault();
+  const rows=Object.keys(C).map(k=>({key:k,value:e.target[k].value}));
+  const {error}=await sb.from('site_content').upsert(rows);
+  toast(el,error?error.message:'Contenus enregistrés',!!error)
+ }
+}
+
+async function tReviews(el){
+ const {data,error}=await sb.from('site_content').select('value').eq('key','reviews.data').maybeSingle();
+ const items=parseReviews(data?.value);
+ el.innerHTML=`<div class="admin-reviews"><h2>Ajouter un avis</h2><p class="note">Les avis enregistrés ici apparaissent publiquement sur la page d’accueil.</p><form id="review-form"><label>Commentaire<textarea name="text" rows="4" maxlength="1500" required placeholder="Saisir le commentaire"></textarea></label><label>Prénom ou nom affiché (facultatif)<input name="name" maxlength="80" placeholder="Ex. Camille"></label><button class="btn" type="submit">Ajouter l’avis</button></form><h2>Avis publiés (${items.length})</h2><div class="admin-review-list">${items.map((r,i)=>`<article class="box"><p>« ${esc(r.text)} »</p>${r.name?`<p><strong>${esc(r.name)}</strong></p>`:''}<button type="button" class="btn alt" data-delete-review="${i}">Supprimer</button></article>`).join('')||'<p>Aucun avis publié pour le moment.</p>'}</div></div>`;
+ if(error)toast(el,`Chargement des avis impossible : ${error.message}`,true);
+ const save=async next=>{
+  const {error:saveError}=await sb.from('site_content').upsert({key:'reviews.data',value:JSON.stringify(next)});
+  if(saveError){toast(el,saveError.message,true);return false}
+  reviews=next;
+  return true
+ };
+ el.querySelector('#review-form').onsubmit=async e=>{
+  e.preventDefault();
+  const form=e.currentTarget;
+  const submit=form.querySelector('button[type="submit"]');
+  const text=form.elements.namedItem('text').value.trim();
+  const name=form.elements.namedItem('name').value.trim();
+  if(!text)return;
+  const next=[...items,{text,name}];
+  submit.disabled=true;
+  if(await save(next))tReviews(el);
+  else submit.disabled=false
+ };
+ el.querySelectorAll('[data-delete-review]').forEach(button=>button.onclick=async()=>{
+  const next=items.filter((_,i)=>i!==Number(button.dataset.deleteReview));
+  if(await save(next))tReviews(el)
+ })
+}
+
+let revealObserver;
+const rv=()=>{
+ if(revealObserver)revealObserver.disconnect();
+ const items=document.querySelectorAll('#app .rv');
+ if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  items.forEach(x=>x.classList.add('on'));
+  return
+ }
+ revealObserver=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('on');revealObserver.unobserve(e.target)}
+ }),{threshold:.12,rootMargin:'0px 0px -30px 0px'});
+ items.forEach(x=>revealObserver.observe(x))
+};
+
+let moodFrame=0;
+const syncScrollMood=()=>{
+ if(moodFrame)return;
+ moodFrame=requestAnimationFrame(()=>{
+  const maxScroll=Math.max(1,document.documentElement.scrollHeight-innerHeight);
+  const progress=Math.min(1,Math.max(0,scrollY/maxScroll));
+  const drift=progress*8;
+  document.documentElement.style.setProperty('--scroll-x',`${46+drift}%`);
+  document.documentElement.style.setProperty('--scroll-y',`${46+drift}%`);
+  moodFrame=0
+ })
+};
+addEventListener('scroll',syncScrollMood,{passive:true});
+addEventListener('resize',syncScrollMood);
+
+function openReservationChooser(){
+ const old=$('[data-reservation-chooser]');
+ old?.remove();
+ const overlay=document.createElement('div');
+ overlay.className='reservation-chooser-backdrop';
+ overlay.dataset.reservationChooser='';
+ overlay.innerHTML=`<section class="reservation-chooser" role="dialog" aria-modal="true" aria-labelledby="reservation-chooser-title"><button type="button" class="reservation-chooser-close" aria-label="Fermer">×</button><p class="reservation-chooser-kicker">CHOISIR UN ACCOMPAGNEMENT</p><h2 id="reservation-chooser-title">Que souhaitez-vous réserver ?</h2><div class="reservation-chooser-options"><a href="#/mentale#resa"><span>Préparation mentale</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/basket#resa"><span>Coaching individuel basket</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/physique#resa"><span>Préparation physique</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/clubs"><span>Clubs et Entreprises</span><b>Échanger sur un projet <span aria-hidden="true">→</span></b></a></div></section>`;
+ document.body.append(overlay);
+ const close=()=>overlay.remove();
+ overlay.querySelector('.reservation-chooser-close').addEventListener('click',close);
+ overlay.querySelectorAll('a').forEach(link=>link.addEventListener('click',close));
+ overlay.addEventListener('click',event=>{if(event.target===overlay)close()});
+ overlay.addEventListener('keydown',event=>{if(event.key==='Escape')close()});
+ overlay.querySelector('.reservation-chooser-close').focus()
+}
+
+history.scrollRestoration='manual';
+
+const navOrder=['mentale','basket','physique','clubs'];
+const navPrimary=$('.nav-primary');
+if(navPrimary){
+ const navLinks=new Map([...navPrimary.querySelectorAll('a')].map(link=>[link.getAttribute('href').replace(/^#\//,''),link]));
+ navOrder.forEach(key=>{const link=navLinks.get(key);if(link)navPrimary.append(link)})
+}
+
+async function route(preserveScroll=false){
+ const currentScroll=scrollY;
+ const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');
+ const key=p||'home';
+ document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');
+ $('#nav').classList.remove('open');
+ $('.burger')?.setAttribute('aria-expanded','false');
+ if(key==='admin')await admin();
+ else{
+  $('#app').innerHTML=SV[key]?pages.service(key):(pages[{'a-propos':'about'}[key]||key]||pages.home)();
+  if(SV[key])booking(key);
+  if(key==='home')setupReviews();
+  if(key==='clubs')setupClubTabs();
+  if(key==='a-propos')setupTimeline()
+ }
+ if(key==='home'){
+  const hero=$('#app .hero');
+  if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))
+ }
+ foot();
+ rv();
+ if(anchor)document.getElementById(anchor)?.scrollIntoView();
+ else{
+  const behavior=document.documentElement.style.scrollBehavior;
+  document.documentElement.style.scrollBehavior='auto';
+  scrollTo(0,preserveScroll===true?currentScroll:0);
+  document.documentElement.style.scrollBehavior=behavior
+ }
+ syncScrollMood()
+}
+
+$('#nav').addEventListener('click',e=>{
+ const link=e.target.closest('a[href^="#/"]:not([data-resa])');
+ if(!link)return;
+ e.preventDefault();
+ const target=link.getAttribute('href');
+ if(location.hash===target){
+  const behavior=document.documentElement.style.scrollBehavior;
+  document.documentElement.style.scrollBehavior='auto';
+  scrollTo(0,0);
+  document.documentElement.style.scrollBehavior=behavior
+ }else location.hash=target
+});
+
+document.addEventListener('click',e=>{
+ const a=e.target.closest('[data-resa]');
+ if(!a)return;
+ const current=location.hash.match(/^#\/(physique|mentale|basket)(?:#|$)/)?.[1];
+ if(current){
+  e.preventDefault();
+  document.getElementById('resa')?.scrollIntoView({behavior:'smooth',block:'start'});
+  return
+ }
+ e.preventDefault();
+ openReservationChooser()
+});
+
+$('.burger').onclick=e=>{
+ const n=$('#nav'),open=n.classList.toggle('open');
+ e.currentTarget.setAttribute('aria-expanded',String(open))
+};
+
+if(!live)$('#banner').innerHTML='<div class="warn">Mode aperçu : Supabase n’est pas connecté. Les contenus affichés sont ceux par défaut et les réservations sont désactivées.</div>';
+addEventListener('hashchange',()=>route(false));
+
+async function boot(){
+ await loadData();
+ await route();
+ document.body.classList.add('is-ready')
+}
+boot();
