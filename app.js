@@ -1,4 +1,10 @@
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+document.body.classList.remove('is-ready');
+const watermark=document.createElement('div');
+watermark.className='site-watermark';
+watermark.setAttribute('aria-hidden','true');
+watermark.innerHTML='<svg viewBox="0 0 1000 1000" focusable="false"><circle cx="500" cy="500" r="410" fill="none" stroke="currentColor" stroke-width="14"/><text class="watermark-monogram" x="500" y="545" text-anchor="middle">BY</text><text class="watermark-name" x="500" y="690" text-anchor="middle">BET ON YOU</text></svg>';
+document.body.prepend(watermark);
 const cfg=window.SITE_CONFIG||{}, live=!!(cfg.supabaseUrl&&cfg.supabaseAnonKey);
 const sb=live?createClient(cfg.supabaseUrl,cfg.supabaseAnonKey):null;
 const $=(s,r=document)=>r.querySelector(s);
@@ -10,7 +16,7 @@ const fmt=d=>new Date(d).toLocaleString('fr-FR',{weekday:'long',day:'numeric',mo
 const DUR='Séance de référence : 1 h 15 de séance effective, suivie d’un débriefing et de conseils.';
 const TBC='[À compléter]';
 
-const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenus)
+const C={
 'brand':'[Nom de l’activité à définir]',
 'home.title':'Préparer le corps, l’esprit et le geste.',
 'home.lead':'Tu veux miser sur toi ? Je t’accompagne en préparation physique, mentale, en nutrition et en coaching basket. Clubs et entreprises : des formations et interventions sur mesure autour de la performance, de la cohésion et du bien-être.',
@@ -46,7 +52,8 @@ const C={ // textes par défaut, modifiables dans l'espace admin (onglet Contenu
 'faq.2.q':'Quelle est la durée d’une séance ?','faq.2.a':DUR,
 'faq.3.q':'Quelles sont les modalités d’annulation et de paiement ?','faq.3.a':'[À compléter]',
 'faq.4.q':'Les mineurs peuvent-ils réserver ?','faq.4.a':'Oui, avec les coordonnées du représentant légal, demandées lors de la réservation.',
-'video.url':''};
+'video.url':''
+};
 const DEF_OFFERS=[
 ['physique','Séance à l’unité','',5000],['physique','Pack de 5 séances','soit 45 € par séance',22500],['physique','Pack de 10 séances','soit 40 € par séance',40000],
 ['mentale','Séance à l’unité','Séance individuelle',5000],['mentale','Pack de 5 séances','soit 40 € par séance',20000],
@@ -268,6 +275,7 @@ async function tReviews(el){
  el.querySelector('#review-form').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget,submit=form.querySelector('button[type="submit"]'),text=form.elements.namedItem('text').value.trim(),name=form.elements.namedItem('name').value.trim();if(!text)return;const next=[...items,{text,name}];submit.disabled=true;if(await save(next))tReviews(el);else submit.disabled=false};
  el.querySelectorAll('[data-delete-review]').forEach(button=>button.onclick=async()=>{const next=items.filter((_,i)=>i!==Number(button.dataset.deleteReview));if(await save(next))tReviews(el)});
 }
+
 // ---------- Routeur ----------
 let revealObserver;
 const rv=()=>{
@@ -278,7 +286,6 @@ const rv=()=>{
  items.forEach(x=>revealObserver.observe(x))
 };
 
-// Le fond accompagne doucement le défilement, sans animation lourde ni effet de curseur.
 let moodFrame=0;
 const syncScrollMood=()=>{
  if(moodFrame)return;
@@ -310,7 +317,6 @@ function openReservationChooser(){
 }
 
 history.scrollRestoration='manual';
-// Ordre uniforme des rubriques dans le menu téléphone et ordinateur.
 const navOrder=['mentale','basket','physique','clubs'];
 const navPrimary=$('.nav-primary');
 if(navPrimary){
@@ -326,8 +332,6 @@ async function route(preserveScroll=false){
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else{const behavior=document.documentElement.style.scrollBehavior;document.documentElement.style.scrollBehavior='auto';scrollTo(0,preserveScroll===true?currentScroll:0);document.documentElement.style.scrollBehavior=behavior}syncScrollMood();
 }
-// Les onglets de navigation doivent toujours ramener en haut de leur page,
-// y compris si l’on reclique sur l’onglet de la page déjà ouverte.
 $('#nav').addEventListener('click',e=>{
  const link=e.target.closest('a[href^="#/"]:not([data-resa])');
  if(!link)return;
@@ -354,9 +358,10 @@ document.addEventListener('click',e=>{
 });
 $('.burger').onclick=e=>{const n=$('#nav'),open=n.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(open))};
 if(!live)$('#banner').innerHTML='<div class="warn">Mode aperçu : Supabase n’est pas connecté. Les contenus affichés sont ceux par défaut et les réservations sont désactivées.</div>';
-let visitorHasScrolled=false;
-addEventListener('scroll',()=>{visitorHasScrolled=true},{passive:true,once:true});
 addEventListener('hashchange',()=>route(false));
-// Affiche le site tout de suite. Ne le re-rend après le chargement des données que si le visiteur n’a pas commencé à défiler.
-route();
-loadData().then(()=>{if(!visitorHasScrolled)route(true)});
+async function boot(){
+ await loadData();
+ await route();
+ document.body.classList.add('is-ready');
+}
+boot();
