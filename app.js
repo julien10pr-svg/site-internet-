@@ -153,7 +153,7 @@ async function loadData(){
 }
 
 const foot=()=>{
- $('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a><a href="#/admin">Espace admin</a></p>`;
+ $('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a></p>`;
  $('#brand').innerHTML=tbd(t('brand'))
 };
 
@@ -530,7 +530,9 @@ if(navPrimary){
 async function route(preserveScroll=false){
  const currentScroll=scrollY;
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');
- const key=p||'home';
+ const path=location.pathname.replace(/\/+$/,'').toLowerCase();
+ const isAdminPath=path==='/admin'||path==='/admin.html';
+ const key=isAdminPath?'admin':(p==='admin'?'home':(p||'home'));
  document.body.dataset.t=key==='admin'?'admin':SV[key]?key:(key==='clubs'?'clubs':'home');
  $('#nav').classList.remove('open');
  $('.burger')?.setAttribute('aria-expanded','false');
