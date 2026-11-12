@@ -231,7 +231,6 @@ function booking(id){
  });
 }
 
-// ---------- Admin ----------
 const ST=['pending','confirmed','cancelled','done'],STL={pending:'En attente',confirmed:'Confirmée',cancelled:'Annulée',done:'Réalisée'},PS=['unpaid','paid','refunded'],PSL={unpaid:'Non payé',paid:'Payé',refunded:'Remboursé'};
 const opts=(a,l,v)=>a.map(x=>`<option value="${x}"${x===v?' selected':''}>${l[x]||x}</option>`).join('');
 async function admin(){
@@ -275,8 +274,6 @@ async function tReviews(el){
  el.querySelector('#review-form').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget,submit=form.querySelector('button[type="submit"]'),text=form.elements.namedItem('text').value.trim(),name=form.elements.namedItem('name').value.trim();if(!text)return;const next=[...items,{text,name}];submit.disabled=true;if(await save(next))tReviews(el);else submit.disabled=false};
  el.querySelectorAll('[data-delete-review]').forEach(button=>button.onclick=async()=>{const next=items.filter((_,i)=>i!==Number(button.dataset.deleteReview));if(await save(next))tReviews(el)});
 }
-
-// ---------- Routeur ----------
 let revealObserver;
 const rv=()=>{
  if(revealObserver)revealObserver.disconnect();
