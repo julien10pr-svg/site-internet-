@@ -54,9 +54,9 @@ const DEF_OFFERS=[
 ].map(([service,label,detail,price_cents,tbc])=>({service,label,detail,price_cents,tbc}));
 
 const SV={
-physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</span>',secs:[['Vision et méthodologie','vision'],['Besoins et objectifs','needs'],['Évaluation et testing','testing'],['Nutrition','nutrition']]},
 mentale:{name:'Préparation mentale',k:'ment',h:'Préparation mentale',secs:[['Vision et méthodologie','vision'],['Objectifs et déroulement','goals'],['Individuel','format']]},
-basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]}};
+basket:{name:'Coaching individuel basket',k:'bask',h:'Coaching individuel <span>basket</span>',secs:[['Les fondamentaux','fund'],['Technique et gestuelle de tir','shoot'],['Un suivi adapté','levels'],['Petits groupes (4 max.)','groups']]},
+physique:{name:'Préparation physique',k:'phys',h:'Préparation <span>physique</span>',secs:[['Vision et méthodologie','vision'],['Besoins et objectifs','needs'],['Évaluation et testing','testing'],['Nutrition','nutrition']]}};
 
 const TIMELINE=[
  {year:'2026–2027',tone:'clubs',chapter:'Master 2 et nouvelles missions',events:[
@@ -186,7 +186,7 @@ service(id){const s=SV[id],o=offers.filter(x=>x.service===id);
 <section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}</p></div>`).join('')}</div>
 <p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
 <section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`},
- about(){return `<div class="shero about-hero rv"><div class="wrap"><h1>Mon parcours</h1></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone} ${index%2?'timeline-left':'timeline-right'}" style="--step:${index}" aria-label="${esc(item.year)} — ${esc(item.chapter)}"><div class="timeline-node" aria-hidden="true"></div><div class="timeline-card"><div class="timeline-card-top"><p class="timeline-year">${esc(item.year)}</p></div><div class="timeline-events">${item.events.map((event,eventIndex)=>`<div class="timeline-event" style="--event-step:${eventIndex}"><div class="timeline-event-copy"><span class="timeline-label">${esc(event.label)}</span><h3>${esc(event.title)}</h3><p>${esc(event.detail)}</p></div></div>`).join('')}</div></div></article>`).join('')}</div></section>`},
+about(){return `<div class="shero about-hero rv"><div class="wrap"><h1>Mon parcours</h1></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone} ${index%2?'timeline-left':'timeline-right'}" style="--step:${index}" aria-label="${esc(item.year)} — ${esc(item.chapter)}"><div class="timeline-node" aria-hidden="true"></div><div class="timeline-card"><div class="timeline-card-top"><p class="timeline-year">${esc(item.year)}</p></div><div class="timeline-events">${item.events.map((event,eventIndex)=>`<div class="timeline-event" style="--event-step:${eventIndex}"><div class="timeline-event-copy"><span class="timeline-label">${esc(event.label)}</span><h3>${esc(event.title)}</h3><p>${esc(event.detail)}</p></div></div>`).join('')}</div></div></article>`).join('')}</div></section>`},
 clubs(){return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
 <section class="wrap rv clubs-choices"><h2>Choisissez votre accompagnement</h2><div class="clubs-switch" role="tablist" aria-label="Type d’intervention"><button type="button" role="tab" id="clubs-tab-sport" aria-controls="clubs-panel-sport" aria-selected="true" data-club-tab="sport">Club sportif</button><button type="button" role="tab" id="clubs-tab-company" aria-controls="clubs-panel-company" aria-selected="false" data-club-tab="company" tabindex="-1">Entreprise</button></div>
 <div class="clubs-panel is-active" role="tabpanel" id="clubs-panel-sport" aria-labelledby="clubs-tab-sport" data-club-panel="sport"><h2>Interventions pour les clubs sportifs</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article></div></div>
@@ -299,7 +299,7 @@ function openReservationChooser(){
  const overlay=document.createElement('div');
  overlay.className='reservation-chooser-backdrop';
  overlay.dataset.reservationChooser='';
- overlay.innerHTML=`<section class="reservation-chooser" role="dialog" aria-modal="true" aria-labelledby="reservation-chooser-title"><button type="button" class="reservation-chooser-close" aria-label="Fermer">×</button><p class="reservation-chooser-kicker">CHOISIR UN ACCOMPAGNEMENT</p><h2 id="reservation-chooser-title">Que souhaitez-vous réserver ?</h2><div class="reservation-chooser-options"><a href="#/physique#resa"><span>Préparation physique</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/mentale#resa"><span>Préparation mentale</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/basket#resa"><span>Coaching individuel basket</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/clubs"><span>Clubs et Entreprises</span><b>Échanger sur un projet <span aria-hidden="true">→</span></b></a></div></section>`;
+ overlay.innerHTML=`<section class="reservation-chooser" role="dialog" aria-modal="true" aria-labelledby="reservation-chooser-title"><button type="button" class="reservation-chooser-close" aria-label="Fermer">×</button><p class="reservation-chooser-kicker">CHOISIR UN ACCOMPAGNEMENT</p><h2 id="reservation-chooser-title">Que souhaitez-vous réserver ?</h2><div class="reservation-chooser-options"><a href="#/mentale#resa"><span>Préparation mentale</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/basket#resa"><span>Coaching individuel basket</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/physique#resa"><span>Préparation physique</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/clubs"><span>Clubs et Entreprises</span><b>Échanger sur un projet <span aria-hidden="true">→</span></b></a></div></section>`;
  document.body.append(overlay);
  const close=()=>overlay.remove();
  overlay.querySelector('.reservation-chooser-close').addEventListener('click',close);
@@ -310,6 +310,13 @@ function openReservationChooser(){
 }
 
 history.scrollRestoration='manual';
+// Ordre uniforme des rubriques dans le menu téléphone et ordinateur.
+const navOrder=['mentale','basket','physique','clubs'];
+const navPrimary=$('.nav-primary');
+if(navPrimary){
+ const navLinks=new Map([...navPrimary.querySelectorAll('a')].map(link=>[link.getAttribute('href').replace(/^#\//,''),link]));
+ navOrder.forEach(key=>{const link=navLinks.get(key);if(link)navPrimary.append(link)});
+}
 async function route(preserveScroll=false){
  const currentScroll=scrollY;
  const [p,anchor]=location.hash.replace(/^#\/?/,'').split('#');const key=p||'home';
@@ -319,6 +326,20 @@ async function route(preserveScroll=false){
  if(key==='home'){const hero=$('#app .hero');if(hero)requestAnimationFrame(()=>requestAnimationFrame(()=>hero.classList.add('home-enter')))}
  foot();rv();if(anchor)document.getElementById(anchor)?.scrollIntoView();else{const behavior=document.documentElement.style.scrollBehavior;document.documentElement.style.scrollBehavior='auto';scrollTo(0,preserveScroll===true?currentScroll:0);document.documentElement.style.scrollBehavior=behavior}syncScrollMood();
 }
+// Les onglets de navigation doivent toujours ramener en haut de leur page,
+// y compris si l’on reclique sur l’onglet de la page déjà ouverte.
+$('#nav').addEventListener('click',e=>{
+ const link=e.target.closest('a[href^="#/"]:not([data-resa])');
+ if(!link)return;
+ e.preventDefault();
+ const target=link.getAttribute('href');
+ if(location.hash===target){
+  const behavior=document.documentElement.style.scrollBehavior;
+  document.documentElement.style.scrollBehavior='auto';
+  scrollTo(0,0);
+  document.documentElement.style.scrollBehavior=behavior;
+ }else location.hash=target;
+});
 document.addEventListener('click',e=>{
  const a=e.target.closest('[data-resa]');
  if(!a)return;
