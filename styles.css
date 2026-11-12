@@ -1510,6 +1510,7 @@ th {
   .timeline-event p { font-size: .88rem; }
   .about-hero h1 { font-size: clamp(2.45rem, 11vw, 4rem); }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .timeline-rail::after { transform: scaleY(1); }
   .timeline-item,
@@ -1523,5 +1524,129 @@ th {
     filter: none;
     transform: none;
     transition: none;
+  }
+}
+
+/* Sélecteur d’accompagnement ouvert par le bouton Réserver hors d’une page de prestation. */
+.reservation-chooser-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(20, 23, 28, 0.52);
+  backdrop-filter: blur(7px);
+  animation: chooser-fade-in 0.22s ease both;
+}
+
+.reservation-chooser {
+  position: relative;
+  width: min(100%, 680px);
+  max-height: min(90vh, 800px);
+  overflow: auto;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 24px;
+  background: var(--bg);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.22);
+  text-align: center;
+  animation: chooser-rise-in 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.reservation-chooser-close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  font: 400 1.5rem/1 "Hanken Grotesk", sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.reservation-chooser-close:hover {
+  transform: rotate(90deg);
+  background: var(--ink);
+  color: #fff;
+}
+
+.reservation-chooser-kicker {
+  margin: 0 auto 0.7rem;
+  color: var(--mut);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.reservation-chooser h2 {
+  max-width: 18ch;
+  margin: 0 auto 1.5rem;
+  font-size: clamp(1.65rem, 4vw, 2.4rem);
+}
+
+.reservation-chooser-options {
+  display: grid;
+  gap: 0.7rem;
+  text-align: left;
+}
+
+.reservation-chooser-options a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  text-decoration: none;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.reservation-chooser-options a:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--a) 48%, var(--line));
+  box-shadow: 0 10px 24px rgba(20, 23, 28, 0.08);
+}
+
+.reservation-chooser-options a > span {
+  font-weight: 700;
+}
+
+.reservation-chooser-options b {
+  color: var(--a);
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+@keyframes chooser-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes chooser-rise-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 560px) {
+  .reservation-chooser-options a {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reservation-chooser-backdrop,
+  .reservation-chooser {
+    animation: none;
   }
 }
