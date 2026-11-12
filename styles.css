@@ -119,6 +119,7 @@ body:not(.is-ready) footer {
   visibility: hidden;
 }
 
+/* Halo de couleurs animé, visible sans passer devant le contenu. */
 body::before {
   position: fixed;
   z-index: -1;
@@ -694,23 +695,7 @@ body[data-t="basket"] .shero h1 span {
 }
 
 .sec2::before {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 100vw;
-  height: 3px;
-  transform: translateX(-50%);
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--a) 38%, transparent) 0%,
-    color-mix(in srgb, var(--a) 30%, transparent) 10%,
-    color-mix(in srgb, var(--a) 15%, transparent) 36%,
-    color-mix(in srgb, var(--a) 8%, transparent) 50%,
-    color-mix(in srgb, var(--a) 15%, transparent) 64%,
-    color-mix(in srgb, var(--a) 30%, transparent) 90%,
-    color-mix(in srgb, var(--a) 38%, transparent) 100%
-  );
-  content: "";
+  display: none;
 }
 
 .sec2 h2 {
@@ -904,6 +889,7 @@ th {
   overflow-x: auto;
 }
 
+/* Apparition progressive des sections publiques au défilement */
 .rv {
   opacity: 0;
   transform: translateY(24px);
@@ -917,6 +903,7 @@ th {
   transform: translateY(0);
 }
 
+/* Avis : une bulle visible à la fois, avec une pointe façon bande dessinée */
 .reviews-section {
   padding-top: clamp(2.5rem, 5vw, 4rem);
   padding-bottom: clamp(3rem, 6vw, 5rem);
@@ -1055,6 +1042,7 @@ th {
   font-size: 0.9rem;
 }
 
+/* L’espace admin conserve une mise en page pratique et lisible */
 #app .wrap.admin {
   text-align: left;
 }
@@ -1261,6 +1249,7 @@ th {
   }
 }
 
+/* Frise chronologique du parcours — les jalons s’activent au défilement. */
 .about-hero {
   position: relative;
   overflow: hidden;
@@ -1549,7 +1538,6 @@ th {
   .timeline-event p { font-size: .88rem; }
   .about-hero h1 { font-size: clamp(2.45rem, 11vw, 4rem); }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .timeline-rail::after { transform: scaleY(1); }
   .timeline-item,
@@ -1566,6 +1554,7 @@ th {
   }
 }
 
+/* Sélecteur d’accompagnement ouvert par le bouton Réserver hors d’une page de prestation. */
 .reservation-chooser-backdrop {
   position: fixed;
   z-index: 1000;
@@ -1694,22 +1683,31 @@ th {
   .top {
     position: sticky;
     z-index: 50;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
     min-height: 64px;
   }
 
   .top .brand {
-    position: absolute;
-    left: 50%;
-    width: calc(100% - 120px);
-    transform: translateX(-50%);
+    position: static;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    width: max-content;
+    max-width: calc(100vw - 150px);
+    margin: 0;
     text-align: center;
+    white-space: nowrap;
   }
 
   .burger {
     position: relative;
     z-index: 52;
-    flex: 0 0 auto;
-    margin-left: auto;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    margin-left: 0;
     min-width: 76px;
     min-height: 42px;
     background: rgba(255, 255, 255, 0.75);
@@ -1721,6 +1719,7 @@ th {
 
   .top nav#nav.open {
     position: absolute;
+    display: flex;
     inset: auto 0.75rem auto;
     top: calc(100% + 0.45rem);
     z-index: 51;
