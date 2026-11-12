@@ -217,6 +217,15 @@ nav .cta,
   transition: transform 0.25s ease, background 0.25s ease;
 }
 
+.top nav .cta {
+  align-self: center;
+  margin: 0;
+  padding: 0.62em 1.05em;
+  font-size: 0.94rem;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
 nav .cta:hover,
 .btn:hover {
   transform: translateY(-2px);
@@ -351,6 +360,7 @@ mark.tbd {
   margin: 0 auto 1.5em;
   color: var(--mut);
   font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+  white-space: pre-line;
 }
 
 @keyframes rise-in {
@@ -504,6 +514,11 @@ body[data-t="clubs"] section.wrap.clubs-offers {
 
 .clubs-offers .box h3 {
   color: #244b38;
+}
+
+.clubs-offers .box p {
+  margin-bottom: 0.6em !important;
+  line-height: 1.55 !important;
 }
 
 .clubs-choices {
