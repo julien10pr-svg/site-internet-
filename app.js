@@ -1,5 +1,5 @@
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
-import {renderFollowupAdmin} from './followup.js?v=20261113-followup-v3';
+import {renderFollowupAdmin} from './followup.js?v=20261113-followup-v4';
 
 document.body.classList.remove('is-ready');
 
