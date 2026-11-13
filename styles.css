@@ -2080,3 +2080,13 @@ th {
  .followup-assessment-layout{grid-template-columns:minmax(0,1fr)}
  .followup-assessment-right{max-height:none}
 }
+
+/* Espacement intérieur des sections imbriquées dans l’administration */
+.admin .followup-form section,
+.admin .followup-form .followup-final-results,
+.admin .followup-resource-section{padding:1rem}
+.admin .followup-final-results h4,
+.admin .followup-final-results .followup-result-progress{margin-inline:0}
+.admin .followup-final-results .followup-results-table-wrap{margin:.75rem 0}
+.admin .followup-final-results .followup-report-label{margin:.8rem 0}
+.admin .followup-final-results textarea{padding:.75rem .85rem}
