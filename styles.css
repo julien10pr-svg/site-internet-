@@ -2061,3 +2061,22 @@ th {
  .followup-score-top strong{text-align:left}
  .followup-final-results{padding:.7rem}
 }
+
+/* Mise en page large et lisibilité des résultats du suivi */
+#app .wrap.admin{width:min(100%,1680px);max-width:1680px}
+.admin>section,#tab,.followup-admin{width:100%;min-width:0}
+.followup-form,.followup-assessment-form{box-sizing:border-box}
+.followup-score-top{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:.5rem;min-height:0!important;height:auto!important;overflow:visible!important;background:transparent!important}
+.followup-score-top>b{min-width:0;overflow-wrap:anywhere}
+.followup-score-top strong{display:inline-flex;flex-wrap:wrap;justify-content:flex-end;gap:.2rem;white-space:nowrap;text-align:right;font-size:1rem;line-height:1.25}
+.followup-score .followup-score-bar{height:12px!important;min-height:12px;overflow:hidden!important}
+.followup-score-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.followup-score{min-height:154px}
+.followup-score>p{min-height:0}
+.followup-admin .followup-head>div>p:not(.eyebrow),.followup-admin .followup-sub,.followup-admin .followup-hint,.followup-assessment-intro>p{display:none!important}
+.followup-pick-list [data-resource-kind][hidden]{display:none!important}
+@media(max-width:1000px){
+ #app .wrap.admin{width:100%;max-width:none}
+ .followup-assessment-layout{grid-template-columns:minmax(0,1fr)}
+ .followup-assessment-right{max-height:none}
+}
