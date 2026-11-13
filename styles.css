@@ -2013,3 +2013,5 @@ th {
 .followup-final-chips span{display:flex;flex-direction:column;border-radius:10px}
 @media(max-width:850px){.followup-assessment-layout{grid-template-columns:1fr}.followup-assessment-right{position:static;max-height:none;order:2}.followup-session-columns{grid-template-columns:1fr}}
 @media(max-width:600px){.followup-resource-grid{grid-template-columns:1fr}.followup-session-builder{padding:.8rem}.followup-rating-circles{gap:.2rem}.followup-rating-circles button{width:32px;height:32px}.followup-question{grid-template-columns:1fr}.followup-effect-answer{grid-column:1}.followup-assessment-intro{position:static}}
+
+.followup-rating-circles button{font:inherit;font-size:.88rem;font-weight:700}
