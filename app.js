@@ -140,18 +140,19 @@ const CONTENT_BLOCKS={
   {title:'Gagner en autonomie',text:'Tester des outils, comprendre leur intérêt et apprendre à les réutiliser dans sa pratique.'}
  ],
  'ment.steps':[
-  {title:'Échanger',text:'Faire le point sur le vécu, les attentes, les objectifs et les situations rencontrées.'},
-  {title:'Évaluer',text:'Repérer les ressources, les besoins et les habitudes déjà mobilisées.'},
-  {title:'S’entraîner',text:'Choisir des outils adaptés et les travailler progressivement en séance puis dans la pratique.'},
-  {title:'Ajuster',text:'Faire le bilan des essais, observer ce qui aide et adapter la suite du suivi.'}
+  {title:'Établir votre profil',text:'Un entretien approfondi explore votre parcours, vos objectifs, vos difficultés, vos points forts et vos besoins.'},
+  {title:'Évaluer et orienter',text:'Des tests pertinents et documentés complètent l’entretien. Le croisement des observations permet de poser un diagnostic de travail.'},
+  {title:'Entraîner et transférer',text:'Des outils adaptés sont travaillés progressivement, puis réinvestis dans votre pratique et votre quotidien pour gagner en autonomie.'},
+  {title:'Ajuster et approfondir',text:'On fait le point sur ce qui fonctionne, puis on ajuste le suivi ou on développe de nouvelles compétences mentales.'}
  ],
  'ment.tools':[
-  {title:'Respiration et relaxation',text:'Explorer des repères respiratoires confortables et des exercices de relâchement adaptés.'},
-  {title:'Imagerie mentale',text:'Répéter mentalement une action ou une situation en mobilisant les sensations pertinentes.'},
-  {title:'Dialogue interne',text:'Repérer les pensées utiles ou limitantes et construire des mots-clés personnels.'},
-  {title:'Objectifs et routines',text:'Définir des actions maîtrisables et organiser des repères avant ou pendant la performance.'},
-  {title:'Attention et concentration',text:'Choisir un point d’attention, gérer les distractions et entraîner le retour à la tâche.'},
-  {title:'Méditation de pleine conscience',text:'Observer pensées et sensations sans jugement, puis replacer volontairement son attention.'}
+  {title:'Respiration et régulation',text:'Apprendre à repérer et moduler sa respiration — abdominale, thoracique ou calmante — pour agir sur l’activation et relâcher les tensions.'},
+  {title:'Relaxation',text:'Utiliser des exercices de relâchement corporel pour diminuer les tensions et retrouver un état adapté à la situation.'},
+  {title:'Imagerie mentale',text:'Renforcer la confiance en répétant une réussite, ou préparer une réponse face à un scénario redouté.'},
+  {title:'Dialogue interne et switch mental',text:'Repérer les pensées qui freinent, construire des mots-clés et retrouver rapidement un repère utile après une erreur.'},
+  {title:'Objectifs et routines de performance',text:'Définir des objectifs de processus et installer des repères avant, pendant ou après l’action.'},
+  {title:'Attention et concentration',text:'Repérer les distractions, sélectionner les indices utiles et ramener volontairement son attention à la tâche.'},
+  {title:'Pleine conscience',text:'Observer pensées et sensations sans jugement, puis entraîner le retour volontaire de l’attention.'}
  ],
  'bask.fundamentals':[
   {title:'Appuis et équilibre',text:'Gagner en stabilité, démarrer efficacement et changer de direction avec maîtrise.'},
@@ -183,7 +184,7 @@ const CONTENT_BLOCKS={
  ]
 };
 const SERVICE_BLOCK_SECTIONS={
- mentale:[['Ce que la préparation mentale peut vous apporter','ment.benefits','cards'],['Un accompagnement en quatre étapes','ment.steps','steps'],['Des outils concrets, choisis avec vous','ment.tools','cards']],
+ mentale:[['Ce que la préparation mentale peut vous apporter','ment.benefits','cards'],['Ma démarche d’accompagnement','ment.steps','steps'],['Quelques outils concrets, parmi d’autres','ment.tools','cards']],
  basket:[['Les fondamentaux individuels','bask.fundamentals','cards'],['Une progression en quatre temps','bask.steps','steps']],
  physique:[['Les qualités physiques travaillées','phys.axes','cards'],['Une démarche adaptée à votre profil','phys.steps','steps']]
 };
@@ -320,13 +321,13 @@ home(){
  const homeTitle=esc(t('home.title')).replace(/(Investir sur soi-même)/i,'<span class="home-title-break">$1</span>');
  const homeLead=esc(t('home.lead').replace(/\s+(Clubs et entreprises\s*:)/i,'\n\n$1'));
  const tiles=[
-  {id:'mentale',title:'Préparation mentale',desc:t('ment.intro'),tone:'mentale'},
-  {id:'basket',title:'Coaching individuel basket',desc:t('bask.intro'),tone:'basket'},
-  {id:'physique',title:'Préparation physique',desc:t('phys.intro'),tone:'physique'},
-  {id:'clubs',title:'Clubs et Entreprises',desc:t('clubs.intro'),tone:'clubs'}
+  {id:'mentale',title:'Préparation mentale',tone:'mentale'},
+  {id:'basket',title:'Coaching individuel basket',tone:'basket'},
+  {id:'physique',title:'Préparation physique',tone:'physique'},
+  {id:'clubs',title:'Clubs et Entreprises',tone:'clubs'}
  ];
  return `<section class="hero home-hero wrap"><div class="home-hero-copy"><h1>${homeTitle}</h1><p>${homeLead}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></div><figure class="home-portrait">${photoMarkup('home.profile','Portrait à ajouter')}</figure></section>
-<section class="home-services wrap" aria-labelledby="home-services-title"><header class="home-services-heading"><span class="eyebrow">BET ON YOU</span><h2 id="home-services-title">Un accompagnement construit autour de votre pratique</h2></header>${tiles.map((item,index)=>`<article class="home-service-row ${index%2?'is-reversed':''} tone-${item.tone} rv"><a class="home-service-copy" href="#/${item.id}"><span class="home-service-kicker">0${index+1} · ${esc(item.title)}</span><h3>${esc(item.title)}</h3><p>${esc(item.desc)}</p><span class="home-service-link">Découvrir <b aria-hidden="true">↗</b></span></a><a class="home-service-photo" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}">${photoMarkup(`home.${item.id}`,`Photo à ajouter — ${item.title}`)}</a></article>`).join('')}</section>
+<section class="home-services wrap" aria-labelledby="home-services-title"><header class="home-services-heading"><span class="eyebrow">BET ON YOU</span><h2 id="home-services-title">Un accompagnement construit autour de votre pratique</h2></header>${tiles.map((item,index)=>`<article class="home-service-row ${index%2?'is-reversed':''} tone-${item.tone} rv"><a class="home-service-copy" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}"><span class="home-service-kicker">0${index+1} · ACCOMPAGNEMENT</span><h3>${esc(item.title)}</h3></a><a class="home-service-photo" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}">${photoMarkup(`home.${item.id}`,`Photo à ajouter — ${item.title}`)}</a></article>`).join('')}</section>
 <section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Au fait, c’est qui Julien ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`
 },
@@ -336,8 +337,8 @@ service(id){
  const leadKey=id==='mentale'?'ment.vision':id==='physique'?'phys.vision':'bask.fund';
  const supporting=id==='mentale'?[['Un accompagnement individuel','ment.format']]:id==='physique'?[['Évaluation et testing','phys.testing'],['Nutrition et récupération','phys.nutrition']]:[['Travail du tir','bask.shoot'],['Un suivi adapté','bask.levels'],['Séances en petit groupe','bask.groups']];
  return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
-<div class="wrap service-page"><section class="service-intro rv"><span class="eyebrow">${esc(s.name)}</span><h2>${id==='mentale'?'Une préparation qui part de votre réalité':id==='basket'?'Un travail individuel, au service du jeu':'Un travail progressif et adapté'}</h2>${rich(t(leadKey))}</section>
-${blocks.map(([heading,key,kind])=>`<section class="service-content-section rv"><header><span class="eyebrow">${kind==='steps'?'LA DÉMARCHE':'LES AXES DE TRAVAIL'}</span><h2>${esc(heading)}</h2></header>${blockCards(key,kind)}</section>`).join('')}
+<div class="wrap service-page"><section class="service-intro rv"><span class="eyebrow">${esc(s.name)}</span><h2>${id==='mentale'?'Le mental se travaille, au service de votre pratique':id==='basket'?'Un travail individuel, au service du jeu':'Un travail progressif et adapté'}</h2>${rich(t(leadKey))}</section>
+${blocks.map(([heading,key,kind])=>`<section class="service-content-section rv"><header><span class="eyebrow">${kind==='steps'?(id==='mentale'?'UN PARCOURS ÉVOLUTIF':'LA DÉMARCHE'):key==='ment.tools'?'EXEMPLES D’OUTILS':'LES AXES DE TRAVAIL'}</span><h2>${esc(heading)}</h2>${id==='mentale'&&key==='ment.steps'?'<p class="service-section-note">Ces étapes structurent le suivi ; elles ne correspondent pas à quatre séances fixes.</p>':''}</header>${blockCards(key,kind)}</section>`).join('')}
 ${supporting.map(([h,k])=>`<section class="service-note-section rv"><h2>${esc(h)}</h2><div>${rich(t(k))}</div></section>`).join('')}
 <section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}</p></div>`).join('')}</div>
 <p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
