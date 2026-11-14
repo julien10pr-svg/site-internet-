@@ -2233,3 +2233,9 @@ th {
 .admin-photo-preview{width:min(100%,760px);max-width:760px;margin-inline:auto}
 .admin-photo-controls label output{float:right;color:var(--mut);font-weight:700;font-variant-numeric:tabular-nums}
 @media(max-width:700px){.admin-photo-preview{width:100%!important;max-width:100%}.admin-photo-controls label output{float:none;margin-left:.35rem}}
+
+
+/* Déplacement direct de la photo dans l’aperçu de l’administration. */
+.admin-photo-preview{cursor:grab;touch-action:none}
+.admin-photo-preview.is-dragging{cursor:grabbing}
+.admin-photo-preview img{user-select:none;-webkit-user-drag:none;pointer-events:none}
