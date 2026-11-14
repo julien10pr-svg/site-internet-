@@ -1065,6 +1065,11 @@ th {
 .admin .tabs {
   justify-content: flex-start;
 }
+.admin .admin-content-form{width:min(100%,980px);max-width:980px;margin-left:0}
+.admin-title-group{margin:.65rem 0;padding:.9rem 1rem;border:1px solid var(--line);border-radius:12px;background:#fff}
+.admin-title-group summary{font-weight:700;cursor:pointer}
+.admin-title-group[open] summary{margin-bottom:.85rem}
+.admin-title-group label{margin:.7rem 0}
 
 @media (max-width: 1050px) {
   .burger {
@@ -2120,6 +2125,7 @@ th {
 .tone-basket .home-service-copy{background:#0d0d0d;border-color:#0d0d0d;color:#fff}
 .tone-physique .home-service-copy{background:#7046a3;border-color:#7046a3;color:#fff}
 .tone-clubs .home-service-copy{background:#d5e3d7;border-color:#c4d8c8;color:#244b38}
+.tone-basket .home-service-copy h3{color:#b88943}
 .home-service-copy .home-service-kicker{color:inherit;opacity:.82}
 
 /* Pages de prestation : contenus courts, répartis en cartes lisibles */
@@ -2158,6 +2164,9 @@ th {
 .admin-photo-card{display:grid;grid-template-columns:minmax(210px,.72fr) minmax(0,1.28fr);gap:1.2rem;align-items:start;padding:1rem;border:1px solid var(--line);border-radius:16px;background:#fff}
 .admin-photo-card h3{margin:.1rem 0 .8rem}
 .admin-photo-preview{width:100%;max-width:340px;aspect-ratio:4/3;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#f5f4f1}
+.admin-photo-preview[data-photo-preview-slot="home.profile"]{aspect-ratio:4/5}
+.admin-photo-quality{min-height:1.35em;margin:.45rem 0 0;color:var(--mut);font-size:.86rem;line-height:1.4}
+.admin-photo-preview img{image-rendering:auto}
 .admin-photo-preview .photo-placeholder{min-height:100%}
 .admin-photo-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
 .admin-photo-controls input[type=range]{width:100%;margin:.45rem 0}
@@ -2165,6 +2174,7 @@ th {
 .admin-photo-actions .btn{margin:0}
 @media(max-width:900px){.service-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.service-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){
+ .admin-photo-preview[data-photo-preview-slot="home.profile"]{aspect-ratio:1/1.05}
  .home-hero{grid-template-columns:minmax(0,1fr);gap:1.5rem;text-align:center!important}
  .home-hero-copy h1,.home-hero-copy p{text-align:center;margin-right:auto;margin-left:auto}
  .home-hero-copy .row{justify-content:center}

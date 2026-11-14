@@ -63,7 +63,70 @@ const C={
 'faq.3.a':'[À compléter]',
 'faq.4.q':'Les mineurs peuvent-ils réserver ?',
 'faq.4.a':'Oui, avec les coordonnées du représentant légal, demandées lors de la réservation.',
-'video.url':''
+'video.url':'',
+"title.home.services":"Un accompagnement construit autour de votre pratique",
+"title.home.about":"Au fait, c’est qui Julien ?",
+"title.home.contact":"Contact",
+"title.home.video":"Vidéo de présentation",
+"title.home.reviews":"Vos avis",
+"title.category.mentale":"Préparation mentale",
+"title.category.basket":"Coaching individuel basket",
+"title.category.physique":"Préparation physique",
+"title.category.clubs":"Clubs et Entreprises",
+"title.service.mentale.intro":"Le mental se travaille, au service de votre pratique",
+"title.service.basket.intro":"Un travail individuel, au service du jeu",
+"title.service.physique.intro":"Un travail progressif et adapté",
+"title.service.mentale.support":"Un accompagnement individuel",
+"title.service.physique.support1":"Évaluation et testing",
+"title.service.physique.support2":"Nutrition et récupération",
+"title.service.basket.support1":"Travail du tir",
+"title.service.basket.support2":"Un suivi adapté",
+"title.service.basket.support3":"Séances en petit groupe",
+"title.service.offers":"Offres et tarifs",
+"title.service.booking":"Réserver un créneau",
+"title.about.page":"Mon parcours",
+"title.clubs.choices":"Choisissez votre accompagnement",
+"title.clubs.sport":"Interventions pour les clubs sportifs",
+"title.clubs.players":"Joueurs et joueuses",
+"title.clubs.staff":"Staffs et entraîneurs",
+"title.clubs.company":"Interventions en entreprise",
+"title.clubs.teams":"Équipes et collaborateurs",
+"title.clubs.modalities":"Modalités et tarifs",
+"title.clubs.frequency":"Fréquence des interventions",
+"title.clubs.duration":"Durée d’une intervention",
+"title.clubs.pricing":"Tarification",
+"title.contact.page":"Contact",
+"title.faq.page":"FAQ",
+"title.legal.page":"Mentions légales",
+"title.privacy.page":"Confidentialité",
+"title.booking.chooser":"Que souhaitez-vous réserver ?",
+"title.nav.reserve":"Réserver",
+"title.timeline.0":"Master 2 EOPS",
+"title.timeline.1":"U18 France et U18 Région R1",
+"title.timeline.2":"École de basket",
+"title.timeline.3":"Basket individuel",
+"title.timeline.4":"Préparation physique",
+"title.timeline.5":"Préparation mentale",
+"title.timeline.6":"Nutrition et hydratation",
+"title.timeline.7":"Master 1 EOPS obtenu",
+"title.timeline.8":"U18 France et U18 Région R1",
+"title.timeline.9":"Basket individuel",
+"title.timeline.10":"Préparation physique",
+"title.timeline.11":"Préparation mentale",
+"title.timeline.12":"Réathlétisation du sportif",
+"title.timeline.13":"U15F et U18F Région",
+"title.timeline.14":"U11 garçons · Terrien Sud",
+"title.timeline.15":"Championnat de France universitaire",
+"title.timeline.16":"DETB · 3 modules sur 4",
+"title.timeline.17":"Licence STAPS · mention Bien",
+"title.timeline.18":"Basket individuel",
+"title.timeline.19":"U15 filles Région",
+"title.timeline.20":"U11 garçons · Terrien Sud",
+"title.timeline.21":"Première saison à Roncq",
+"title.timeline.22":"Brevet fédéral adulte",
+"title.timeline.23":"Baccalauréat scientifique",
+"title.timeline.24":"BAFA",
+"title.timeline.25":"PSC1"
 };
 
 const DEF_OFFERS=[
@@ -227,7 +290,9 @@ async function loadData(){
 
 const foot=()=>{
  $('#foot').innerHTML=`<p><strong>${tbd(t('brand'))}</strong></p><p><a href="#/faq">FAQ</a><a href="#/mentions">Mentions légales</a><a href="#/confidentialite">Confidentialité</a></p>`;
- $('#brand').innerHTML=tbd(t('brand'))
+ $('#brand').innerHTML=tbd(t('brand'));
+ [['physique','title.category.physique'],['mentale','title.category.mentale'],['basket','title.category.basket'],['clubs','title.category.clubs'],['contact','title.contact.page']].forEach(([route,key])=>{const link=document.querySelector('#nav a[href="#/'+route+'"]');if(link)link.textContent=t(key)});
+ const reserve=document.querySelector('#nav .cta');if(reserve)reserve.textContent=t('title.nav.reserve')
 };
 
 const video=()=>{
@@ -236,12 +301,12 @@ const video=()=>{
  const y=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/);
  if(y)inner=`<iframe src="https://www.youtube-nocookie.com/embed/${y[1]}" allowfullscreen title="Vidéo de présentation"></iframe>`;
  else if(/^https:\/\/.+\.(mp4|webm)/.test(u))inner=`<video controls src="${esc(u)}"></video>`;
- return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>Vidéo de présentation</h2><div class="vid">${inner}</div></section>`
+ return `<section class="wrap rv" style="padding-top:clamp(2rem,4vw,3rem)"><h2>${esc(t('title.home.video'))}</h2><div class="vid">${inner}</div></section>`
 };
 
 const contactBlock=()=>`<div class="box"><p>${tbd(t('contact.email'))}</p><p>${tbd(t('contact.phone'))}</p><p>${tbd(t('contact.zone'))}</p><p>${tbd(t('contact.social'))}</p></div>`;
 
-const reviewsSection=()=>`<section class="wrap rv reviews-section" aria-labelledby="reviews-title"><div class="reviews-heading"><h2 id="reviews-title">Vos avis</h2><p>Les retours d’expérience des personnes accompagnées.</p></div>${reviews.length?`<div class="reviews-carousel" data-reviews-carousel><article class="review-bubble" aria-live="polite"><blockquote><p data-review-text></p><cite data-review-name></cite></blockquote></article><div class="review-controls"><button type="button" data-review-prev aria-label="Avis précédent">←</button><span data-review-count aria-live="polite"></span><button type="button" data-review-next aria-label="Avis suivant">→</button></div></div>`:`<p class="reviews-empty">Les premiers avis seront affichés ici.</p>`}</section>`;
+const reviewsSection=()=>`<section class="wrap rv reviews-section" aria-labelledby="reviews-title"><div class="reviews-heading"><h2 id="reviews-title">${esc(t('title.home.reviews'))}</h2><p>Les retours d’expérience des personnes accompagnées.</p></div>${reviews.length?`<div class="reviews-carousel" data-reviews-carousel><article class="review-bubble" aria-live="polite"><blockquote><p data-review-text></p><cite data-review-name></cite></blockquote></article><div class="review-controls"><button type="button" data-review-prev aria-label="Avis précédent">←</button><span data-review-count aria-live="polite"></span><button type="button" data-review-next aria-label="Avis suivant">→</button></div></div>`:`<p class="reviews-empty">Les premiers avis seront affichés ici.</p>`}</section>`;
 
 function setupClubTabs(){
  const tabs=[...document.querySelectorAll('[data-club-tab]')];
@@ -320,50 +385,50 @@ home(){
  const homeTitle=esc(t('home.title')).replace(/(Investir sur soi-même)/i,'<span class="home-title-break">$1</span>');
  const homeLead=esc(t('home.lead').replace(/\s+(Clubs et entreprises\s*:)/i,'\n\n$1'));
  const tiles=[
-  {id:'mentale',title:'Préparation mentale',tone:'mentale'},
-  {id:'basket',title:'Coaching individuel basket',tone:'basket'},
-  {id:'physique',title:'Préparation physique',tone:'physique'},
-  {id:'clubs',title:'Clubs et Entreprises',tone:'clubs'}
+  {id:'mentale',title:t('title.category.mentale'),tone:'mentale'},
+  {id:'basket',title:t('title.category.basket'),tone:'basket'},
+  {id:'physique',title:t('title.category.physique'),tone:'physique'},
+  {id:'clubs',title:t('title.category.clubs'),tone:'clubs'}
  ];
- return `<section class="hero home-hero wrap"><div class="home-hero-copy"><h1>${homeTitle}</h1><p>${homeLead}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></div><figure class="home-portrait">${photoMarkup('home.profile','Portrait à ajouter')}</figure></section>
-<section class="home-services wrap" aria-labelledby="home-services-title"><header class="home-services-heading"><span class="eyebrow">BET ON YOU</span><h2 id="home-services-title">Un accompagnement construit autour de votre pratique</h2></header>${tiles.map((item,index)=>`<article class="home-service-row ${index%2?'is-reversed':''} tone-${item.tone} rv"><a class="home-service-copy" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}"><h3>${esc(item.title)}</h3></a><a class="home-service-photo" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}">${photoMarkup(`home.${item.id}`,`Photo à ajouter — ${item.title}`)}</a></article>`).join('')}</section>
-<section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Au fait, c’est qui Julien ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}
-<section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`
+ return `<section class="hero home-hero wrap"><div class="home-hero-copy"><h1>${homeTitle}</h1><p>${homeLead}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>${esc(t('title.service.booking'))}</a></div></div><figure class="home-portrait">${photoMarkup('home.profile','Portrait à ajouter')}</figure></section>
+<section class="home-services wrap" aria-labelledby="home-services-title"><header class="home-services-heading"><span class="eyebrow">BET ON YOU</span><h2 id="home-services-title">${esc(t('title.home.services'))}</h2></header>${tiles.map((item,index)=>`<article class="home-service-row ${index%2?'is-reversed':''} tone-${item.tone} rv"><a class="home-service-copy" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}"><h3>${esc(item.title)}</h3></a><a class="home-service-photo" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}">${photoMarkup(`home.${item.id}`,`Photo à ajouter — ${item.title}`)}</a></article>`).join('')}</section>
+<section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>${esc(t('title.home.about'))}</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}
+<section class="wrap rv"><h2>${esc(t('title.home.contact'))}</h2>${contactBlock()}</section>`
 },
 service(id){
  const s=SV[id],o=offers.filter(x=>x.service===id);
  const blocks=SERVICE_BLOCK_SECTIONS[id]||[];
  const leadKey=id==='mentale'?'ment.vision':id==='physique'?'phys.vision':'bask.fund';
- const supporting=id==='mentale'?[['Un accompagnement individuel','ment.format']]:id==='physique'?[['Évaluation et testing','phys.testing'],['Nutrition et récupération','phys.nutrition']]:[['Travail du tir','bask.shoot'],['Un suivi adapté','bask.levels'],['Séances en petit groupe','bask.groups']];
- return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
-<div class="wrap service-page"><section class="service-intro rv"><span class="eyebrow">${esc(s.name)}</span><h2>${id==='mentale'?'Le mental se travaille, au service de votre pratique':id==='basket'?'Un travail individuel, au service du jeu':'Un travail progressif et adapté'}</h2>${rich(t(leadKey))}</section>
+ const supporting=id==='mentale'?[['title.service.mentale.support','ment.format']]:id==='physique'?[['title.service.physique.support1','phys.testing'],['title.service.physique.support2','phys.nutrition']]:[['title.service.basket.support1','bask.shoot'],['title.service.basket.support2','bask.levels'],['title.service.basket.support3','bask.groups']];
+ return `<div class="shero rv"><div class="wrap"><h1>${esc(t('title.category.'+id))}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
+<div class="wrap service-page"><section class="service-intro rv"><span class="eyebrow">${esc(s.name)}</span><h2>${esc(t('title.service.'+id+'.intro'))}</h2>${rich(t(leadKey))}</section>
 ${blocks.map(([heading,key,kind])=>`<section class="service-content-section rv"><header><span class="eyebrow">${kind==='steps'?(id==='mentale'?'UN PARCOURS ÉVOLUTIF':'LA DÉMARCHE'):key==='ment.tools'?'EXEMPLES D’OUTILS':'LES AXES DE TRAVAIL'}</span><h2>${esc(heading)}</h2>${id==='mentale'&&key==='ment.steps'?'<p class="service-section-note">Ces étapes structurent le suivi ; elles ne correspondent pas à quatre séances fixes.</p>':''}</header>${blockCards(key,kind)}</section>`).join('')}
-${supporting.map(([h,k])=>`<section class="service-note-section rv"><h2>${esc(h)}</h2><div>${rich(t(k))}</div></section>`).join('')}
-<section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}</p></div>`).join('')}</div>
+${supporting.map(([titleKey,k])=>`<section class="service-note-section rv"><h2>${esc(t(titleKey))}</h2><div>${rich(t(k))}</div></section>`).join('')}
+<section class="rv"><h2>${esc(t('title.service.offers'))}</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}</p></div>`).join('')}</div>
 <p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
-<section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`
+<section id="resa" class="rv"><h2>${esc(t('title.service.booking'))}</h2><div id="booking"></div></section></div>`
 },
 about(){
- return `<div class="shero about-hero rv"><div class="wrap"><h1>Mon parcours</h1></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone} ${index%2?'timeline-left':'timeline-right'}" style="--step:${index}" aria-label="${esc(item.year)} — ${esc(item.chapter)}"><div class="timeline-node" aria-hidden="true"></div><div class="timeline-card"><div class="timeline-card-top"><p class="timeline-year">${esc(item.year)}</p></div><div class="timeline-events">${item.events.map((event,eventIndex)=>`<div class="timeline-event" style="--event-step:${eventIndex}"><div class="timeline-event-copy"><span class="timeline-label">${esc(event.label)}</span><h3>${esc(event.title)}</h3><p>${esc(event.detail)}</p></div></div>`).join('')}</div></div></article>`).join('')}</div></section>`
+ return `<div class="shero about-hero rv"><div class="wrap"><h1>${esc(t('title.about.page'))}</h1></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone} ${index%2?'timeline-left':'timeline-right'}" style="--step:${index}" aria-label="${esc(item.year)} — ${esc(item.chapter)}"><div class="timeline-node" aria-hidden="true"></div><div class="timeline-card"><div class="timeline-card-top"><p class="timeline-year">${esc(item.year)}</p></div><div class="timeline-events">${item.events.map((event,eventIndex)=>`<div class="timeline-event" style="--event-step:${eventIndex}"><div class="timeline-event-copy"><span class="timeline-label">${esc(event.label)}</span><h3>${esc(t('title.timeline.'+(TIMELINE.slice(0,index).reduce((sum,item)=>sum+item.events.length,0)+eventIndex)))}</h3><p>${esc(event.detail)}</p></div></div>`).join('')}</div></div></article>`).join('')}</div></section>`
 },
 clubs(){
- return `<div class="shero rv"><div class="wrap"><h1>Clubs et Entreprises</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
-<section class="wrap rv clubs-choices"><h2>Choisissez votre accompagnement</h2><div class="clubs-switch" role="tablist" aria-label="Type d’intervention"><button type="button" role="tab" id="clubs-tab-sport" aria-controls="clubs-panel-sport" aria-selected="true" data-club-tab="sport">Club sportif</button><button type="button" role="tab" id="clubs-tab-company" aria-controls="clubs-panel-company" aria-selected="false" data-club-tab="company" tabindex="-1">Entreprise</button></div>
-<div class="clubs-panel is-active" role="tabpanel" id="clubs-panel-sport" aria-labelledby="clubs-tab-sport" data-club-panel="sport"><h2>Interventions pour les clubs sportifs</h2><div class="grid"><article class="box"><h3>Joueurs et joueuses</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>Staffs et entraîneurs</h3>${rich(t('clubs.staff'))}</article></div></div>
-<div class="clubs-panel" role="tabpanel" id="clubs-panel-company" aria-labelledby="clubs-tab-company" data-club-panel="company" hidden><h2>Interventions en entreprise</h2><div class="grid"><article class="box"><h3>Équipes et collaborateurs</h3>${rich(t('clubs.companies'))}</article></div></div></section>
-<section class="wrap rv clubs-offers"><h2>Modalités et tarifs</h2><div class="grid"><article class="box"><h3>Fréquence des interventions</h3>${rich(t('clubs.frequency'))}</article><article class="box"><h3>Durée d’une intervention</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>Tarification</h3>${rich(t('clubs.pricing'))}</article></div></section>`
+ return `<div class="shero rv"><div class="wrap"><h1>${esc(t('title.category.clubs'))}</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
+<section class="wrap rv clubs-choices"><h2>${esc(t('title.clubs.choices'))}</h2><div class="clubs-switch" role="tablist" aria-label="Type d’intervention"><button type="button" role="tab" id="clubs-tab-sport" aria-controls="clubs-panel-sport" aria-selected="true" data-club-tab="sport">Club sportif</button><button type="button" role="tab" id="clubs-tab-company" aria-controls="clubs-panel-company" aria-selected="false" data-club-tab="company" tabindex="-1">Entreprise</button></div>
+<div class="clubs-panel is-active" role="tabpanel" id="clubs-panel-sport" aria-labelledby="clubs-tab-sport" data-club-panel="sport"><h2>${esc(t('title.clubs.sport'))}</h2><div class="grid"><article class="box"><h3>${esc(t('title.clubs.players'))}</h3>${rich(t('clubs.players'))}</article><article class="box"><h3>${esc(t('title.clubs.staff'))}</h3>${rich(t('clubs.staff'))}</article></div></div>
+<div class="clubs-panel" role="tabpanel" id="clubs-panel-company" aria-labelledby="clubs-tab-company" data-club-panel="company" hidden><h2>${esc(t('title.clubs.company'))}</h2><div class="grid"><article class="box"><h3>${esc(t('title.clubs.teams'))}</h3>${rich(t('clubs.companies'))}</article></div></div></section>
+<section class="wrap rv clubs-offers"><h2>${esc(t('title.clubs.modalities'))}</h2><div class="grid"><article class="box"><h3>${esc(t('title.clubs.frequency'))}</h3>${rich(t('clubs.frequency'))}</article><article class="box"><h3>${esc(t('title.clubs.duration'))}</h3>${rich(t('clubs.duration'))}</article><article class="box"><h3>${esc(t('title.clubs.pricing'))}</h3>${rich(t('clubs.pricing'))}</article></div></section>`
 },
 contact(){
- return `<div class="shero rv"><div class="wrap"><h1>Contact</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`
+ return `<div class="shero rv"><div class="wrap"><h1>${esc(t('title.contact.page'))}</h1></div></div><div class="wrap"><section class="rv">${contactBlock()}</section></div>`
 },
 faq(){
- return `<div class="shero rv"><div class="wrap"><h1>FAQ</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`
+ return `<div class="shero rv"><div class="wrap"><h1>${esc(t('title.faq.page'))}</h1></div></div><div class="wrap"><section class="rv">${[1,2,3,4].map(i=>`<details class="box" style="margin-bottom:.6rem"><summary><strong>${esc(t(`faq.${i}.q`))}</strong></summary>${rich(t(`faq.${i}.a`))}</details>`).join('')}</section></div>`
 },
 mentions(){
- return `<div class="wrap"><section class="rv"><h1>Mentions légales</h1>${rich(t('legal.text'))}</section></div>`
+ return `<div class="wrap"><section class="rv"><h1>${esc(t('title.legal.page'))}</h1>${rich(t('legal.text'))}</section></div>`
 },
 confidentialite(){
- return `<div class="wrap"><section class="rv"><h1>Confidentialité</h1>${rich(t('privacy.text'))}</section></div>`
+ return `<div class="wrap"><section class="rv"><h1>${esc(t('title.privacy.page'))}</h1>${rich(t('privacy.text'))}</section></div>`
 }
 };
 
@@ -503,31 +568,109 @@ async function tOffers(el){
 async function tContent(el){
  const {data=[]}=await sb.from('site_content').select('*');
  const cur={...C};
- data.forEach(r=>cur[r.key]=r.value);
- const clubHeadings={
-  'clubs.intro':'<h2 class="content-group-title">Clubs et Entreprises — introduction</h2>',
-  'clubs.players':'<h2 class="content-group-title">Club sportif</h2>',
-  'clubs.companies':'<h2 class="content-group-title">Entreprise</h2>',
-  'clubs.frequency':'<h2 class="content-group-title">Modalités et tarifs</h2>'
- };
+ data.forEach(row=>cur[row.key]=row.value);
  const contentLabels={
-  'clubs.intro':'Introduction commune',
+  'brand':'Nom de l’activité',
+  'home.title':'Titre principal de l’accueil',
+  'home.lead':'Texte d’introduction de l’accueil',
+  'home.about':'Présentation personnelle',
+  'phys.intro':'Introduction physique',
+  'phys.vision':'Méthodologie physique',
+  'phys.needs':'Qualités physiques travaillées',
+  'phys.testing':'Évaluation et tests',
+  'phys.nutrition':'Nutrition et hydratation',
+  'ment.intro':'Introduction mentale',
+  'ment.vision':'Méthodologie mentale',
+  'ment.goals':'Objectifs et déroulement mental',
+  'ment.format':'Format des séances mentales',
+  'bask.intro':'Introduction basket',
+  'bask.fund':'Fondamentaux basket',
+  'bask.shoot':'Travail du tir',
+  'bask.levels':'Niveaux et suivi basket',
+  'bask.groups':'Séances en groupe',
+  'clubs.intro':'Introduction Clubs et Entreprises',
   'clubs.players':'Joueurs et joueuses',
   'clubs.staff':'Staffs et entraîneurs',
   'clubs.companies':'Interventions en entreprise',
   'clubs.frequency':'Fréquence des interventions',
   'clubs.duration':'Durée d’une intervention',
-  'clubs.pricing':'Tarification'
+  'clubs.pricing':'Tarification',
+  'about.text':'Présentation complète',
+  'contact.email':'E-mail',
+  'contact.phone':'Téléphone',
+  'contact.zone':'Zone d’intervention',
+  'contact.social':'Réseaux sociaux',
+  'pay.text':'Modalités de paiement',
+  'legal.text':'Mentions légales',
+  'privacy.text':'Confidentialité',
+  'faq.1.q':'FAQ · Question 1','faq.1.a':'FAQ · Réponse 1',
+  'faq.2.q':'FAQ · Question 2','faq.2.a':'FAQ · Réponse 2',
+  'faq.3.q':'FAQ · Question 3','faq.3.a':'FAQ · Réponse 3',
+  'faq.4.q':'FAQ · Question 4','faq.4.a':'FAQ · Réponse 4',
+  'video.url':'Lien vidéo'
  };
- el.innerHTML=`<form style="max-width:760px">${Object.keys(C).map(k=>`${clubHeadings[k]||''}<label>${contentLabels[k]||k}<textarea name="${k}" rows="${cur[k].length>120?4:1}">${esc(cur[k])}</textarea></label>`).join('')}<button class="btn">Enregistrer les contenus</button></form>`;
- el.querySelector('form').onsubmit=async e=>{
-  e.preventDefault();
-  const rows=Object.keys(C).map(k=>({key:k,value:e.target[k].value}));
+ const titleLabels={
+  'title.home.services':'Accueil · présentation des catégories',
+  'title.home.about':'Accueil · présentation de Julien',
+  'title.home.contact':'Accueil · contact',
+  'title.home.video':'Accueil · vidéo',
+  'title.home.reviews':'Accueil · avis',
+  'title.category.mentale':'Catégorie · préparation mentale',
+  'title.category.basket':'Catégorie · coaching individuel basket',
+  'title.category.physique':'Catégorie · préparation physique',
+  'title.category.clubs':'Catégorie · clubs et entreprises',
+  'title.service.mentale.intro':'Mental · titre de présentation',
+  'title.service.basket.intro':'Basket · titre de présentation',
+  'title.service.physique.intro':'Physique · titre de présentation',
+  'title.service.mentale.support':'Mental · suivi individuel',
+  'title.service.physique.support1':'Physique · évaluation et tests',
+  'title.service.physique.support2':'Physique · nutrition et récupération',
+  'title.service.basket.support1':'Basket · travail du tir',
+  'title.service.basket.support2':'Basket · suivi',
+  'title.service.basket.support3':'Basket · séances en petit groupe',
+  'title.service.offers':'Prestations · offres et tarifs',
+  'title.service.booking':'Prestations · réservation',
+  'title.about.page':'Parcours · titre de page',
+  'title.clubs.choices':'Clubs · choix d’intervention',
+  'title.clubs.sport':'Clubs · interventions sportives',
+  'title.clubs.players':'Clubs · joueurs et joueuses',
+  'title.clubs.staff':'Clubs · staffs et entraîneurs',
+  'title.clubs.company':'Entreprises · titre de section',
+  'title.clubs.teams':'Entreprises · équipes et collaborateurs',
+  'title.clubs.modalities':'Clubs et Entreprises · modalités et tarifs',
+  'title.clubs.frequency':'Clubs · fréquence des interventions',
+  'title.clubs.duration':'Clubs · durée d’intervention',
+  'title.clubs.pricing':'Clubs · tarification',
+  'title.contact.page':'Contact · titre de page',
+  'title.faq.page':'FAQ · titre de page',
+  'title.legal.page':'Mentions légales · titre de page',
+  'title.privacy.page':'Confidentialité · titre de page',
+  'title.booking.chooser':'Réservation · titre de la fenêtre',
+  'title.nav.reserve':'Navigation · bouton Réserver'
+ };
+ const timelineTitleKeys=Object.keys(C).filter(key=>key.startsWith('title.timeline.'));
+ let timelineIndex=0;TIMELINE.forEach(period=>period.events.forEach(event=>{titleLabels['title.timeline.'+timelineIndex]='Parcours · '+period.year+' · '+event.title;timelineIndex++}));
+ const titleGroups=[
+  {name:'Accueil',keys:['title.home.services','title.home.about','title.home.video','title.home.reviews','title.home.contact']},
+  {name:'Préparation mentale',keys:['title.category.mentale','title.service.mentale.intro','title.service.mentale.support']},
+  {name:'Coaching individuel basket',keys:['title.category.basket','title.service.basket.intro','title.service.basket.support1','title.service.basket.support2','title.service.basket.support3']},
+  {name:'Préparation physique',keys:['title.category.physique','title.service.physique.intro','title.service.physique.support1','title.service.physique.support2']},
+  {name:'Clubs et Entreprises',keys:['title.category.clubs','title.clubs.choices','title.clubs.sport','title.clubs.players','title.clubs.staff','title.clubs.company','title.clubs.teams','title.clubs.modalities','title.clubs.frequency','title.clubs.duration','title.clubs.pricing']},
+  {name:'Autres pages et réservation',keys:['title.service.offers','title.service.booking','title.about.page','title.contact.page','title.faq.page','title.legal.page','title.privacy.page','title.booking.chooser','title.nav.reserve']},
+  {name:'Parcours · titres des expériences',keys:timelineTitleKeys}
+ ];
+ const contentFields=Object.keys(C).filter(key=>!key.startsWith('title.')).map(key=>'<label>'+esc(contentLabels[key]||key)+'<textarea name="'+esc(key)+'" rows="'+(String(cur[key]||'').length>120?4:1)+'">'+esc(cur[key])+'</textarea></label>').join('');
+ const titleFields=titleGroups.map(group=>'<details class="admin-title-group"><summary>'+esc(group.name)+'</summary>'+group.keys.map(key=>'<label>'+esc(titleLabels[key]||key)+'<input type="text" name="'+esc(key)+'" maxlength="160" value="'+esc(cur[key]||'')+'"></label>').join('')+'</details>').join('');
+ el.innerHTML='<form class="admin-content-form"><section><h2 class="content-group-title">Textes du site</h2>'+contentFields+'</section><section><h2 class="content-group-title">Titres du site</h2>'+titleFields+'</section><button class="btn">Enregistrer les contenus</button></form>';
+ el.querySelector('form').onsubmit=async event=>{
+  event.preventDefault();
+  const formData=new FormData(event.currentTarget);
+  const rows=Object.keys(C).map(key=>({key,value:String(formData.get(key)??'')}));
   const {error}=await sb.from('site_content').upsert(rows);
-  toast(el,error?error.message:'Contenus enregistrés',!!error)
+  if(!error)rows.forEach(row=>content[row.key]=row.value);
+  toast(el,error?error.message:'Textes et titres enregistrés',!!error)
  }
 }
-
 async function tSections(el){
  const entries=Object.entries(CONTENT_BLOCKS);
  const names={'ment.benefits':'Mental · apports','ment.steps':'Mental · étapes','ment.tools':'Mental · outils','bask.fundamentals':'Basket · fondamentaux','bask.steps':'Basket · progression','phys.axes':'Physique · qualités travaillées','phys.steps':'Physique · étapes'};
@@ -546,23 +689,26 @@ async function tPhotos(el){
  if(readError){el.innerHTML=`<p class="msg err">${esc(readError.message)}</p>`;return}
  photos={};rows.forEach(row=>{if(row.caption?.startsWith('photo.home.'))photos[row.caption.slice(6)]=row});
  const settings=await sb.from('site_content').select('*').like('key','photo.%');(settings.data||[]).forEach(row=>content[row.key]=row.value);
- const editor=slot=>{const photo=photos[slot.id],cfg=photoSettings(slot.id);return `<article class="admin-photo-card" data-photo-slot="${esc(slot.id)}"><div><h3>${esc(slot.label)}</h3><div class="admin-photo-preview">${photo?.url?`<img data-preview-image src="${esc(photo.url)}" alt="${esc(cfg.alt)}" style="object-position:${cfg.x}% ${cfg.y}%;transform:scale(${cfg.zoom/100})">`:'<div class="photo-placeholder"><span>Emplacement photo</span></div>'}</div></div><div class="admin-photo-controls"><label>Choisir une photo<input type="file" accept="image/jpeg,image/png,image/webp" data-photo-file></label><label>Description de la photo<input type="text" maxlength="140" data-photo-alt value="${esc(cfg.alt)}"></label><label>Position horizontale<input type="range" min="0" max="100" value="${cfg.x}" data-photo-x></label><label>Position verticale<input type="range" min="0" max="100" value="${cfg.y}" data-photo-y></label><label>Zoom<input type="range" min="70" max="100" value="${cfg.zoom}" data-photo-zoom></label><div class="row admin-photo-actions"><button class="btn" type="button" data-save-photo>Enregistrer la photo</button>${photo?'<button class="btn alt" type="button" data-delete-photo>Retirer</button>':''}</div></div></article>`};
+ const editor=slot=>{const photo=photos[slot.id],cfg=photoSettings(slot.id);return `<article class="admin-photo-card" data-photo-slot="${esc(slot.id)}"><div><h3>${esc(slot.label)}</h3><div class="admin-photo-preview" data-photo-preview-slot="${esc(slot.id)}">${photo?.url?`<img data-preview-image src="${esc(photo.url)}" alt="${esc(cfg.alt)}" style="object-position:${cfg.x}% ${cfg.y}%;transform:scale(${cfg.zoom/100})">`:'<div class="photo-placeholder"><span>Emplacement photo</span></div>'}</div><p class="admin-photo-quality" data-photo-quality aria-live="polite"></p></div><div class="admin-photo-controls"><label>Choisir une photo<input type="file" accept="image/jpeg,image/png,image/webp" data-photo-file></label><label>Description de la photo<input type="text" maxlength="140" data-photo-alt value="${esc(cfg.alt)}"></label><label>Position horizontale<input type="range" min="0" max="100" value="${cfg.x}" data-photo-x></label><label>Position verticale<input type="range" min="0" max="100" value="${cfg.y}" data-photo-y></label><label>Zoom<input type="range" min="70" max="100" value="${cfg.zoom}" data-photo-zoom></label><div class="row admin-photo-actions"><button class="btn" type="button" data-save-photo>Enregistrer la photo</button>${photo?'<button class="btn alt" type="button" data-delete-photo>Retirer</button>':''}</div></div></article>`};
  el.innerHTML=`<div class="admin-photo-grid">${PHOTO_SLOTS.map(editor).join('')}</div>`;
  el.querySelectorAll('[data-photo-slot]').forEach(card=>{
-  const preview=card.querySelector('[data-preview-image]'),file=card.querySelector('[data-photo-file]');
-  const updatePreview=()=>{if(!preview)return;preview.style.objectPosition=`${card.querySelector('[data-photo-x]').value}% ${card.querySelector('[data-photo-y]').value}%`;preview.style.transform=`scale(${card.querySelector('[data-photo-zoom]').value/100})`};
-  card.querySelectorAll('[data-photo-x],[data-photo-y],[data-photo-zoom]').forEach(input=>input.oninput=updatePreview);
-  file.onchange=()=>{const selected=file.files?.[0];if(!selected)return;const url=URL.createObjectURL(selected);let image=card.querySelector('[data-preview-image]');if(!image){card.querySelector('.admin-photo-preview').innerHTML='<img data-preview-image alt="Aperçu de la photo">';image=card.querySelector('[data-preview-image]')}image.src=url;image.style.objectPosition=`${card.querySelector('[data-photo-x]').value}% ${card.querySelector('[data-photo-y]').value}%`;image.style.transform=`scale(${card.querySelector('[data-photo-zoom]').value/100})`};
+  const file=card.querySelector('[data-photo-file]'),quality=card.querySelector('[data-photo-quality]');
+  let localPreviewUrl='';
+  const previewBox=card.querySelector('.admin-photo-preview');
+  const ensurePreviewImage=()=>{let image=card.querySelector('[data-preview-image]');if(!image){image=document.createElement('img');image.dataset.previewImage='';image.alt='Aperçu de la photo';previewBox.replaceChildren(image)}return image};
+  const updatePreview=()=>{const image=card.querySelector('[data-preview-image]');if(!image)return;image.style.objectPosition=card.querySelector('[data-photo-x]').value+'% '+card.querySelector('[data-photo-y]').value+'%';image.style.transform='scale('+(Number(card.querySelector('[data-photo-zoom]').value)/100)+')';image.alt=card.querySelector('[data-photo-alt]').value.trim()};
+  card.querySelectorAll('[data-photo-x],[data-photo-y],[data-photo-zoom],[data-photo-alt]').forEach(input=>input.addEventListener(input.type==='range'?'input':'input',updatePreview));
+  file.onchange=()=>{const selected=file.files?.[0];if(!selected)return;if(localPreviewUrl)URL.revokeObjectURL(localPreviewUrl);localPreviewUrl=URL.createObjectURL(selected);const image=ensurePreviewImage();image.onload=()=>{const dimensions=image.naturalWidth+' × '+image.naturalHeight+' px';quality.textContent=Math.min(image.naturalWidth,image.naturalHeight)<900?'Résolution faible : risque de flou ('+dimensions+').':'Aperçu net · '+dimensions;};image.onerror=()=>{quality.textContent='Impossible d’afficher cette image dans l’aperçu.'};image.src=localPreviewUrl;updatePreview()};
   card.querySelector('[data-save-photo]').onclick=async()=>{
    const slot=card.dataset.photoSlot,selected=file.files?.[0],caption=`photo.${slot}`;let current=photos[slot],url=current?.url||'',path=current?.path||'';
-   if(selected){if(selected.size>8*1024*1024){toast(el,'La photo doit faire 8 Mo maximum.',true);return}const safe=selected.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').slice(-90),nextPath=`site/${slot}/${Date.now()}-${safe}`;const upload=await sb.storage.from('media').upload(nextPath,selected,{upsert:true,contentType:selected.type});if(upload.error){toast(el,upload.error.message,true);return}const publicData=sb.storage.from('media').getPublicUrl(nextPath).data;url=publicData.publicUrl;path=nextPath}
+   if(selected){if(selected.size>20*1024*1024){toast(el,'La photo doit faire 20 Mo maximum.',true);return}const safe=selected.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').slice(-90),nextPath=`site/${slot}/${Date.now()}-${safe}`;const upload=await sb.storage.from('media').upload(nextPath,selected,{upsert:true,contentType:selected.type});if(upload.error){toast(el,upload.error.message,true);return}const publicData=sb.storage.from('media').getPublicUrl(nextPath).data;url=publicData.publicUrl;path=nextPath}
    if(!url){toast(el,'Choisis une photo avant de l’enregistrer.',true);return}
    const existing=await sb.from('media').select('id').eq('caption',caption).limit(1).maybeSingle();let write=existing.data?.id?await sb.from('media').update({url,path,kind:'photo',caption,sort:PHOTO_SLOTS.findIndex(item=>item.id===slot)}).eq('id',existing.data.id):await sb.from('media').insert({url,path,kind:'photo',caption,sort:PHOTO_SLOTS.findIndex(item=>item.id===slot)});
    const values={x:card.querySelector('[data-photo-x]').value,y:card.querySelector('[data-photo-y]').value,zoom:card.querySelector('[data-photo-zoom]').value,alt:card.querySelector('[data-photo-alt]').value.trim()};
    const saved=write.error?write:await sb.from('site_content').upsert(Object.entries(values).map(([name,value])=>({key:`photo.${slot}.${name}`,value:String(value)})));
    if(saved.error){toast(el,saved.error.message,true);return}
    if(selected&&current?.path&&current.path!==path)await sb.storage.from('media').remove([current.path]);
-   photos[slot]={...(current||{}),url,path,caption};Object.entries(values).forEach(([name,value])=>content[`photo.${slot}.${name}`]=String(value));await tPhotos(el);toast(el,'Photo enregistrée. Recharge la page du site pour la voir.',false)
+   photos[slot]={...(current||{}),url,path,caption};Object.entries(values).forEach(([name,value])=>content[`photo.${slot}.${name}`]=String(value));await tPhotos(el);toast(el,'Photo enregistrée en qualité d’origine.',false)
   };
   card.querySelector('[data-delete-photo]')?.addEventListener('click',async()=>{const slot=card.dataset.photoSlot,current=photos[slot];if(!current)return;const removed=await sb.from('media').delete().eq('caption',`photo.${slot}`);if(removed.error){toast(el,removed.error.message,true);return}if(current.path)await sb.storage.from('media').remove([current.path]);delete photos[slot];await tPhotos(el);toast(el,'Photo retirée',false)})
  });
@@ -632,7 +778,7 @@ function openReservationChooser(){
  const overlay=document.createElement('div');
  overlay.className='reservation-chooser-backdrop';
  overlay.dataset.reservationChooser='';
- overlay.innerHTML=`<section class="reservation-chooser" role="dialog" aria-modal="true" aria-labelledby="reservation-chooser-title"><button type="button" class="reservation-chooser-close" aria-label="Fermer">×</button><p class="reservation-chooser-kicker">CHOISIR UN ACCOMPAGNEMENT</p><h2 id="reservation-chooser-title">Que souhaitez-vous réserver ?</h2><div class="reservation-chooser-options"><a href="#/mentale#resa"><span>Préparation mentale</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/basket#resa"><span>Coaching individuel basket</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/physique#resa"><span>Préparation physique</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/clubs"><span>Clubs et Entreprises</span><b>Échanger sur un projet <span aria-hidden="true">→</span></b></a></div></section>`;
+ overlay.innerHTML=`<section class="reservation-chooser" role="dialog" aria-modal="true" aria-labelledby="reservation-chooser-title"><button type="button" class="reservation-chooser-close" aria-label="Fermer">×</button><p class="reservation-chooser-kicker">CHOISIR UN ACCOMPAGNEMENT</p><h2 id="reservation-chooser-title">${esc(t('title.booking.chooser'))}</h2><div class="reservation-chooser-options"><a href="#/mentale#resa"><span>${esc(t('title.category.mentale'))}</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/basket#resa"><span>${esc(t('title.category.basket'))}</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/physique#resa"><span>${esc(t('title.category.physique'))}</span><b>Réserver un créneau <span aria-hidden="true">→</span></b></a><a href="#/clubs"><span>${esc(t('title.category.clubs'))}</span><b>Échanger sur un projet <span aria-hidden="true">→</span></b></a></div></section>`;
  document.body.append(overlay);
  const close=()=>overlay.remove();
  overlay.querySelector('.reservation-chooser-close').addEventListener('click',close);
