@@ -141,13 +141,12 @@ const CONTENT_BLOCKS={
  ],
  'ment.steps':[
   {title:'Établir votre profil',text:'Un entretien approfondi explore votre parcours, vos objectifs, vos difficultés, vos points forts et vos besoins.'},
-  {title:'Évaluer et orienter',text:'Des tests pertinents et documentés complètent l’entretien. Le croisement des observations permet de poser un diagnostic de travail.'},
+  {title:'Évaluer et orienter',text:'Des tests validés scientifiquement, choisis selon les besoins repérés lors de l’entretien, complètent l’évaluation. Le croisement des résultats permet de poser un diagnostic de travail.'},
   {title:'Entraîner et transférer',text:'Des outils adaptés sont travaillés progressivement, puis réinvestis dans votre pratique et votre quotidien pour gagner en autonomie.'},
   {title:'Ajuster et approfondir',text:'On fait le point sur ce qui fonctionne, puis on ajuste le suivi ou on développe de nouvelles compétences mentales.'}
  ],
  'ment.tools':[
   {title:'Respiration et régulation',text:'Apprendre à repérer et moduler sa respiration — abdominale, thoracique ou calmante — pour agir sur l’activation et relâcher les tensions.'},
-  {title:'Relaxation',text:'Utiliser des exercices de relâchement corporel pour diminuer les tensions et retrouver un état adapté à la situation.'},
   {title:'Imagerie mentale',text:'Renforcer la confiance en répétant une réussite, ou préparer une réponse face à un scénario redouté.'},
   {title:'Dialogue interne et switch mental',text:'Repérer les pensées qui freinent, construire des mots-clés et retrouver rapidement un repère utile après une erreur.'},
   {title:'Objectifs et routines de performance',text:'Définir des objectifs de processus et installer des repères avant, pendant ou après l’action.'},
@@ -184,7 +183,7 @@ const CONTENT_BLOCKS={
  ]
 };
 const SERVICE_BLOCK_SECTIONS={
- mentale:[['Ce que la préparation mentale peut vous apporter','ment.benefits','cards'],['Ma démarche d’accompagnement','ment.steps','steps'],['Quelques outils concrets, parmi d’autres','ment.tools','cards']],
+ mentale:[['Ce que la préparation mentale peut vous apporter','ment.benefits','cards'],['Ma démarche d’accompagnement','ment.steps','steps'],['','ment.tools','cards']],
  basket:[['Les fondamentaux individuels','bask.fundamentals','cards'],['Une progression en quatre temps','bask.steps','steps']],
  physique:[['Les qualités physiques travaillées','phys.axes','cards'],['Une démarche adaptée à votre profil','phys.steps','steps']]
 };
@@ -327,7 +326,7 @@ home(){
   {id:'clubs',title:'Clubs et Entreprises',tone:'clubs'}
  ];
  return `<section class="hero home-hero wrap"><div class="home-hero-copy"><h1>${homeTitle}</h1><p>${homeLead}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></div><figure class="home-portrait">${photoMarkup('home.profile','Portrait à ajouter')}</figure></section>
-<section class="home-services wrap" aria-labelledby="home-services-title"><header class="home-services-heading"><span class="eyebrow">BET ON YOU</span><h2 id="home-services-title">Un accompagnement construit autour de votre pratique</h2></header>${tiles.map((item,index)=>`<article class="home-service-row ${index%2?'is-reversed':''} tone-${item.tone} rv"><a class="home-service-copy" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}"><span class="home-service-kicker">0${index+1} · ACCOMPAGNEMENT</span><h3>${esc(item.title)}</h3></a><a class="home-service-photo" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}">${photoMarkup(`home.${item.id}`,`Photo à ajouter — ${item.title}`)}</a></article>`).join('')}</section>
+<section class="home-services wrap" aria-labelledby="home-services-title"><header class="home-services-heading"><span class="eyebrow">BET ON YOU</span><h2 id="home-services-title">Un accompagnement construit autour de votre pratique</h2></header>${tiles.map((item,index)=>`<article class="home-service-row ${index%2?'is-reversed':''} tone-${item.tone} rv"><a class="home-service-copy" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}"><h3>${esc(item.title)}</h3></a><a class="home-service-photo" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}">${photoMarkup(`home.${item.id}`,`Photo à ajouter — ${item.title}`)}</a></article>`).join('')}</section>
 <section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Au fait, c’est qui Julien ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`
 },

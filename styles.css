@@ -2116,14 +2116,10 @@ th {
 .home-service-photo .photo-placeholder{min-height:clamp(250px,32vw,390px)}
 .home-service-row.is-reversed .home-service-copy{grid-column:2;grid-row:1}
 .home-service-row.is-reversed .home-service-photo{grid-column:1;grid-row:1}
-.tone-mentale .home-service-copy{background:linear-gradient(135deg,#dce8ff,#c8d9fb);border-color:#a9c2f7;color:#163d8b}
-.tone-mentale .home-service-kicker{color:#163d8b}
-.tone-basket .home-service-copy{background:linear-gradient(135deg,#f4e6c8,#e9d39f);border-color:#ddc080;color:#5c4217}
-.tone-basket .home-service-kicker{color:#5c4217}
-.tone-physique .home-service-copy{background:linear-gradient(135deg,#eadff5,#d8c8eb);border-color:#c1a9dc;color:#563377}
-.tone-physique .home-service-kicker{color:#563377}
-.tone-clubs .home-service-copy{background:linear-gradient(135deg,#dcebe0,#c9dfd0);border-color:#b1cbb9;color:#244b38}
-.tone-clubs .home-service-kicker{color:#244b38}
+.tone-mentale .home-service-copy{background:linear-gradient(180deg,#eaf1ff 0%,#f5f8ff 52%,#fff 100%);border-color:#c9d8f7;color:#0f2a66}
+.tone-basket .home-service-copy{background:linear-gradient(180deg,#f3eee5 0%,#faf8f3 52%,#fff 100%);border-color:#e8deca;color:#302a20}
+.tone-physique .home-service-copy{background:linear-gradient(180deg,#f1edf5 0%,#f8f6fa 52%,#fff 100%);border-color:#e3d9ee;color:#5b3585}
+.tone-clubs .home-service-copy{background:linear-gradient(180deg,#e5efe7 0%,#f3f8f4 52%,#fff 100%);border-color:#dce7df;color:#203d30}
 
 /* Pages de prestation : contenus courts, répartis en cartes lisibles */
 .service-page{padding-bottom:clamp(2rem,5vw,4rem)}
