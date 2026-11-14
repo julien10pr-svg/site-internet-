@@ -26,17 +26,17 @@ const C={
 'home.lead':'Tu veux miser sur toi ? Je t’accompagne en préparation physique, mentale, en nutrition et en coaching basket. Clubs et entreprises : des formations et interventions sur mesure autour de la performance, de la cohésion et du bien-être.',
 'home.about':'Je termine un Master EOPS à l’Université de Lille, en alternance au sein du club de la Patriote de Templeuve. J’y entraîne les U18F Région et j’assiste les U18 France. J’interviens aussi à l’école de basket.\n\n[Phrase personnelle sur ma façon d’accompagner à rédiger]',
 'phys.intro':'Un travail physique structuré, pensé pour le sport pratiqué et le profil de chaque athlète.',
-'phys.vision':'[Vision et méthodologie à détailler]',
-'phys.needs':'[Besoins et objectifs concernés à détailler]',
-'phys.testing':'[Moyens d’évaluation et de testing à préciser]',
-'phys.nutrition':'L’accompagnement nutritionnel peut compléter le travail physique.\n\n[Place et contenu de l’accompagnement nutritionnel à préciser]',
+'phys.vision':'Le contenu est construit selon le niveau, le sport pratiqué, les objectifs et les contraintes de chacun. La progression vise des qualités utiles et transférables à la pratique.',
+'phys.needs':'Force, puissance, vitesse, mobilité, condition physique, prévention et reprise progressive peuvent être travaillées selon les priorités définies ensemble.',
+'phys.testing':'Des observations et des tests simples permettent de faire le point sur la mobilité, les appuis, la force fonctionnelle ou les capacités d’effort. Les résultats servent à orienter le travail, pas à poser un diagnostic médical.',
+'phys.nutrition':'Des repères simples autour de l’alimentation et de l’hydratation peuvent compléter l’accompagnement physique, dans le respect du cadre de compétence et des besoins de la personne.',
 'ment.intro':'Un accompagnement individuel pour travailler la confiance, la concentration et la gestion de la pression.',
-'ment.vision':'[Vision et méthodologie à détailler]',
-'ment.goals':'[Objectifs possibles et déroulement général à préciser]',
-'ment.format':'Les séances sont individuelles.\n\n[Détails des formats à préciser]',
+'ment.vision':'Le travail part du vécu et des situations concrètes. On choisit des objectifs observables, puis on teste des outils adaptés à la personne et à sa pratique.',
+'ment.goals':'Les objectifs peuvent concerner la confiance, la concentration, la motivation, la gestion des émotions ou la préparation à une échéance. Le contenu évolue avec les retours de séance et les essais sur le terrain.',
+'ment.format':'Les séances sont individuelles et s’adaptent au rythme, aux objectifs et aux contraintes de la personne. Chaque séance se termine par des repères à réinvestir dans la pratique.',
 'bask.intro':'Du joueur débutant à celle ou celui qui vise une progression importante, par exemple une entrée au CREPS : un coaching adapté au niveau, aux objectifs et au profil.',
-'bask.fund':'Travail des fondamentaux individuels : maniement, appuis, finitions, lecture de jeu.\n\n[Contenu à détailler]',
-'bask.shoot':'Développement technique et gestuelle de tir, avec un suivi progressif.\n\n[Contenu à détailler]',
+'bask.fund':'Travail des fondamentaux individuels : appuis, maniement, passe, finition, tir et lecture du jeu. Les contenus sont adaptés au poste, au niveau et aux situations rencontrées.',
+'bask.shoot':'Le travail du tir associe repères techniques, répétitions de qualité et prises d’information. Les exercices évoluent progressivement vers des situations proches du jeu.',
 'bask.levels':'Chaque séance s’adapte au niveau, aux objectifs et au profil du joueur ou de la joueuse.',
 'bask.groups':'Les petits groupes sont limités à 4 personnes. Le tarif par personne diminue avec la taille du groupe, et le groupe se réserve ensemble.',
 'clubs.intro':'Des interventions adaptées aux clubs sportifs, quel que soit le sport, et aux entreprises : préparation physique et mentale, formation des staffs, cohésion d’équipe et bien-être.',
@@ -126,8 +126,78 @@ const TIMELINE=[
  ]}
 ];
 
-let content={...C}, offers=DEF_OFFERS, reviews=[], user=null;
-const t=k=>content[k]??C[k]??'';
+let content={...C}, offers=DEF_OFFERS, reviews=[], photos={}, user=null;
+const unfinishedKeys=new Set(['phys.vision','phys.needs','phys.testing','phys.nutrition','ment.vision','ment.goals','ment.format','bask.fund','bask.shoot']);
+const t=k=>{const value=content[k]??C[k]??'';return unfinishedKeys.has(k)&&/^\s*\[[^\]]+\]\s*$/.test(value)?(C[k]??''):value};
+
+const CONTENT_BLOCKS={
+ 'ment.benefits':[
+  {title:'Mieux gérer la pression',text:'Repérer ce qui déclenche la pression et préparer des réponses utiles avant, pendant et après l’épreuve.'},
+  {title:'Renforcer la confiance',text:'S’appuyer sur ses réussites, ses ressources et des repères concrets pour agir avec plus d’assurance.'},
+  {title:'Rester concentré',text:'Identifier les informations importantes et revenir à la tâche après une distraction ou une erreur.'},
+  {title:'Réguler ses émotions',text:'Mieux comprendre ses réactions et choisir des stratégies adaptées à la situation vécue.'},
+  {title:'Se fixer des objectifs',text:'Transformer une intention en objectifs de résultat, de performance et surtout de processus.'},
+  {title:'Gagner en autonomie',text:'Tester des outils, comprendre leur intérêt et apprendre à les réutiliser dans sa pratique.'}
+ ],
+ 'ment.steps':[
+  {title:'Échanger',text:'Faire le point sur le vécu, les attentes, les objectifs et les situations rencontrées.'},
+  {title:'Évaluer',text:'Repérer les ressources, les besoins et les habitudes déjà mobilisées.'},
+  {title:'S’entraîner',text:'Choisir des outils adaptés et les travailler progressivement en séance puis dans la pratique.'},
+  {title:'Ajuster',text:'Faire le bilan des essais, observer ce qui aide et adapter la suite du suivi.'}
+ ],
+ 'ment.tools':[
+  {title:'Respiration et relaxation',text:'Explorer des repères respiratoires confortables et des exercices de relâchement adaptés.'},
+  {title:'Imagerie mentale',text:'Répéter mentalement une action ou une situation en mobilisant les sensations pertinentes.'},
+  {title:'Dialogue interne',text:'Repérer les pensées utiles ou limitantes et construire des mots-clés personnels.'},
+  {title:'Objectifs et routines',text:'Définir des actions maîtrisables et organiser des repères avant ou pendant la performance.'},
+  {title:'Attention et concentration',text:'Choisir un point d’attention, gérer les distractions et entraîner le retour à la tâche.'},
+  {title:'Méditation de pleine conscience',text:'Observer pensées et sensations sans jugement, puis replacer volontairement son attention.'}
+ ],
+ 'bask.fundamentals':[
+  {title:'Appuis et équilibre',text:'Gagner en stabilité, démarrer efficacement et changer de direction avec maîtrise.'},
+  {title:'Maniement de balle',text:'Développer la dextérité et garder le contrôle du ballon sous différentes contraintes.'},
+  {title:'Passe et réception',text:'Améliorer la précision, le timing et l’enchaînement avec le déplacement.'},
+  {title:'Finition',text:'Varier les finitions près du cercle et choisir une réponse adaptée à la défense.'},
+  {title:'Tir',text:'Construire une gestuelle régulière et travailler la prise d’information avant le tir.'},
+  {title:'Lecture du jeu',text:'Lire les espaces, les partenaires et les défenseurs pour décider plus vite.'}
+ ],
+ 'bask.steps':[
+  {title:'Observer',text:'Faire le point sur le niveau, les habitudes et les objectifs du joueur ou de la joueuse.'},
+  {title:'Choisir un axe',text:'Définir une priorité technique ou décisionnelle adaptée à la séance.'},
+  {title:'Répéter et varier',text:'Travailler le geste puis le replacer dans des situations qui évoluent.'},
+  {title:'Transférer',text:'Relier le travail individuel aux situations rencontrées en entraînement et en match.'}
+ ],
+ 'phys.axes':[
+  {title:'Force',text:'Développer la capacité à produire et contrôler de la force selon le niveau et la pratique.'},
+  {title:'Puissance',text:'Travailler la production rapide de force avec des exercices adaptés et une progression maîtrisée.'},
+  {title:'Vitesse et changements de direction',text:'Améliorer les premiers appuis, les accélérations, les freinages et les relances.'},
+  {title:'Mobilité',text:'Entretenir les amplitudes utiles à la pratique et à la qualité des mouvements.'},
+  {title:'Condition physique',text:'Construire des capacités d’effort cohérentes avec les exigences du sport ou du quotidien.'},
+  {title:'Prévention et reprise',text:'Renforcer progressivement les capacités nécessaires à une pratique durable et à une reprise adaptée.'}
+ ],
+ 'phys.steps':[
+  {title:'Échanger',text:'Préciser la pratique, les objectifs, les contraintes et l’expérience de la personne.'},
+  {title:'Faire le point',text:'Observer les mouvements et utiliser des tests simples, choisis selon le besoin.'},
+  {title:'Construire',text:'Organiser un programme progressif avec des consignes et des repères compréhensibles.'},
+  {title:'Suivre',text:'Faire évoluer le travail selon les sensations, les progrès et les contraintes de la pratique.'}
+ ]
+};
+const SERVICE_BLOCK_SECTIONS={
+ mentale:[['Ce que la préparation mentale peut vous apporter','ment.benefits','cards'],['Un accompagnement en quatre étapes','ment.steps','steps'],['Des outils concrets, choisis avec vous','ment.tools','cards']],
+ basket:[['Les fondamentaux individuels','bask.fundamentals','cards'],['Une progression en quatre temps','bask.steps','steps']],
+ physique:[['Les qualités physiques travaillées','phys.axes','cards'],['Une démarche adaptée à votre profil','phys.steps','steps']]
+};
+const PHOTO_SLOTS=[
+ {id:'home.profile',label:'Portrait de présentation',alt:'Portrait de Julien'},
+ {id:'home.mentale',label:'Préparation mentale',alt:'Préparation mentale'},
+ {id:'home.basket',label:'Coaching individuel basket',alt:'Coaching individuel de basket'},
+ {id:'home.physique',label:'Préparation physique',alt:'Préparation physique'},
+ {id:'home.clubs',label:'Clubs et entreprises',alt:'Intervention auprès d’un club ou d’une entreprise'}
+];
+function contentBlocks(key){try{const parsed=JSON.parse(content[key]||'');return Array.isArray(parsed)?parsed:CONTENT_BLOCKS[key]}catch{return CONTENT_BLOCKS[key]||[]}}
+function photoSettings(slot){const read=(name,fallback)=>{const n=Number(content[`photo.${slot}.${name}`]);return Number.isFinite(n)?n:fallback};return{x:read('x',50),y:read('y',50),zoom:read('zoom',100),alt:content[`photo.${slot}.alt`]||PHOTO_SLOTS.find(p=>p.id===slot)?.alt||''}}
+function photoMarkup(slot,label){const item=photos[slot],cfg=photoSettings(slot);return item?.url?`<img src="${esc(item.url)}" alt="${esc(cfg.alt||label)}" loading="lazy" style="object-position:${cfg.x}% ${cfg.y}%;transform:scale(${cfg.zoom/100})">`:`<div class="photo-placeholder" aria-label="Emplacement photo"><span>${esc(label)}</span></div>`}
+function blockCards(key,kind='cards'){const list=contentBlocks(key);return `<div class="service-cards ${kind==='steps'?'service-steps':''}">${list.map((item,i)=>`<article class="service-card"><span class="service-card-index">${String(i+1).padStart(2,'0')}</span><h3>${esc(item.title||'')}</h3><p>${esc(item.text||'')}</p></article>`).join('')}</div>`}
 
 function parseReviews(value){
  try{
@@ -139,15 +209,17 @@ function parseReviews(value){
 async function loadData(){
  if(!live)return;
  try{
-  const [c,o]=await Promise.all([
+  const [c,o,m]=await Promise.all([
    sb.from('site_content').select('*'),
-   sb.from('offers').select('*').eq('active',true).order('sort')
+   sb.from('offers').select('*').eq('active',true).order('sort'),
+   sb.from('media').select('*').order('sort')
   ]);
   (c.data||[]).forEach(r=>{
    if(r.key==='reviews.data')reviews=parseReviews(r.value);
    else content[r.key]=r.value
   });
   if(o.data?.length)offers=o.data;
+  photos={};(m.data||[]).forEach(item=>{if(item.caption?.startsWith('photo.home.'))photos[item.caption.slice(6)]=item});
  }catch(e){
   console.error(e)
  }
@@ -247,15 +319,26 @@ const pages={
 home(){
  const homeTitle=esc(t('home.title')).replace(/(Investir sur soi-même)/i,'<span class="home-title-break">$1</span>');
  const homeLead=esc(t('home.lead').replace(/\s+(Clubs et entreprises\s*:)/i,'\n\n$1'));
- return `<section class="hero wrap"><h1>${homeTitle}</h1><p>${homeLead}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></section>
-<div class="panels">${Object.entries(SV).map(([id,s])=>`<a class="panel p-${id} rv" href="#/${id}"><h2>${s.name}</h2></a>`).join('')}<a class="panel p-clubs rv" href="#/clubs"><h2>Clubs et Entreprises</h2></a></div>
+ const tiles=[
+  {id:'mentale',title:'Préparation mentale',desc:t('ment.intro'),tone:'mentale'},
+  {id:'basket',title:'Coaching individuel basket',desc:t('bask.intro'),tone:'basket'},
+  {id:'physique',title:'Préparation physique',desc:t('phys.intro'),tone:'physique'},
+  {id:'clubs',title:'Clubs et Entreprises',desc:t('clubs.intro'),tone:'clubs'}
+ ];
+ return `<section class="hero home-hero wrap"><div class="home-hero-copy"><h1>${homeTitle}</h1><p>${homeLead}</p><div class="row"><a class="btn alt" style="color:var(--ink)" href="#/physique#resa" data-resa>Réserver un créneau</a></div></div><figure class="home-portrait">${photoMarkup('home.profile','Portrait à ajouter')}</figure></section>
+<section class="home-services wrap" aria-labelledby="home-services-title"><header class="home-services-heading"><span class="eyebrow">BET ON YOU</span><h2 id="home-services-title">Un accompagnement construit autour de votre pratique</h2></header>${tiles.map((item,index)=>`<article class="home-service-row ${index%2?'is-reversed':''} tone-${item.tone} rv"><a class="home-service-copy" href="#/${item.id}"><span class="home-service-kicker">0${index+1} · ${esc(item.title)}</span><h3>${esc(item.title)}</h3><p>${esc(item.desc)}</p><span class="home-service-link">Découvrir <b aria-hidden="true">↗</b></span></a><a class="home-service-photo" href="#/${item.id}" aria-label="Découvrir : ${esc(item.title)}">${photoMarkup(`home.${item.id}`,`Photo à ajouter — ${item.title}`)}</a></article>`).join('')}</section>
 <section class="wrap rv" style="padding-bottom:clamp(3rem,5vw,4rem)"><h2>Au fait, c’est qui Julien ?</h2>${rich(t('home.about'))}<a class="btn" href="#/a-propos">Mon parcours</a></section>${reviewsSection()}
 <section class="wrap rv"><h2>Contact</h2>${contactBlock()}</section>`
 },
 service(id){
  const s=SV[id],o=offers.filter(x=>x.service===id);
+ const blocks=SERVICE_BLOCK_SECTIONS[id]||[];
+ const leadKey=id==='mentale'?'ment.vision':id==='physique'?'phys.vision':'bask.fund';
+ const supporting=id==='mentale'?[['Un accompagnement individuel','ment.format']]:id==='physique'?[['Évaluation et testing','phys.testing'],['Nutrition et récupération','phys.nutrition']]:[['Travail du tir','bask.shoot'],['Un suivi adapté','bask.levels'],['Séances en petit groupe','bask.groups']];
  return `<div class="shero rv"><div class="wrap"><h1>${s.h}</h1><p>${esc(t(s.k+'.intro'))}</p><a class="btn" style="background:var(--a)" href="#/${id}#resa" data-resa>Réserver un créneau</a></div></div>
-<div class="wrap">${s.secs.map(([h,k])=>`<div class="sec2 rv"><h2>${h}</h2><div>${rich(t(s.k+'.'+k))}</div></div>`).join('')}
+<div class="wrap service-page"><section class="service-intro rv"><span class="eyebrow">${esc(s.name)}</span><h2>${id==='mentale'?'Une préparation qui part de votre réalité':id==='basket'?'Un travail individuel, au service du jeu':'Un travail progressif et adapté'}</h2>${rich(t(leadKey))}</section>
+${blocks.map(([heading,key,kind])=>`<section class="service-content-section rv"><header><span class="eyebrow">${kind==='steps'?'LA DÉMARCHE':'LES AXES DE TRAVAIL'}</span><h2>${esc(heading)}</h2></header>${blockCards(key,kind)}</section>`).join('')}
+${supporting.map(([h,k])=>`<section class="service-note-section rv"><h2>${esc(h)}</h2><div>${rich(t(k))}</div></section>`).join('')}
 <section class="rv"><h2>Offres et tarifs</h2><div class="grid">${o.map(x=>`<div class="box"><h3>${esc(x.label)}</h3><div class="price">${eur(x.price_cents)}</div><p>${tbd(x.detail||'')}</p></div>`).join('')}</div>
 <p class="note" style="margin-top:1rem">${DUR}</p><p>${esc(t('loyalty'))}</p><p>${tbd(t('pay.text'))}</p></section>
 <section id="resa" class="rv"><h2>Réserver un créneau</h2><div id="booking"></div></section></div>`
@@ -355,7 +438,7 @@ async function admin(){
   };
   return
  }
- const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,Avis:tReviews,'Suivi des accompagnements':el=>renderFollowupAdmin(el,{sb,esc,fmt})};
+ const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,'Blocs visuels':tSections,Photos:tPhotos,Avis:tReviews,'Suivi des accompagnements':el=>renderFollowupAdmin(el,{sb,esc,fmt})};
  app.innerHTML=`<div class="wrap admin"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
  const show=n=>{
   app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));
@@ -436,13 +519,53 @@ async function tContent(el){
   'clubs.duration':'Durée d’une intervention',
   'clubs.pricing':'Tarification'
  };
- el.innerHTML=`<form style="max-width:760px">${Object.keys(C).map(k=>`${clubHeadings[k]||''}<label>${contentLabels[k]||k}<textarea name="${k}" rows="${cur[k].length>120?4:1}">${esc(cur[k])}</textarea></label>`).join('')}<button class="btn">Enregistrer les contenus</button></form><p class="note">Les passages entre crochets [ ] s’affichent comme « à compléter » sur le site.</p>`;
+ el.innerHTML=`<form style="max-width:760px">${Object.keys(C).map(k=>`${clubHeadings[k]||''}<label>${contentLabels[k]||k}<textarea name="${k}" rows="${cur[k].length>120?4:1}">${esc(cur[k])}</textarea></label>`).join('')}<button class="btn">Enregistrer les contenus</button></form>`;
  el.querySelector('form').onsubmit=async e=>{
   e.preventDefault();
   const rows=Object.keys(C).map(k=>({key:k,value:e.target[k].value}));
   const {error}=await sb.from('site_content').upsert(rows);
   toast(el,error?error.message:'Contenus enregistrés',!!error)
  }
+}
+
+async function tSections(el){
+ const entries=Object.entries(CONTENT_BLOCKS);
+ const names={'ment.benefits':'Mental · apports','ment.steps':'Mental · étapes','ment.tools':'Mental · outils','bask.fundamentals':'Basket · fondamentaux','bask.steps':'Basket · progression','phys.axes':'Physique · qualités travaillées','phys.steps':'Physique · étapes'};
+ const item=(key,row={title:'',text:''})=>`<article class="admin-block-item"><label>Titre<input data-block-title maxlength="90" value="${esc(row.title||'')}"></label><label>Texte<textarea data-block-text rows="2" maxlength="360">${esc(row.text||'')}</textarea></label><button class="btn alt" type="button" data-remove-block>Supprimer ce bloc</button></article>`;
+ el.innerHTML=`<div class="admin-section-editors">${entries.map(([key,defaults])=>`<section class="admin-section-editor" data-block-group="${esc(key)}"><h2>${esc(names[key]||key)}</h2><div class="admin-block-list">${contentBlocks(key).map(row=>item(key,row)).join('')}</div><button class="btn alt" type="button" data-add-block>+ Ajouter un bloc</button></section>`).join('')}<button class="btn" type="button" data-save-blocks>Enregistrer les blocs</button></div>`;
+ el.querySelectorAll('[data-add-block]').forEach(button=>button.onclick=()=>button.closest('[data-block-group]').querySelector('.admin-block-list').insertAdjacentHTML('beforeend',item(button.closest('[data-block-group]').dataset.blockGroup)));
+ el.querySelectorAll('[data-remove-block]').forEach(button=>button.onclick=()=>button.closest('.admin-block-item').remove());
+ el.querySelector('[data-save-blocks]').onclick=async()=>{
+  const rows=[...el.querySelectorAll('[data-block-group]')].map(group=>({key:group.dataset.blockGroup,value:JSON.stringify([...group.querySelectorAll('.admin-block-item')].map(row=>({title:row.querySelector('[data-block-title]').value.trim(),text:row.querySelector('[data-block-text]').value.trim()})).filter(row=>row.title||row.text))}));
+  const {error}=await sb.from('site_content').upsert(rows);if(!error)rows.forEach(row=>content[row.key]=row.value);toast(el,error?error.message:'Blocs enregistrés',!!error)
+ }
+}
+
+async function tPhotos(el){
+ const {data:rows=[],error:readError}=await sb.from('media').select('*').order('sort');
+ if(readError){el.innerHTML=`<p class="msg err">${esc(readError.message)}</p>`;return}
+ photos={};rows.forEach(row=>{if(row.caption?.startsWith('photo.home.'))photos[row.caption.slice(6)]=row});
+ const settings=await sb.from('site_content').select('*').like('key','photo.%');(settings.data||[]).forEach(row=>content[row.key]=row.value);
+ const editor=slot=>{const photo=photos[slot.id],cfg=photoSettings(slot.id);return `<article class="admin-photo-card" data-photo-slot="${esc(slot.id)}"><div><h3>${esc(slot.label)}</h3><div class="admin-photo-preview">${photo?.url?`<img data-preview-image src="${esc(photo.url)}" alt="${esc(cfg.alt)}" style="object-position:${cfg.x}% ${cfg.y}%;transform:scale(${cfg.zoom/100})">`:'<div class="photo-placeholder"><span>Emplacement photo</span></div>'}</div></div><div class="admin-photo-controls"><label>Choisir une photo<input type="file" accept="image/jpeg,image/png,image/webp" data-photo-file></label><label>Description de la photo<input type="text" maxlength="140" data-photo-alt value="${esc(cfg.alt)}"></label><label>Position horizontale<input type="range" min="0" max="100" value="${cfg.x}" data-photo-x></label><label>Position verticale<input type="range" min="0" max="100" value="${cfg.y}" data-photo-y></label><label>Zoom<input type="range" min="100" max="150" value="${cfg.zoom}" data-photo-zoom></label><div class="row admin-photo-actions"><button class="btn" type="button" data-save-photo>Enregistrer la photo</button>${photo?'<button class="btn alt" type="button" data-delete-photo>Retirer</button>':''}</div></div></article>`};
+ el.innerHTML=`<div class="admin-photo-grid">${PHOTO_SLOTS.map(editor).join('')}</div>`;
+ el.querySelectorAll('[data-photo-slot]').forEach(card=>{
+  const preview=card.querySelector('[data-preview-image]'),file=card.querySelector('[data-photo-file]');
+  const updatePreview=()=>{if(!preview)return;preview.style.objectPosition=`${card.querySelector('[data-photo-x]').value}% ${card.querySelector('[data-photo-y]').value}%`;preview.style.transform=`scale(${card.querySelector('[data-photo-zoom]').value/100})`};
+  card.querySelectorAll('[data-photo-x],[data-photo-y],[data-photo-zoom]').forEach(input=>input.oninput=updatePreview);
+  file.onchange=()=>{const selected=file.files?.[0];if(!selected)return;const url=URL.createObjectURL(selected);let image=card.querySelector('[data-preview-image]');if(!image){card.querySelector('.admin-photo-preview').innerHTML='<img data-preview-image alt="Aperçu de la photo">';image=card.querySelector('[data-preview-image]')}image.src=url;image.style.objectPosition=`${card.querySelector('[data-photo-x]').value}% ${card.querySelector('[data-photo-y]').value}%`;image.style.transform=`scale(${card.querySelector('[data-photo-zoom]').value/100})`};
+  card.querySelector('[data-save-photo]').onclick=async()=>{
+   const slot=card.dataset.photoSlot,selected=file.files?.[0],caption=`photo.${slot}`;let current=photos[slot],url=current?.url||'',path=current?.path||'';
+   if(selected){if(selected.size>8*1024*1024){toast(el,'La photo doit faire 8 Mo maximum.',true);return}const safe=selected.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').slice(-90),nextPath=`site/${slot}/${Date.now()}-${safe}`;const upload=await sb.storage.from('media').upload(nextPath,selected,{upsert:true,contentType:selected.type});if(upload.error){toast(el,upload.error.message,true);return}const publicData=sb.storage.from('media').getPublicUrl(nextPath).data;url=publicData.publicUrl;path=nextPath}
+   if(!url){toast(el,'Choisis une photo avant de l’enregistrer.',true);return}
+   const existing=await sb.from('media').select('id').eq('caption',caption).limit(1).maybeSingle();let write=existing.data?.id?await sb.from('media').update({url,path,kind:'photo',caption,sort:PHOTO_SLOTS.findIndex(item=>item.id===slot)}).eq('id',existing.data.id):await sb.from('media').insert({url,path,kind:'photo',caption,sort:PHOTO_SLOTS.findIndex(item=>item.id===slot)});
+   const values={x:card.querySelector('[data-photo-x]').value,y:card.querySelector('[data-photo-y]').value,zoom:card.querySelector('[data-photo-zoom]').value,alt:card.querySelector('[data-photo-alt]').value.trim()};
+   const saved=write.error?write:await sb.from('site_content').upsert(Object.entries(values).map(([name,value])=>({key:`photo.${slot}.${name}`,value:String(value)})));
+   if(saved.error){toast(el,saved.error.message,true);return}
+   if(selected&&current?.path&&current.path!==path)await sb.storage.from('media').remove([current.path]);
+   photos[slot]={...(current||{}),url,path,caption};Object.entries(values).forEach(([name,value])=>content[`photo.${slot}.${name}`]=String(value));await tPhotos(el);toast(el,'Photo enregistrée. Recharge la page du site pour la voir.',false)
+  };
+  card.querySelector('[data-delete-photo]')?.addEventListener('click',async()=>{const slot=card.dataset.photoSlot,current=photos[slot];if(!current)return;const removed=await sb.from('media').delete().eq('caption',`photo.${slot}`);if(removed.error){toast(el,removed.error.message,true);return}if(current.path)await sb.storage.from('media').remove([current.path]);delete photos[slot];await tPhotos(el);toast(el,'Photo retirée',false)})
+ });
 }
 
 async function tReviews(el){
