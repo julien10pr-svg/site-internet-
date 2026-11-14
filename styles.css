@@ -2239,3 +2239,29 @@ th {
 .admin-photo-preview{cursor:grab;touch-action:none}
 .admin-photo-preview.is-dragging{cursor:grabbing}
 .admin-photo-preview img{user-select:none;-webkit-user-drag:none;pointer-events:none}
+
+
+/* Sur le site public, le cadre des photos suit leur ratio natif. */
+.home-portrait,.home-service-photo{
+  height:auto!important;
+  min-height:0!important;
+  aspect-ratio:auto!important;
+}
+.home-portrait img,.home-service-photo img{
+  display:block;
+  width:100%;
+  height:auto!important;
+  max-height:none;
+  object-fit:contain;
+}
+.home-portrait:not(:has(img)){
+  aspect-ratio:var(--photo-frame-ratio,4/5)!important;
+}
+.home-service-photo:not(:has(img)){
+  aspect-ratio:var(--photo-frame-ratio,4/3)!important;
+}
+@media(max-width:700px){
+  .home-portrait,.home-service-photo{height:auto!important;aspect-ratio:auto!important}
+  .home-portrait:not(:has(img)){aspect-ratio:var(--photo-frame-ratio-mobile,var(--photo-frame-ratio,1/1.05))!important}
+  .home-service-photo:not(:has(img)){aspect-ratio:var(--photo-frame-ratio-mobile,var(--photo-frame-ratio,16/10))!important}
+}
