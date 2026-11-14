@@ -2193,3 +2193,43 @@ th {
  .admin-photo-actions{grid-column:1}
 }
 \n.service-section-note{max-width:66ch;margin:.55rem auto 0;color:var(--mut);font-size:.98rem;line-height:1.5;text-align:center}\n
+
+/* Cadres photo réglables depuis l’administration, sans déformation de l’image. */
+.home-portrait{
+  width:min(var(--photo-frame-width,390px),100%);
+  max-width:none;
+  height:auto;
+  aspect-ratio:var(--photo-frame-ratio,4/5);
+}
+.home-service-photo{
+  width:min(var(--photo-frame-width,100%),100%);
+  min-height:0;
+  height:auto;
+  aspect-ratio:var(--photo-frame-ratio,4/3);
+  justify-self:center;
+  align-self:center;
+}
+@media(max-width:700px){
+  .home-portrait{
+    width:min(var(--photo-frame-width,82vw),82vw,360px);
+    aspect-ratio:var(--photo-frame-ratio-mobile,var(--photo-frame-ratio,1/1.05));
+  }
+  .home-service-photo{
+    width:min(var(--photo-frame-width,100%),100%);
+    aspect-ratio:var(--photo-frame-ratio-mobile,var(--photo-frame-ratio,16/10));
+  }
+}
+
+.admin-photo-preview{aspect-ratio:var(--photo-frame-ratio,4/3)}
+.admin-photo-preview[data-photo-preview-slot="home.profile"]{aspect-ratio:var(--photo-frame-ratio,4/5)}
+@media(max-width:700px){
+ .admin-photo-preview{aspect-ratio:var(--photo-frame-ratio-mobile,var(--photo-frame-ratio,16/10))}
+ .admin-photo-preview[data-photo-preview-slot="home.profile"]{aspect-ratio:var(--photo-frame-ratio-mobile,var(--photo-frame-ratio,1/1.05))}
+}
+
+
+/* Aperçu photo plus grand dans l’admin, avec cadre réglable et image non déformée. */
+.admin-photo-card{grid-template-columns:minmax(0,1fr)}
+.admin-photo-preview{width:min(100%,760px);max-width:760px;margin-inline:auto}
+.admin-photo-controls label output{float:right;color:var(--mut);font-weight:700;font-variant-numeric:tabular-nums}
+@media(max-width:700px){.admin-photo-preview{width:100%!important;max-width:100%}.admin-photo-controls label output{float:none;margin-left:.35rem}}
