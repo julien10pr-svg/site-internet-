@@ -2116,10 +2116,11 @@ th {
 .home-service-photo .photo-placeholder{min-height:clamp(250px,32vw,390px)}
 .home-service-row.is-reversed .home-service-copy{grid-column:2;grid-row:1}
 .home-service-row.is-reversed .home-service-photo{grid-column:1;grid-row:1}
-.tone-mentale .home-service-copy{background:#8eaceb;border-color:#6d8fd9;color:#102e70}
-.tone-basket .home-service-copy{background:#eaa04c;border-color:#d78332;color:#352313}
-.tone-physique .home-service-copy{background:#a184c0;border-color:#8060a2;color:#34204e}
-.tone-clubs .home-service-copy{background:#9bb6a2;border-color:#789a82;color:#203b2b}
+.tone-mentale .home-service-copy{background:#eaf1ff;border-color:#c9d8fb;color:#0f2a66}
+.tone-basket .home-service-copy{background:#0d0d0d;border-color:#0d0d0d;color:#fff}
+.tone-physique .home-service-copy{background:#7046a3;border-color:#7046a3;color:#fff}
+.tone-clubs .home-service-copy{background:#d5e3d7;border-color:#c4d8c8;color:#244b38}
+.home-service-copy .home-service-kicker{color:inherit;opacity:.82}
 
 /* Pages de prestation : contenus courts, répartis en cartes lisibles */
 .service-page{padding-bottom:clamp(2rem,5vw,4rem)}
