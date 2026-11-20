@@ -126,7 +126,8 @@ const C={
 "title.timeline.22":"Brevet fédéral adulte",
 "title.timeline.23":"Baccalauréat scientifique",
 "title.timeline.24":"BAFA",
-"title.timeline.25":"PSC1"
+"title.timeline.25":"PSC1",
+"title.timeline.prenationale":"Pré-nationale féminine senior (RF1)"
 };
 
 const DEF_OFFERS=[
@@ -150,6 +151,7 @@ const TIMELINE=[
  {year:'2026–2027',tone:'clubs',chapter:'Master 2 et nouvelles missions',events:[
   {label:'FORMATION',title:'Master 2 EOPS',detail:'Optimisation de la performance sportive — en cours'},
   {label:'ENCADREMENT',title:'U18 France et U18 Région R1',detail:'Assistant U18 France et entraîneur U18 Région R1 à la Patriote de Templeuve'},
+  {label:'ENCADREMENT',titleKey:'title.timeline.prenationale',detail:'Coach de l’équipe pré-nationale féminine senior (RF1)'},
   {label:'COACHING EN CLUB',title:'École de basket',detail:'Coaching au sein de mon club, la Patriote de Templeuve'},
   {label:'COACHING INDIVIDUEL',title:'Basket individuel',detail:'Accompagnement individuel des joueuses et joueurs'},
   {label:'PRÉPARATION PHYSIQUE',title:'Préparation physique',detail:'Accompagnement adapté aux besoins et aux objectifs'},
@@ -413,7 +415,7 @@ ${supporting.map(([titleKey,k])=>`<section class="service-note-section rv"><h2>$
 <section id="resa" class="rv"><h2>${esc(t('title.service.booking'))}</h2><div id="booking"></div></section></div>`
 },
 about(){
- return `<div class="shero about-hero rv"><div class="wrap"><h1>${esc(t('title.about.page'))}</h1></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone} ${index%2?'timeline-left':'timeline-right'}" style="--step:${index}" aria-label="${esc(item.year)} — ${esc(item.chapter)}"><div class="timeline-node" aria-hidden="true"></div><div class="timeline-card"><div class="timeline-card-top"><p class="timeline-year">${esc(item.year)}</p></div><div class="timeline-events">${item.events.map((event,eventIndex)=>`<div class="timeline-event" style="--event-step:${eventIndex}"><div class="timeline-event-copy"><span class="timeline-label">${esc(event.label)}</span><h3>${esc(t('title.timeline.'+(TIMELINE.slice(0,index).reduce((sum,item)=>sum+item.events.length,0)+eventIndex)))}</h3><p>${esc(event.detail)}</p></div></div>`).join('')}</div></div></article>`).join('')}</div></section>`
+ return `<div class="shero about-hero rv"><div class="wrap"><h1>${esc(t('title.about.page'))}</h1></div></div><section class="timeline-section wrap" aria-label="Frise chronologique de mon parcours"><div class="timeline" data-timeline><div class="timeline-rail" aria-hidden="true"></div>${TIMELINE.map((item,index)=>`<article class="timeline-item rv tone-${item.tone} ${index%2?'timeline-left':'timeline-right'}" style="--step:${index}" aria-label="${esc(item.year)} — ${esc(item.chapter)}"><div class="timeline-node" aria-hidden="true"></div><div class="timeline-card"><div class="timeline-card-top"><p class="timeline-year">${esc(item.year)}</p></div><div class="timeline-events">${item.events.map((event,eventIndex)=>`<div class="timeline-event" style="--event-step:${eventIndex}"><div class="timeline-event-copy"><span class="timeline-label">${esc(event.label)}</span><h3>${esc(t(event.titleKey||'title.timeline.'+(TIMELINE.slice(0,index).reduce((sum,item)=>sum+item.events.filter(event=>!event.titleKey).length,0)+item.events.slice(0,eventIndex).filter(event=>!event.titleKey).length)))}</h3><p>${esc(event.detail)}</p></div></div>`).join('')}</div></div></article>`).join('')}</div></section>`
 },
 clubs(){
  return `<div class="shero rv"><div class="wrap"><h1>${esc(t('title.category.clubs'))}</h1><p>${esc(t('clubs.intro'))}</p><a class="btn" href="#/contact">Échanger sur votre projet</a></div></div>
