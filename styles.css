@@ -2265,3 +2265,16 @@ th {
   .home-portrait:not(:has(img)){aspect-ratio:var(--photo-frame-ratio-mobile,var(--photo-frame-ratio,1/1.05))!important}
   .home-service-photo:not(:has(img)){aspect-ratio:var(--photo-frame-ratio-mobile,var(--photo-frame-ratio,16/10))!important}
 }
+
+
+/* Génération de factures dans l’administration */
+.invoice-admin{display:grid;gap:1.1rem;min-width:0}
+.invoice-seller-grid,.invoice-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;max-width:none}
+.invoice-seller-grid label,.invoice-form-grid label{display:grid;gap:.35rem;min-width:0}
+.invoice-client-fields,.invoice-pricing-fields{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+.invoice-actions{grid-column:1/-1}
+.invoice-preview{margin-top:1rem;padding:1.1rem;border:1px solid var(--line);border-radius:14px;background:#fff}
+.invoice-preview-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--line);padding-bottom:.7rem}
+.invoice-preview p{line-height:1.5}
+.invoice-preview-total{text-align:right;font-size:1.15rem;font-weight:800;color:var(--a)}
+@media(max-width:700px){.invoice-seller-grid,.invoice-form-grid,.invoice-client-fields,.invoice-pricing-fields{grid-template-columns:minmax(0,1fr)}.invoice-client-fields,.invoice-pricing-fields,.invoice-actions{grid-column:1}}
