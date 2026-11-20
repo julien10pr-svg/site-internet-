@@ -127,7 +127,7 @@ const C={
 "title.timeline.23":"Baccalauréat scientifique",
 "title.timeline.24":"BAFA",
 "title.timeline.25":"PSC1",
-"title.timeline.prenationale":"Pré-nationale féminine senior (RF1)"
+"title.timeline.prenationale":"Coach de l’équipe pré-nationale féminine senior (RF1)"
 };
 
 const DEF_OFFERS=[
