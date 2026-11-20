@@ -507,7 +507,7 @@ async function admin(){
   };
   return
  }
- const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Contenus:tContent,'Blocs visuels':tSections,Photos:tPhotos,Avis:tReviews,'Suivi des accompagnements':el=>renderFollowupAdmin(el,{sb,esc,fmt})};
+ const tabs={Réservations:tBook,Créneaux:tSlots,'Offres et tarifs':tOffers,Factures:tInvoices,Contenus:tContent,'Blocs visuels':tSections,Photos:tPhotos,Avis:tReviews,'Suivi des accompagnements':el=>renderFollowupAdmin(el,{sb,esc,fmt})};
  app.innerHTML=`<div class="wrap admin"><section><h1>Administration</h1><div class="tabs" role="tablist">${Object.keys(tabs).map((k,i)=>`<button role="tab" aria-selected="${i==0}">${k}</button>`).join('')}<button id="out">Déconnexion</button></div><div id="tab"></div></section></div>`;
  const show=n=>{
   app.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',b.textContent===n));
@@ -723,6 +723,114 @@ async function tPhotos(el){
   };
   card.querySelector('[data-delete-photo]')?.addEventListener('click',async()=>{const slot=card.dataset.photoSlot,current=photos[slot];if(!current)return;const removed=await sb.from('media').delete().eq('caption',`photo.${slot}`);if(removed.error){toast(el,removed.error.message,true);return}if(current.path)await sb.storage.from('media').remove([current.path]);delete photos[slot];await tPhotos(el);toast(el,'Photo retirée',false)})
  });
+}
+
+
+const INVOICE_SELLER_DEFAULT={
+ name:'Auto-entreprise PROYE Julien',
+ address:'16 rue Albert Camus',
+ postal:'59126',
+ city:'Linselles',
+ phone:'07 82 99 36 20',
+ email:'julien.10pr@gmail.com',
+ siret:'',
+ vatNote:''
+};
+const invoiceMoney=value=>{const n=Number(String(value??'0').replace(',','.'));return Number.isFinite(n)?Math.max(0,Math.round(n*100)):0};
+const invoiceDate=value=>{if(!value)return '';const [y,m,d]=value.split('-');return d+'/'+m+'/'+y};
+async function tInvoices(el){
+ const [offersResult,settingsResult]=await Promise.all([
+  sb.from('offers').select('*').eq('active',true).order('service').order('sort'),
+  sb.from('site_content').select('key,value').in('key',['invoice.seller','invoice.next_number'])
+ ]);
+ if(offersResult.error){el.innerHTML=`<p class="msg err">${esc(offersResult.error.message)}</p>`;return}
+ const offers=offersResult.data||[];
+ const settings=Object.fromEntries((settingsResult.data||[]).map(row=>[row.key,row.value]));
+ let seller={...INVOICE_SELLER_DEFAULT};
+ try{seller={...seller,...JSON.parse(settings['invoice.seller']||'{}')}}catch{}
+ let nextNumber=Math.max(1,parseInt(settings['invoice.next_number']||'9',10)||9);
+ const today=(()=>{const parts=new Intl.DateTimeFormat('fr-CA',{timeZone:'Europe/Paris',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const v=Object.fromEntries(parts.map(p=>[p.type,p.value]));return v.year+'-'+v.month+'-'+v.day})();
+ el.innerHTML=`<div class="invoice-admin">
+  <section class="admin-section-editor"><h2>Coordonnées de l’émetteur</h2>
+   <form id="invoice-seller" class="invoice-seller-grid">
+    <label>Nom / activité<input name="name" value="${esc(seller.name)}" required></label>
+    <label>Adresse<input name="address" value="${esc(seller.address)}" required></label>
+    <label>Code postal<input name="postal" value="${esc(seller.postal)}"></label>
+    <label>Ville<input name="city" value="${esc(seller.city)}"></label>
+    <label>Téléphone<input name="phone" value="${esc(seller.phone)}"></label>
+    <label>E-mail<input type="email" name="email" value="${esc(seller.email)}"></label>
+    <label>SIRET<input name="siret" value="${esc(seller.siret)}"></label>
+    <label>Mention légale / TVA (facultatif)<input name="vatNote" value="${esc(seller.vatNote)}"></label>
+    <button class="btn" type="submit">Enregistrer mes coordonnées</button>
+   </form>
+  </section>
+  <section class="admin-section-editor"><h2>Créer une facture</h2>
+   <form id="invoice-form" class="invoice-form-grid">
+    <label>Numéro de facture<input name="number" value="${nextNumber}" required></label>
+    <label>Date<input name="date" type="date" value="${today}" required></label>
+    <label>Catégorie<select name="category"><option value="physique">Préparation physique</option><option value="mentale">Préparation mentale</option><option value="basket">Coaching individuel basket</option><option value="clubs">Clubs et Entreprises · prestation sur mesure</option></select></label>
+    <label data-offer-wrap>Tarif / offre<select name="offer"></select></label>
+    <div class="invoice-client-fields">
+     <label>Facturer à · nom / structure<input name="client" required></label>
+     <label>Adresse du client<input name="clientAddress"></label>
+     <label>Code postal et ville<input name="clientCity"></label>
+     <label>Téléphone<input name="clientPhone"></label>
+     <label>E-mail<input name="clientEmail" type="email"></label>
+    </div>
+    <label>Référence / conditions<input name="reference" value="Virement bancaire"></label>
+    <label>Description de la prestation<textarea name="description" rows="3" required></textarea></label>
+    <div class="invoice-pricing-fields">
+     <label>Quantité<input name="quantity" type="number" min="1" step="1" value="1" required></label>
+     <label>Prix unitaire (€)<input name="price" type="number" min="0" step="0.01" value="0.00" required></label>
+    </div>
+    <label>Note complémentaire<input name="note" placeholder="Facultatif"></label>
+    <div class="invoice-actions"><button class="btn" type="button" data-invoice-print>Télécharger / imprimer en PDF</button></div>
+   </form>
+   <div class="invoice-preview" id="invoice-preview"></div>
+  </section>
+ </div>`;
+ const sellerForm=el.querySelector('#invoice-seller'), form=el.querySelector('#invoice-form');
+ const readSeller=()=>Object.fromEntries(new FormData(sellerForm).entries());
+ sellerForm.onsubmit=async event=>{
+  event.preventDefault();seller=readSeller();
+  const {error}=await sb.from('site_content').upsert({key:'invoice.seller',value:JSON.stringify(seller)});
+  toast(el,error?error.message:'Coordonnées enregistrées',!!error)
+ };
+ const category=form.elements.category, offerSelect=form.elements.offer, offerWrap=el.querySelector('[data-offer-wrap]');
+ const refreshOffers=()=>{
+  const relevant=offers.filter(offer=>offer.service===category.value);
+  offerWrap.hidden=category.value==='clubs';
+  offerSelect.innerHTML=relevant.map((offer,index)=>`<option value="${esc(offer.id)}" ${index===0?'selected':''}>${esc(offer.label)} · ${(offer.price_cents/100).toLocaleString('fr-FR',{minimumFractionDigits:2})} €${offer.detail?' · '+esc(offer.detail):''}</option>`).join('')||'<option value="">Aucun tarif enregistré</option>';
+  const selected=relevant.find(offer=>String(offer.id)===offerSelect.value)||relevant[0];
+  if(selected){form.elements.price.value=(selected.price_cents/100).toFixed(2);form.elements.description.value=[SV[selected.service]?.name,selected.label,selected.detail].filter(Boolean).join(' — ')}
+  else if(category.value==='clubs'){form.elements.price.value='0.00';form.elements.description.value=''}
+  updatePreview()
+ };
+ category.onchange=refreshOffers;
+ offerSelect.onchange=()=>{const selected=offers.find(offer=>String(offer.id)===offerSelect.value);if(selected){form.elements.price.value=(selected.price_cents/100).toFixed(2);form.elements.description.value=[SV[selected.service]?.name,selected.label,selected.detail].filter(Boolean).join(' — ')}updatePreview()};
+ const updatePreview=()=>{
+  const price=invoiceMoney(form.elements.price.value),qty=Math.max(1,parseInt(form.elements.quantity.value||'1',10));
+  el.querySelector('#invoice-preview').innerHTML=`<div class="invoice-preview-head"><strong>Aperçu de la facture</strong><span>${esc(form.elements.number.value||'')}</span></div><p><b>${esc(form.elements.client.value||'Client')}</b><br>${esc(form.elements.clientAddress.value||'')}<br>${esc(form.elements.clientCity.value||'')}</p><p>${esc(form.elements.description.value||'Description de la prestation')}</p><p class="invoice-preview-total">Total : ${eur(price*qty)}</p>`
+ };
+ form.addEventListener('input',updatePreview);
+ refreshOffers();
+ el.querySelector('[data-invoice-print]').onclick=async()=>{
+  seller=readSeller();
+  if(!form.reportValidity()||!sellerForm.reportValidity())return;
+  const price=invoiceMoney(form.elements.price.value),qty=Math.max(1,parseInt(form.elements.quantity.value||'1',10)),total=price*qty;
+  const data={number:form.elements.number.value.trim(),date:invoiceDate(form.elements.date.value),category:category.options[category.selectedIndex].text,client:form.elements.client.value.trim(),clientAddress:form.elements.clientAddress.value.trim(),clientCity:form.elements.clientCity.value.trim(),clientPhone:form.elements.clientPhone.value.trim(),clientEmail:form.elements.clientEmail.value.trim(),reference:form.elements.reference.value.trim(),description:form.elements.description.value.trim(),quantity:qty,price:eur(price),total:eur(total),note:form.elements.note.value.trim()};
+  const printWindow=window.open('','_blank');
+  if(!printWindow){toast(el,'Autorise les fenêtres contextuelles pour imprimer la facture.',true);return}
+  const lines=[data.clientAddress,data.clientCity,data.clientPhone,data.clientEmail].filter(Boolean).map(esc).join('<br>');
+  printWindow.document.open();printWindow.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Facture ${esc(data.number)}</title><style>
+   *{box-sizing:border-box}body{margin:0;color:#17191d;font:14px Arial,sans-serif}.sheet{width:210mm;min-height:297mm;margin:0 auto;padding:20mm 18mm;display:flex;flex-direction:column}.top{display:flex;justify-content:space-between;gap:30px;border-bottom:2px solid #b88943;padding-bottom:20px}.seller{line-height:1.65}.title{text-align:right}.title h1{font-size:32px;margin:0 0 15px;letter-spacing:.06em}.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}.meta div{background:#f4f2ed;padding:10px;border-radius:5px}.meta b{display:block;font-size:10px;letter-spacing:.08em;color:#68717b;margin-bottom:5px}.billto{margin:28px 0 24px;display:grid;grid-template-columns:1fr 1fr;gap:20px}.billto h2{font-size:11px;letter-spacing:.1em;color:#68717b;margin:0 0 9px}.billto p{line-height:1.55;margin:0}.ref{text-align:right}.items{width:100%;border-collapse:collapse;margin-top:10px}.items th{background:#17191d;color:white;text-align:left;padding:12px 10px;font-size:11px;letter-spacing:.04em}.items td{padding:13px 10px;border-bottom:1px solid #dedbd4;vertical-align:top}.items .num{text-align:right;white-space:nowrap}.summary{width:48%;margin:20px 0 0 auto;border-collapse:collapse}.summary td{padding:8px 0;border-bottom:1px solid #e4e1db}.summary td:last-child{text-align:right}.summary .grand td{font-size:18px;font-weight:bold;border-top:2px solid #b88943;border-bottom:0;padding-top:12px}.thanks{margin-top:auto;padding-top:35px;border-top:1px solid #dedbd4;color:#59636f;line-height:1.6}.thanks strong{color:#17191d}.legal{margin-top:10px;font-size:11px;color:#68717b}@page{size:A4;margin:0}@media print{.sheet{margin:0;min-height:297mm}}
+   </style></head><body><main class="sheet"><header class="top"><div class="seller"><strong>${esc(seller.name)}</strong><br>${esc(seller.address)}<br>${esc([seller.postal,seller.city].filter(Boolean).join(' '))}<br>${seller.phone?'Téléphone : '+esc(seller.phone)+'<br>':''}${seller.email?esc(seller.email)+'<br>':''}${seller.siret?'SIRET : '+esc(seller.siret):''}</div><div class="title"><h1>FACTURE</h1><div class="meta"><div><b>N° FACTURE</b>${esc(data.number)}</div><div><b>DATE</b>${esc(data.date)}</div></div></div></header><section class="billto"><div><h2>FACTURER À</h2><p><strong>${esc(data.client)}</strong><br>${lines}</p></div><div class="ref"><h2>RÉFÉRENCE · CONDITIONS</h2><p>${esc(data.reference||'—')}</p></div></section><table class="items"><thead><tr><th>DESCRIPTION</th><th class="num">QTÉ</th><th class="num">PRIX UNITAIRE</th><th class="num">MONTANT</th></tr></thead><tbody><tr><td>${esc(data.description)}${data.note?'<br><span style="color:#68717b">'+esc(data.note)+'</span>':''}</td><td class="num">${data.quantity}</td><td class="num">${esc(data.price)}</td><td class="num">${esc(data.total)}</td></tr></tbody></table><table class="summary"><tr><td>Sous-total</td><td>${esc(data.total)}</td></tr><tr><td>TVA · 0,000 %</td><td>0,00 €</td></tr><tr class="grand"><td>TOTAL À PAYER</td><td>${esc(data.total)}</td></tr></table><footer class="thanks"><strong>Nous vous remercions de votre confiance.</strong><br>Pour toute question concernant cette facture, contactez ${esc(seller.name.replace(/^Auto-entreprise\s+/i,''))} au ${esc(seller.phone)} ou par e-mail à ${esc(seller.email)}.<div class="legal">${esc(seller.vatNote)}${data.reference?' · '+esc(data.reference):''}</div></footer></main><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),300));<\/script></body></html>`);
+  printWindow.document.close();
+  const next=String((parseInt(data.number,10)||nextNumber)+1);
+  const {error}=await sb.from('site_content').upsert({key:'invoice.next_number',value:next});
+  if(!error)form.elements.number.value=next;
+  updatePreview()
+ };
 }
 
 async function tReviews(el){
